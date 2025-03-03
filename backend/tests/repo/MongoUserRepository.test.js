@@ -4,7 +4,7 @@ import { loadDatabaseDriver } from "../../src/repo/Driver";
 
 var driver;
 
-beforeAll(async () => {
+beforeEach(async () => {
     process.env.EXPLICIT_USE_MONGO = "true";
     config();
 
