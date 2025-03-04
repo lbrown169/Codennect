@@ -4,9 +4,10 @@
   "description": "Develop your next project – connected.",
   "main": "index.js",
   "scripts": {
-    "frontend": "cd frontend && npm run dev",
-    "backend": "cd backend && npm run dev",
-    "dev": "concurrently \"npm run backend\" \"npm run frontend\""
+      "frontend": "cd frontend && npm run dev",
+      "backend": "cd backend && npm run dev",
+      "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+      "setup": "npm install && cd frontend && npm install && cd ../backend && npm install"
   },
   "keywords": [],
   "author": "",
