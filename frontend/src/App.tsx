@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Redirect, Navigate, Switch } fr
 import './App.css';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import DashboardPage from './pages/DashboardPage';
 function App() {
     return (
         <Router >
@@ -11,6 +12,8 @@ function App() {
                 <Route path="/login" exact element={<LoginPage />}>
                 </Route>
                 <Route path="/register" exact element={<SignupPage />}>
+                </Route>
+                <Route path="/dashboard" element={<DashboardPage />}>
                 </Route>
             </Routes>
         </Router>

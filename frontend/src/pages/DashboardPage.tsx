@@ -1,9 +1,11 @@
+import LoggedIn from "../components/LoggedIn";
 const DashboardPage = () =>
 {
-    return{
+    return(
         <div>
-        <h1>Welcome!</h1>
+            <LoggedIn />
+            <h1>Welcome!</h1>
         </div>
-    }
+    );
 }
 export default DashboardPage;
