@@ -64,7 +64,7 @@ function Signup()
     {
         event.preventDefault();
         const checkInputResult = checkInput();
-        if (checkInputResult)
+        if (checkInputResult != '')
         {
             setMessage(checkInputResult);
             return;
