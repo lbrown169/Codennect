@@ -7,11 +7,11 @@ function App() {
     return (
         <Router >
             <Routes>
-                <Route path="/" exact element={<LoginPage />}>
+                <Route path="/" element={<LoginPage />}>
                 </Route>
-                <Route path="/login" exact element={<LoginPage />}>
+                <Route path="/login" element={<LoginPage />}>
                 </Route>
-                <Route path="/register" exact element={<SignupPage />}>
+                <Route path="/register" element={<SignupPage />}>
                 </Route>
                 <Route path="/dashboard" element={<DashboardPage />}>
                 </Route>

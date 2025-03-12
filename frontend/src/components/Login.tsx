@@ -55,8 +55,9 @@ function Login()
             </div>
             
             <input type="submit" className="buttons" id="loginButton" value="Login" onClick={doLogin}></input>
-            
-            <span id="loginResult">{message}</span>
+            <div id="loginResultDiv">
+                <span id="loginResult">{message}</span>
+            </div>
             <p>New user? Sign up <a href="/register">here</a>!</p>
         </div>
     );
