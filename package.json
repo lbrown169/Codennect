@@ -7,7 +7,9 @@
       "frontend": "cd frontend && npm run dev",
       "backend": "cd backend && npm run dev",
       "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
-      "setup": "npm install && cd frontend && npm install && cd ../backend && npm install"
+      "setup": "npm install && cd frontend && npm install && cd ../backend && npm install",
+      "build": "rm -rf ./backend/dist && cd frontend && npm run build && cd ../backend && npm run build && cd .. && cp -R ./frontend/dist/ ./backend/dist/build",
+      "start": "node backend/dist/src/server.js"
   },
   "keywords": [],
   "author": "",
