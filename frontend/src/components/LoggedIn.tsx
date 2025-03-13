@@ -4,12 +4,13 @@ function LoggedIn()
     if(_ud == null) //redirect if user not found
     {
         window.location.href = '/';
+        return;
     }
     var userData = JSON.parse(_ud);
-    var userId = userData.id;
+    //var userId = userData.id;
     var userName = userData.name;
 
-    const doLogout = event =>
+    const doLogout = (event:any) =>
     {
         event.preventDefault();
         localStorage.removeItem("user_data");
