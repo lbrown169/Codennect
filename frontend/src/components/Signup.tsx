@@ -76,16 +76,6 @@ function Signup()
             {
                 setMessage(res.error || 'Signup failed');
             }
-            else
-            {
-                setMessage('Success');
-                const user = { name: res.name, id: res.id };
-                localStorage.setItem('user_data', JSON.stringify(user)); // Store user
-                setTimeout(() =>
-                {
-                    window.location.href = '/dashboard'; // Redirect
-                }, 1000);
-            }
         }
         catch (error: any)
         {
