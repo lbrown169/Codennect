@@ -1,130 +1,172 @@
 import React, { useState } from 'react';
+
 function Signup()
 {
-    const [message,setMessage] = useState('');
-    const [signupFullName,setSignupFullName] = React.useState('');
-    const [signupEmail,setSignupEmail] = React.useState('');
-    const [signupPassword,setSignupPassword] = React.useState('');
-    const [passwordConfirm,setPasswordConfirm] = React.useState('');
+    const [message, setMessage] = useState(''); // Success/error msg
+    const [signupFullName, setSignupFullName] = useState(''); // Name state
+    const [signupEmail, setSignupEmail] = useState(''); // Email state
+    const [signupPassword, setSignupPassword] = useState(''); // Password state
+    const [passwordConfirm, setPasswordConfirm] = useState(''); // Confirm state
+    const [isLoading, setIsLoading] = useState(false); // Loading state
 
-    function handleSetSignupFullName( e: any ) : void
+    const handleSetSignupFullName = (e: React.ChangeEvent<HTMLInputElement>) => // Update name
     {
         setSignupFullName(e.target.value);
-    }
-    function handleSetSignupEmail( e: any ) : void
+    };
+
+    const handleSetSignupEmail = (e: React.ChangeEvent<HTMLInputElement>) => // Update email
     {
         setSignupEmail(e.target.value);
-    }
-    function handleSetSignupPassword( e: any) : void
+    };
+
+    const handleSetSignupPassword = (e: React.ChangeEvent<HTMLInputElement>) => // Update password
     {
         setSignupPassword(e.target.value);
-    }
-    function handleSetPasswordConfirm( e: any ) : void
+    };
+
+    const handleSetPasswordConfirm = (e: React.ChangeEvent<HTMLInputElement>) => // Update confirm
     {
         setPasswordConfirm(e.target.value);
-    }
+    };
 
-    //checks for valid input in fields
-    function checkInput()
+    const checkInput = () => // Validate inputs
     {
-        //missing input check
-        if(signupFullName.length === 0)
-        {
-            return 'Please enter your name';
-        }
-        if(signupEmail.length === 0)
-        {
-            return 'Please enter an email';
-        }
-        if(signupPassword.length === 0)
-        {
-            return 'Please enter a password';
-        }
+        if (!signupFullName) return 'Name required';
+        if (!signupEmail) return 'Email required';
+        if (!signupPassword) return 'Password required';
 
-        //validate password
-        if(signupPassword.length < 8)
+        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+        if (!passwordPattern.test(signupPassword))
         {
-            return 'Password should be at least 8 characters long';
+            return 'Password needs 8+ chars, upper, lower, number, special';
         }
-        if(signupPassword !== passwordConfirm)
-        {
-            return 'Passwords do not match';
-        }
+        if (signupPassword !== passwordConfirm) return 'Passwords mismatch';
 
-        //valid email check
-        //no spaces anywhere
-        //no start with @
-        //contains an @ somewhere
-        //@ must be before a .
-        //at least one non-@ character between @ and .
-        //at least one non-@ character after final .
-        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        var validEmail = pattern.test(signupEmail);
-        if(!(validEmail))
-        {
-            return 'Invalid email';
-        }
-        
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(signupEmail)) return 'Invalid email';
+
         return '';
-    }
+    };
 
-    async function doSignup(event:any) : Promise<void>
+    const doSignup = async (event: React.FormEvent) => // Handle signup
     {
-        alert("Not yet implemented");
         event.preventDefault();
-        var checkInputResult = checkInput();
-        if(checkInputResult.length !== 0)
+        const checkInputResult = checkInput();
+        if (checkInputResult)
         {
             setMessage(checkInputResult);
             return;
         }
-        
-        var obj={name:signupFullName,email:signupEmail,password:signupPassword};
-        var js = JSON.stringify(obj);
 
-        setMessage('Currently valid input');
-    }
+        setIsLoading(true); // Disable form
+        const obj = { name: signupFullName, email: signupEmail, password: signupPassword };
+        const js = JSON.stringify(obj);
+
+        try
+        {
+            const response = await fetch('http://localhost:5001/api/signup',
+            { 
+                method: 'POST',
+                body: js,
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const res = await response.json(); // Parse response
+
+            if (res.error || res.id < 0)
+            {
+                setMessage(res.error || 'Signup failed');
+            }
+            else
+            {
+                setMessage('Success');
+                const user = { name: res.name, id: res.id };
+                localStorage.setItem('user_data', JSON.stringify(user)); // Store user
+                setTimeout(() =>
+                {
+                    window.location.href = '/dashboard'; // Redirect
+                }, 1000);
+            }
+        }
+        catch (error: any)
+        {
+            setMessage('Error occurred');
+            console.error('Signup error:', error);
+        }
+        finally
+        {
+            setIsLoading(false); // Enable form
+        }
+    };
 
     return (
         <div id="signupDiv">
-        <h1>Signup</h1>
-
-        <form id="signupInput">
-            <div id="fullNameDiv">
-                <div id="fullNameLabel">
-                    <label>Full Name</label>
+            <h1>Signup</h1>
+            <form id="signupInput" onSubmit={doSignup}> {/* Form wrapper */}
+                <div id="fullNameDiv">
+                    <div id="fullNameLabel">
+                        <label>Full Name</label>
+                    </div>
+                    <input
+                        type="text"
+                        id="signupFullName"
+                        placeholder="Full Name"
+                        value={signupFullName}
+                        onChange={handleSetSignupFullName}
+                        disabled={isLoading} // Disable on load
+                    />
                 </div>
-                <input type="text" id="signupFullName" placeholder="Full Name" onChange={handleSetSignupFullName}></input>
-            </div>
-            <div id="emailDiv">
-                <div id="emailLabel">
-                    <label>Email</label>
+                <div id="emailDiv">
+                    <div id="emailLabel">
+                        <label>Email</label>
+                    </div>
+                    <input
+                        type="email"
+                        id="signupEmail"
+                        placeholder="Email"
+                        value={signupEmail}
+                        onChange={handleSetSignupEmail}
+                        disabled={isLoading}
+                    />
                 </div>
-                <input type="email" id="signupEmail" placeholder="Email" onChange={handleSetSignupEmail}></input> 
-            </div>
-            <div id="passwordDiv">
-                <div id="passwordLabel">
-                    <label>Password</label>
+                <div id="passwordDiv">
+                    <div id="passwordLabel">
+                        <label>Password</label>
+                    </div>
+                    <input
+                        type="password"
+                        id="signupPassword"
+                        placeholder="Password"
+                        value={signupPassword}
+                        onChange={handleSetSignupPassword}
+                        disabled={isLoading}
+                    />
                 </div>
-                <input type="password" id="signupPassword" placeholder="Password" onChange={handleSetSignupPassword}></input>
-            </div>
-            <div id="passwordConfirmDiv">
-                <div id="passwordConfirmLabel">
-                    <label>Re-enter password</label>
+                <div id="passwordConfirmDiv">
+                    <div id="passwordConfirmLabel">
+                        <label>Re-enter password</label>
+                    </div>
+                    <input
+                        type="password"
+                        id="passwordConfirm"
+                        placeholder="Confirm Password"
+                        value={passwordConfirm}
+                        onChange={handleSetPasswordConfirm}
+                        disabled={isLoading}
+                    />
                 </div>
-                <input type="password" id="passwordConfirm" placeholder="Confirm Password" onChange={handleSetPasswordConfirm}></input>
-            </div>
-
-            <div id="signupResultDiv">
-                <span id="signupResult">{message}</span>
-            </div>
-      
-            <input type="submit" id="submitButton" value="Create Account" onClick={doSignup}></input>
-        </form>
-        <p>Already have an account? Login <a href="/login">here</a>!</p>
-
+                <div id="signupResultDiv">
+                    <span id="signupResult">{message}</span> {/* Feedback */}
+                </div>
+                <input
+                    type="submit"
+                    id="submitButton"
+                    value={isLoading ? "Creating Account..." : "Create Account"} // Loading text
+                    disabled={isLoading}
+                />
+            </form>
+            <p>Already have an account? Login <a href="/login">here</a>!</p>
         </div>
     );
+}
 
-};
 export default Signup;
