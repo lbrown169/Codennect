@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
 
+const app_name = "cop4331.tech";
+
+function buildPath(route: string) : string {
+    if (process.env.NODE_ENV != "production") {
+        return 'http://localhost:5001' + route;
+    } else {
+        return 'http://' + app_name + route;
+    }
+}
+
 function Signup()
 {
     const [message, setMessage] = useState(''); // Success/error msg
@@ -64,7 +74,7 @@ function Signup()
 
         try
         {
-            const response = await fetch('http://localhost:5001/api/register',
+            const response = await fetch(buildPath('/api/register'),
             { 
                 method: 'POST',
                 body: js,
