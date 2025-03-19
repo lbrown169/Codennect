@@ -89,14 +89,15 @@ function Signup()
     };
 
     return (
-        <div id="signupDiv">
-            <h1>Signup</h1>
+        <div id="signupDiv" className="bg-[#EFF6E0] p-10 rounded-xl text-black text-lg w-lg m-auto">
+            <h1 className="p-6 font-bold">Signup</h1>
             <form id="signupInput" onSubmit={doSignup}> {/* Form wrapper */}
-                <div id="fullNameDiv">
+                <div id="fullNameDiv" className="text-left">
                     <div id="fullNameLabel">
                         <label>Full Name</label>
                     </div>
                     <input
+                        className="accountInput"
                         type="text"
                         id="signupFullName"
                         placeholder="Full Name"
@@ -105,11 +106,12 @@ function Signup()
                         disabled={isLoading} // Disable on load
                     />
                 </div>
-                <div id="emailDiv">
+                <div id="emailDiv" className="text-left">
                     <div id="emailLabel">
                         <label>Email</label>
                     </div>
                     <input
+                        className="accountInput"
                         type="email"
                         id="signupEmail"
                         placeholder="Email"
@@ -118,11 +120,12 @@ function Signup()
                         disabled={isLoading}
                     />
                 </div>
-                <div id="passwordDiv">
+                <div id="passwordDiv" className="text-left">
                     <div id="passwordLabel">
                         <label>Password</label>
                     </div>
                     <input
+                        className="accountInput"
                         type="password"
                         id="signupPassword"
                         placeholder="Password"
@@ -131,11 +134,12 @@ function Signup()
                         disabled={isLoading}
                     />
                 </div>
-                <div id="passwordConfirmDiv">
+                <div id="passwordConfirmDiv" className="text-left">
                     <div id="passwordConfirmLabel">
                         <label>Re-enter password</label>
                     </div>
                     <input
+                        className="accountInput"
                         type="password"
                         id="passwordConfirm"
                         placeholder="Confirm Password"
@@ -148,6 +152,7 @@ function Signup()
                     <span id="signupResult">{message}</span> {/* Feedback */}
                 </div>
                 <input
+                    className="bg-[#598392] text-white font-bold px-4 py-3 rounded-[10px] my-3 hover:bg-[#90b0bb]"
                     type="submit"
                     id="submitButton"
                     value={isLoading ? "Creating Account..." : "Create Account"} // Loading text
