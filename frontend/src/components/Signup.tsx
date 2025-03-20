@@ -89,10 +89,10 @@ function Signup()
     };
 
     return (
-        <div id="signupDiv" className="bg-[#EFF6E0] p-10 rounded-xl text-black text-lg w-lg m-auto">
+        <div id="signupDiv" className="accountBox">
             <h1 className="p-6 font-bold">Signup</h1>
             <form id="signupInput" onSubmit={doSignup}> {/* Form wrapper */}
-                <div id="fullNameDiv" className="text-left">
+                <div id="fullNameDiv" className="text-left py-1">
                     <div id="fullNameLabel">
                         <label>Full Name</label>
                     </div>
@@ -106,7 +106,7 @@ function Signup()
                         disabled={isLoading} // Disable on load
                     />
                 </div>
-                <div id="emailDiv" className="text-left">
+                <div id="emailDiv" className="text-left py-1">
                     <div id="emailLabel">
                         <label>Email</label>
                     </div>
@@ -120,7 +120,7 @@ function Signup()
                         disabled={isLoading}
                     />
                 </div>
-                <div id="passwordDiv" className="text-left">
+                <div id="passwordDiv" className="text-left py-1">
                     <div id="passwordLabel">
                         <label>Password</label>
                     </div>
@@ -134,7 +134,7 @@ function Signup()
                         disabled={isLoading}
                     />
                 </div>
-                <div id="passwordConfirmDiv" className="text-left">
+                <div id="passwordConfirmDiv" className="text-left py-1">
                     <div id="passwordConfirmLabel">
                         <label>Re-enter password</label>
                     </div>

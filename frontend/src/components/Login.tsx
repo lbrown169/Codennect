@@ -74,7 +74,7 @@ function Login()
     };
 
     return (
-        <div id="loginDiv" className="bg-[#EFF6E0] p-10 rounded-xl text-black text-lg w-lg m-auto">
+        <div id="loginDiv" className="accountBox">
             <h1 className="p-6 font-bold">Login</h1>
             <p className="pb-4">Enter login info here.</p>
             <form onSubmit={doLogin}> {/* Form wrapper */}

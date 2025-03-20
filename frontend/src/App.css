@@ -1,10 +1,17 @@
 @import "tailwindcss";
 
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+
+.accountBox {
+  background-color: #EFF6E0;
+  padding: 18px;
+  border-radius: 12px;
+  color: black;
+  font-size: 18px;
   text-align: center;
+  position: relative;
+  width: 60%;
+  margin: auto;
+  top: 100px;
 }
 
 .accountInput {
@@ -13,6 +20,23 @@
   border-radius: 4px;
   padding: 4px;
   width: 100%;
+}
+
+.navBar {
+  top: 0px;
+  font-size: 22px;
+  padding: 10px;
+  color: white;
+  background-color: #01161E;
+}
+
+.navBar a {
+  color: white;
+  padding: 8px;
+}
+
+.navBar a:hover {
+  color: #B3B3B3;
 }
 
 .card {
