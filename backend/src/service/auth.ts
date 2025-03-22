@@ -1,20 +1,18 @@
-// Sample information at the moment
-/*
 export function loadTransporter() {
 
     const nodemailer = require("nodemailer");
 
     const transporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
-        port: 587,
-        secure: false, // true for port 465, false for other ports
-        auth: {
-            user: "maddison53@ethereal.email",
-            pass: "jn7jnAPss4f63QBp6D",
-        },
+      service: 'gmail',
+      host: "smtp.gmail.email",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "rideoperatorqbozo@gmail.com", // sender gmail address
+        pass: "cjbvvkdudnyiwqqd ", // app password from Gmail account
+      },
     });
 
     return transporter;
 
 }
-*/

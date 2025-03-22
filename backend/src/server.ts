@@ -1,33 +1,23 @@
 import { config } from "dotenv";
 import { loadDatabaseDriver } from "./repo/Driver";
-//import { loadTransporter } from "./service/auth";
+import { loadTransporter } from "./service/auth";
 import { User, UserRegistration, UserRepository } from "./domain/User";
 
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
-const nodemailer = require("nodemailer");
 const crypto = require("crypto"); // generate token
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.json()); // Nodemailer stuff TODO Refactor
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.ethereal.email",
-  port: 587,
-  secure: false,
-  auth: {
-    user: "maddison53@ethereal.email",
-    pass: "jn7jnAPss4f63QBp6D",
-  },
-});
+app.use(express.json());
 
 config();
 
 let driver = loadDatabaseDriver();
+let transporter = loadTransporter();
 
 // In-memory store for demo purposes (replace with DB or Redis in production)
 const tokenStore = {};
@@ -45,6 +35,7 @@ app.post("/api/register", async (req, res) => {
   const existingUser = await db.userRepository.GetByEmail(email);
 
   // if there is one, send an error
+  // TODO Update to check for a "verified" flag within the user
   if (existingUser != null) {
     return res.status(400).json({ error: "User already exists!" });
   }
@@ -109,29 +100,6 @@ app.get("/api/verify-email", async (req, res) => {
   // TODO Set new name and password
 
 });
-
-// Nodemailer
-/*
-let transporter = loadTransporter();
-
-app.post("/api/auth", async (req, res, next) => {
-
-  // send mail with defined transport object
-  const info = await transporter.sendMail({
-    from: '"Maddison Foo Koch 👻" <maddison53@ethereal.email>', // sender address
-    to: "bar@example.com, baz@example.com", // list of receivers
-    subject: "Hello ✔", // Subject line
-    text: "Hello world?", // plain text body
-    html: "<b>Hello world?</b>", // html body
-  });
-
-  console.log("Message sent: %s", info.messageId);
-  // Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.email>
-
-});
-*/
-
-
 
 app.post("/api/login", async (req, res, next) => {
   // incoming: email, password
