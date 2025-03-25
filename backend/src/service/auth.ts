@@ -8,8 +8,8 @@ export function loadTransporter() {
       port: 587,
       secure: false,
       auth: {
-        user: "rideoperatorqbozo@gmail.com", // sender gmail address
-        pass: "cjbvvkdudnyiwqqd ", // app password from Gmail account
+        user: "", // sender gmail address
+        pass: "", // app password from Gmail account
       },
     });
 
