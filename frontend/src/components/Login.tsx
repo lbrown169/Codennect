@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
 
+const app_name = "cop4331.tech";
+
+function buildPath(route: string) : string {
+    if (process.env.NODE_ENV != "production") {
+        return 'http://localhost:5001' + route;
+    } else {
+        return 'http://' + app_name + route;
+    }
+}
+
 function Login()
 {
     const [message, setMessage] = useState(''); // Success/error msg
@@ -42,7 +52,7 @@ function Login()
 
         try
         {
-            const response = await fetch('http://localhost:5001/api/login',
+            const response = await fetch(buildPath('/api/login'),
             {
                 method: 'POST',
                 body: js,
