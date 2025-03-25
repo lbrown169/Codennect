@@ -4,7 +4,7 @@ const DashboardPage = () =>
     return(
         <div>
             <LoggedIn />
-            <h1>Welcome!</h1>
+            <h1 className="text-center">Welcome!</h1>
         </div>
     );
 }
