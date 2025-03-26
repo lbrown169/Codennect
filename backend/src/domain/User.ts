@@ -59,8 +59,3 @@ export interface UserRepository {
     ): Promise<User | undefined>;
     Register(user: UserRegistration): Promise<User>;
 }
-
-// 
-export function getProfile() {
-    
-}
