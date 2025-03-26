@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'register_page.dart';
 
 class LoginPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -81,7 +82,10 @@ class LoginPage extends StatelessWidget {
                   const Text("Don't have an account? "),
                   GestureDetector(
                     onTap: () {
-                      // Navigate to Register Page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => RegisterPage())
+                      );
                     },
                     child: const Text(
                       "Sign up",
