@@ -122,6 +122,23 @@ app.post("/api/login", async (req, res, next) => {
   res.status(200).json({ id: theUser._id, name: theUser.name, error: "" });
 });
 
+app.post("/api/get-user-info", async (req, res) => {
+  // incoming: user id
+  // outgoing: all the user info
+
+  const { id } = req.body;
+  const db = driver;
+
+  const theUser = await db.userRepository.GetById(id);
+
+  // more specific error based on email OR password
+  if (theUser == null) {
+    return res.status(400).json({ error: "User not found!" });
+  }
+
+  res.status(200).json({ theUser });
+});
+
 // TODO Split up register into two pieces: Part 1 Email -> Verify, Part 2 Set up password + info
 
 /*
