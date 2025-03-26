@@ -84,12 +84,13 @@ function Login()
     };
 
     return (
-        <div id="loginDiv">
-            <h1>Login</h1>
-            <p>Enter login info here.</p>
+        <div id="loginDiv" className="accountBox">
+            <h1 className="p-6 font-bold">Login</h1>
+            <p className="pb-4">Enter login info here.</p>
             <form onSubmit={doLogin}> {/* Form wrapper */}
-                <div id="loginEmailDiv">
+                <div id="loginEmailDiv" className="my-3">
                     <input
+                        className="accountInput"
                         type="email"
                         id="loginEmail"
                         placeholder="Email"
@@ -98,8 +99,9 @@ function Login()
                         disabled={isLoading} // Disable on load
                     />
                 </div>
-                <div id="loginPasswordDiv">
+                <div id="loginPasswordDiv" className="my-3">
                     <input
+                        className="accountInput"
                         type="password"
                         id="loginPassword"
                         placeholder="Password"
@@ -110,7 +112,7 @@ function Login()
                 </div>
                 <input
                     type="submit"
-                    className="buttons"
+                    className="bg-[#598392] text-white font-bold px-4 py-3 rounded-[10px] my-3 hover:bg-[#90b0bb]"
                     id="loginButton"
                     value={isLoading ? "Logging in..." : "Login"} // Loading text
                     disabled={isLoading}
