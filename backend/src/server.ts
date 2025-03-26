@@ -1,5 +1,6 @@
 import { config } from "dotenv";
 import { loadDatabaseDriver } from "./repo/Driver";
+import { getProfile } from "./domain/User";
 import { loadTransporter } from "./service/auth";
 import { User, UserRegistration, UserRepository } from "./domain/User";
 
