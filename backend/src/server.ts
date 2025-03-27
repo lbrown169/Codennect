@@ -40,25 +40,29 @@ app.post("/api/register", async (req, res) => {
     return res.status(400).json({ error: "User already exists!" });
   }
 
+  /* TODO We don't want to create new user yet, but instead do that AFTER VERFICATION 
+  What we will want is to store the email in a "purgatory" assignment until verification is done.
+  Note: We will also want to see if the email is already in "purgatory", if it is, then we
+  just send a new verification token to the same email*/
   // create new user instance
   const newUser = new UserRegistration("", email, "");
 
+  // TODO Replace with inserting into "purgatory" (only if user isn't already in purgatory)
   // insert the new user into the database using UserRepo
   const registeredUser = await db.userRepository.Register(newUser);
 
-  // return a successful registration message
-  //res.status(201).json({ log : "User email saved. Generating verification email." });
-
-  // Next up, the email
-
+  // Now for the actual verification email
   // Generate a simple random token
   const token = crypto.randomBytes(32).toString("hex");
 
+  // TODO Store token in database for recalling it in verify-email endpoint
   // Store the token and email temporarily
   tokenStore[token] = { email, expires: Date.now() + 15 * 60 * 1000 }; // Expires in 15 mins
 
-  const verificationLink = `http://localhost:3000/verify-email?token=${token}`;
+  // Is this link good?
+  const verificationLink = `http://cop4331.tech/verify-email?token=${token}`;
 
+  // TODO This is all placeholder stuff to be resolved upon creation of proper transporter email
   const info = await transporter.sendMail({
     from: '"Maddison Foo Koch 👻" <maddison53@ethereal.email>',
     to: email,
@@ -73,15 +77,17 @@ app.post("/api/register", async (req, res) => {
 
 // Route to verify token
 app.get("/api/verify-email", async (req, res) => {
-  const { token } = req.query;
+  // This is why we need the token in the database
+  const { token, name, email, password } = req.query;
   const db = driver;
 
+  // TODO Subject to change
   const record = tokenStore[token];
   if (!record) {
     return res.status(400).send("Invalid or expired token.");
   }
 
-  // Optional: Check for token expiration
+  // Check for token expiration
   if (record.expires < Date.now()) {
     delete tokenStore[token];
     return res.status(400).send("Token expired.");
@@ -91,13 +97,14 @@ app.get("/api/verify-email", async (req, res) => {
   const verifiedEmail = record.email;
   delete tokenStore[token];
 
-  //res.send(`Email ${verifiedEmail} has been successfully verified! Proceed to complete your registration.`);
+  // create new user instance
+  const newUser = new UserRegistration(name, email, password);
 
-  // Part 2: Finish registration
-  const verifiedUser = await db.userRepository.GetByEmail(verifiedEmail);
+  // insert the new user into the database using UserRepo
+  const registeredUser = await db.userRepository.Register(newUser);
 
-  const { name, password } = req.body;
-  // TODO Set new name and password
+  // return a successful registration message
+  res.status(201).json({ log : "User registered successfully!" });
 
 });
 
@@ -166,7 +173,7 @@ app.post("/api/register", async (req, res, next) => {
   const registeredUser = await db.userRepository.Register(newUser);
 
   // return a successful registration message
-  res.status(201).json({ log : "User registered successfully!" });
+  res.status(201).json({ "User registered successfully!" });
 });
 */
 

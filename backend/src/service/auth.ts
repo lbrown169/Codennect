@@ -2,14 +2,15 @@ export function loadTransporter() {
 
     const nodemailer = require("nodemailer");
 
+    // TODO Set up a gmail email for the sole purpose of email verification for this project
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      host: "smtp.gmail.email",
-      port: 587,
-      secure: false,
+      host: process.env.HOST, //'smtp.gmail.com' - I will implement a gmail specifically for this
+      service: process.env.SERVICE, //I might delete this
+      port: 465,
+      secure: true,
       auth: {
-        user: "", // sender gmail address
-        pass: "", // app password from Gmail account
+        user: process.env.USER, //put in gmail email
+        pass: process.env.PASS, //create an app on the gmail
       },
     });
 
