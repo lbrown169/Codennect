@@ -61,7 +61,7 @@ app.post("/api/register", async (req, res, next) => {
 
   // return a successful registration message
   res.status(201).json({ error: "User registered successfully!" });
-});
+}); 
 
 app.post("/api/get-user-info", async (req, res) => {
   // incoming: user id
