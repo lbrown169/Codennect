@@ -70,9 +70,15 @@ app.post("/api/get-user-info", async (req, res) => {
   const { id } = req.body;
   const db = driver;
 
-  const theUser = await db.userRepository.GetById(id);
+  let theUser;
+  try {
+    theUser = await db.userRepository.GetById(id);
+  }
+  catch {
+    return res.status(400).json({ error: "Invalid ID format!" });
+  }
 
-  // more specific error based on email OR password
+  // error if the user is not found
   if (theUser == null) {
     return res.status(400).json({ error: "User not found!" });
   }
@@ -84,18 +90,48 @@ app.post("/api/get-user-info", async (req, res) => {
 //   // incoming: user id
 //   // outgoing: all the user info
 
-//   const { id } = req.body;
+//   const { id, editedField, change } = req.body;
 //   const db = driver;
+
+//   // TODO: SANITIZE ID INPUT
+//     // copy from above once confirmed
 
 //   const theUser = await db.userRepository.GetById(id);
 
-//   // more specific error based on email OR password
+//   // error if the user is not found
 //   if (theUser == null) {
 //     return res.status(400).json({ error: "User not found!" });
 //   }
 
 //   // the same as getting the user up to this point, then get into editing it
-//     // 
+//   // use a switch statement to determine (from editedField) which field is being edited
+//     // name, comm, skills, roles, interests
+//   switch(editedField) { 
+//     case "name": { 
+//       //statements;
+//       break; 
+//     }
+//     case "comm": { 
+//       //statements; 
+//       break; 
+//     }
+//     case "skills": { 
+//       //statements; 
+//       break; 
+//     }
+//     case "roles": { 
+//       //statements; 
+//       break; 
+//     }
+//     case "interests": { 
+//       //statements; 
+//       break; 
+//     }
+//     default: { 
+//        //statements; 
+//        break; 
+//     } 
+//   } 
 
 //   res.status(200).json(theUser);
 // });
