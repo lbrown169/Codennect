@@ -32,11 +32,22 @@
 
 .navBar a {
   color: white;
+  margin: auto;
+  position: relative;
+  text-align: center;
   padding: 8px;
 }
 
 .navBar a:hover {
   color: #B3B3B3;
+}
+
+.profileBox {
+  background-color: #EFF6E0;
+  padding: 18px;
+  border-radius: 12px;
+  color: black;
+  font-size: 18px;
 }
 
 .card {
