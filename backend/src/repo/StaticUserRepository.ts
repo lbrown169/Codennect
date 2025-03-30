@@ -113,4 +113,17 @@ export class StaticUserRepository implements UserRepository {
 
         return Promise.resolve(newUser);
     }
+
+    async updateUser(id: string, updates: Partial<User>) {
+        // find user, return false if not found
+        const user = this._internal.find(user => user._id === id);
+        
+        if (!user)
+            return false;
+    
+        // update the found user
+        Object.assign(user, updates);
+
+        return true;
+    }
 }

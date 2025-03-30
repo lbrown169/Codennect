@@ -110,4 +110,16 @@ export class MongoUserRepository implements UserRepository {
 
         return Promise.resolve(returning);
     }
+
+    async updateUser(id: string, updates: Partial<User>) {
+        const objectId = new ObjectId(id);
+    
+        const result = await this.collection.updateOne(
+            { _id: objectId }, // find by id
+            { $set: updates }  // do all the updates
+        );
+    
+        // true if updated
+        return result.modifiedCount > 0; 
+    }
 }
