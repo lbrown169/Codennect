@@ -6,7 +6,8 @@
     "start": "ts-node src/server.ts",
     "build": "npx tsc",
     "dev": "npx tsx src/server.ts",
-    "test": "jest --setupFiles dotenv/config"
+    "test": "jest --setupFiles dotenv/config --testPathIgnorePatterns=\\(dist Mongo\\)",
+    "allTests": "jest --setupFiles dotenv/config --testPathIgnorePatterns=dist"
   },
   "keywords": [],
   "author": "",
