@@ -46,7 +46,7 @@ test("Tests failing to get a mongo user by Email and Password", async () => {
 })
 
 test("Tests registering a mongo user", async () => {
-    let result = await driver.userRepository.Register(new UserRegistration("Jane Smith", "jane.smith@example.com", "AnotherPassword!"));
+    let result = await driver.userRepository.Register(new UserRegistration("Jane Smith", crypto.randomUUID(), "AnotherPassword!"));
     expect(result).toBeDefined();
 })
 
