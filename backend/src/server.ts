@@ -50,7 +50,7 @@ app.post("/api/register", async (req: Request, res: Response) => {
   const verificationLink = `http://cop4331.tech/verify-email?token=${token}`;
   // TODO This is all placeholder stuff to be resolved upon creation of proper transporter email
   const info = await transporter.sendMail({
-    from: '"Maddison Foo Koch 👻" <maddison53@ethereal.email>',
+    from: '"Codennect" <noreply.codennect@gmail.com>',
     to: email,
     subject: "Verify your email",
     html: `<p>Click <a href="${verificationLink}">here</a> to verify your email.</p>`,
