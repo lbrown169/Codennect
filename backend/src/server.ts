@@ -2,6 +2,8 @@ import { config } from "dotenv";
 import { loadDatabaseDriver } from "./repo/Driver";
 import { User, UserRegistration, UserRepository } from "./domain/User";
 
+import bcrypt from "bcrypt";
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -15,6 +17,13 @@ config();
 
 let driver = loadDatabaseDriver();
 
+const saltRounds = 10; // Number of salt rounds (higher = more secure but slower)
+
+async function hashPassword(password: string): Promise<string> {
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    return hashedPassword;
+}
+
 app.post("/api/login", async (req, res, next) => {
   // incoming: email, password
   // outgoing: id, name, error
@@ -23,14 +32,20 @@ app.post("/api/login", async (req, res, next) => {
   const { email, password } = req.body;
   const db = driver;
 
-  const theUser = await db.userRepository.GetByEmailAndPassword(
-    email,
-    password
-  );
+  const theUserEmail = await db.userRepository.GetByEmail(email);
 
-  // more specific error based on email OR password
+  // make sure a user was found with that email
+    // this is basically for testing and can be removed later
+  if (theUserEmail == null) {
+    return res.status(400).json({ error: "User with that email not found!" });
+  }
+
+  // now try the password
+  const theUser = await db.userRepository.GetByEmailAndPassword(email, password);
+
+  // make sure a user was found with that email and password
   if (theUser == null) {
-    return res.status(400).json({ error: "User not found!" });
+    return res.status(400).json({ error: "User with that email and password not found!" });
   }
 
   res.status(200).json({ id: theUser._id, name: theUser.name, error: "" });
@@ -53,8 +68,11 @@ app.post("/api/register", async (req, res, next) => {
     return res.status(400).json({ error: "User already exists!" });
   }
 
+  // hash the password before putting it away
+  const hashed = await hashPassword(password);
+
   // create new user instance
-  const newUser = new UserRegistration(name, email, password);
+  const newUser = new UserRegistration(name, email, hashed);
 
   // insert the new user into the database using UserRepo
   const registeredUser = await db.userRepository.Register(newUser);

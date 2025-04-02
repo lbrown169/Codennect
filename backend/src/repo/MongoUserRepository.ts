@@ -1,5 +1,6 @@
 import { User, UserRegistration, UserRepository } from "../domain/User";
 import { Collection, MongoClient, ObjectId } from "mongodb";
+import bcrypt from "bcrypt";
 
 export class MongoUserRepository implements UserRepository {
     private collection: Collection;
@@ -59,13 +60,21 @@ export class MongoUserRepository implements UserRepository {
     async GetByEmailAndPassword(
         email: string,
         password: string
-    ): Promise<User | undefined> {
-        let result = await this.collection.findOne({
-            email: email,
-            password: password,
-        });
+    ): Promise<User | undefined> 
+    {
+        let result = await this.collection.findOne({email: email});
+
+        // if couldn't find by email
         if (!result) {
             return Promise.resolve(undefined);
+        }
+
+        // compare hashed password
+        const isMatch = await bcrypt.compare(password, result.password);
+    
+        // if couldn't find by password
+        if (!isMatch) {
+            return undefined;
         }
 
         return Promise.resolve(
