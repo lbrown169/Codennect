@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 const app_name = "cop4331.tech";
 
 function buildPath(route: string) : string {
-    if (process.env.NODE_ENV != "production") {
-        return 'http://localhost:5001' + route;
-    } else {
+    if (process.env.NODE_ENV === "production") {
         return 'http://' + app_name + route;
+    } else {
+        return 'http://localhost:5001' + route;
     }
 }
 

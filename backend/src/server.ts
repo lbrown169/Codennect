@@ -16,68 +16,68 @@ config();
 let driver = loadDatabaseDriver();
 
 app.post("/api/login", async (req, res, next) => {
-  // incoming: email, password
-  // outgoing: id, name, error
+    // incoming: email, password
+    // outgoing: id, name, error
 
-  var error = "";
-  const { email, password } = req.body;
-  const db = driver;
+    var error = "";
+    const { email, password } = req.body;
+    const db = driver;
 
-  const theUser = await db.userRepository.GetByEmailAndPassword(
-    email,
-    password
-  );
+    const theUser = await db.userRepository.GetByEmailAndPassword(
+        email,
+        password
+    );
 
-  // more specific error based on email OR password
-  if (theUser == null) {
-    return res.status(400).json({ error: "User not found!" });
-  }
+    // more specific error based on email OR password
+    if (theUser == null) {
+        return res.status(400).json({ error: "User not found!" });
+    }
 
-  res.status(200).json({ id: theUser._id, name: theUser.name, error: "" });
+    res.status(200).json({ id: theUser._id, name: theUser.name, error: "" });
 });
 
 app.post("/api/register", async (req, res, next) => {
-  // incoming: name, email, password
-  // outgoing: id, error
-  // return new credentials?
+    // incoming: name, email, password
+    // outgoing: id, error
+    // return new credentials?
 
-  var error = "";
-  const { name, email, password } = req.body;
-  const db = driver;
+    var error = "";
+    const { name, email, password } = req.body;
+    const db = driver;
 
-  // make sure there's not already a user with this login
-  const existingUser = await db.userRepository.GetByEmail(email);
+    // make sure there's not already a user with this login
+    const existingUser = await db.userRepository.GetByEmail(email);
 
-  // if there is one, send an error
-  if (existingUser != null) {
-    return res.status(400).json({ error: "User already exists!" });
-  }
+    // if there is one, send an error
+    if (existingUser != null) {
+        return res.status(400).json({ error: "User already exists!" });
+    }
 
-  // create new user instance
-  const newUser = new UserRegistration(name, email, password);
+    // create new user instance
+    const newUser = new UserRegistration(name, email, password);
 
-  // insert the new user into the database using UserRepo
-  const registeredUser = await db.userRepository.Register(newUser);
+    // insert the new user into the database using UserRepo
+    const registeredUser = await db.userRepository.Register(newUser);
 
-  // return a successful registration message
-  res.status(201).json({ error: "User registered successfully!" });
-}); 
+    // return a successful registration message
+    res.status(201).json({ error: "User registered successfully!" });
+});
 
 app.post("/api/get-user-info", async (req, res) => {
-  // incoming: user id
-  // outgoing: all the user info
+    // incoming: user id
+    // outgoing: all the user info
 
-  const { id } = req.body;
-  const db = driver;
+    const { id } = req.body;
+    const db = driver;
 
-  const theUser = await db.userRepository.GetById(id);
+    const theUser = await db.userRepository.GetById(id);
 
-  // more specific error based on email OR password
-  if (theUser == null) {
-    return res.status(400).json({ error: "User not found!" });
-  }
+    // more specific error based on email OR password
+    if (theUser == null) {
+        return res.status(400).json({ error: "User not found!" });
+    }
 
-  res.status(200).json(theUser);
+    res.status(200).json(theUser);
 });
 
 // app.post("/api/edit-user-info", async (req, res) => {
@@ -95,7 +95,7 @@ app.post("/api/get-user-info", async (req, res) => {
 //   }
 
 //   // the same as getting the user up to this point, then get into editing it
-//     // 
+//     //
 
 //   res.status(200).json(theUser);
 // });
@@ -103,7 +103,13 @@ app.post("/api/get-user-info", async (req, res) => {
 app.use(express.static(path.join(__dirname, "../build")));
 
 app.get("*", (req, res) =>
-  res.sendFile(path.resolve(__dirname, "..", "build", "index.html"))
+    res.sendFile(path.resolve(__dirname, "..", "build", "index.html"))
 );
+
+if (process.env.NODE_ENV === "production") {
+    console.log("[PROD] Codennect web launching...");
+} else {
+    console.log("[DEV] Codennect web launching...");
+}
 
 app.listen(5001);
