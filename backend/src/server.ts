@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import { loadDatabaseDriver } from "./repo/Driver";
 import { User, UserRegistration, UserRepository } from "./domain/User";
+import { Request, Response, NextFunction } from "express";
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -15,7 +16,7 @@ config();
 
 let driver = loadDatabaseDriver();
 
-app.post("/api/login", async (req, res, next) => {
+app.post("/api/login", async (req: Request, res: Response, next: NextFunction) => {
     // incoming: email, password
     // outgoing: id, name, error
 
@@ -49,7 +50,7 @@ app.post("/api/login", async (req, res, next) => {
     res.status(200).json({ id: theUser._id, name: theUser.name, error: "" });
 });
 
-app.post("/api/register", async (req, res, next) => {
+app.post("/api/register", async (req: Request, res: Response, next: NextFunction) => {
     // incoming: name, email, password
     // outgoing: id, error
     // return new credentials?
@@ -76,7 +77,7 @@ app.post("/api/register", async (req, res, next) => {
     res.status(201).json({ error: "User registered successfully!" });
 });
 
-app.post("/api/get-user-info", async (req, res) => {
+app.post("/api/get-user-info", async (req: Request, res: Response) => {
     // incoming: user id
     // outgoing: all the user info
 
@@ -98,7 +99,7 @@ app.post("/api/get-user-info", async (req, res) => {
     res.status(200).json(theUser);
 });
 
-app.post("/api/edit-user-info", async (req, res) => {
+app.post("/api/edit-user-info", async (req: Request, res: Response) => {
     // incoming: user id, updates to user
     // format (within the json):
     // "id": "65a1b2c3d4e5f67890123456",
@@ -138,7 +139,7 @@ app.post("/api/edit-user-info", async (req, res) => {
 
 app.use(express.static(path.join(__dirname, "../build")));
 
-app.get("*", (req, res) =>
+app.get("*", (req: Request, res: Response) =>
     res.sendFile(path.resolve(__dirname, "..", "build", "index.html"))
 );
 
