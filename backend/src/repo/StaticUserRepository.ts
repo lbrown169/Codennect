@@ -72,13 +72,11 @@ export class StaticUserRepository implements UserRepository {
     }
 
     async GetById(id: string): Promise<User | undefined> {
-        return Promise.resolve(this._internal.find((user) => user._id === id));
+        return this._internal.find((user) => user._id === id);
     }
 
     async GetByEmail(email: string): Promise<User | undefined> {
-        return Promise.resolve(
-            this._internal.find((user) => user.email === email)
-        );
+        return this._internal.find((user) => user.email === email);
     }
 
     async GetByEmailAndPassword(
@@ -124,10 +122,10 @@ export class StaticUserRepository implements UserRepository {
 
         this._internal.push(newUser);
 
-        return Promise.resolve(newUser);
+        return newUser;
     }
 
-    async UpdateUser(id: string, updates: Partial<User>) {
+    async Update(id: string, updates: Partial<User>): Promise<boolean> {
         // find user, return false if not found
         const user = this._internal.find((user) => user._id === id);
 

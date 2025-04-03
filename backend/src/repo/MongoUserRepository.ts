@@ -18,44 +18,40 @@ export class MongoUserRepository implements UserRepository {
     async GetById(id: string): Promise<User | undefined> {
         let result = await this.collection.findOne({ _id: new ObjectId(id) });
         if (!result) {
-            return Promise.resolve(undefined);
+            return undefined;
         }
 
-        return Promise.resolve(
-            new User(
-                result._id.toString(),
-                result.name,
-                result.email,
-                result.comm,
-                result.skills,
-                result.roles,
-                result.interests,
-                result.accounts,
-                result.projects,
-                result.invites
-            )
+        return new User(
+            result._id.toString(),
+            result.name,
+            result.email,
+            result.comm,
+            result.skills,
+            result.roles,
+            result.interests,
+            result.accounts,
+            result.projects,
+            result.invites
         );
     }
 
     async GetByEmail(email: string): Promise<User | undefined> {
         let result = await this.collection.findOne({ email: email });
         if (!result) {
-            return Promise.resolve(undefined);
+            return undefined;
         }
 
-        return Promise.resolve(
-            new User(
-                result._id.toString(),
-                result.name,
-                result.email,
-                result.comm,
-                result.skills,
-                result.roles,
-                result.interests,
-                result.accounts,
-                result.projects,
-                result.invites
-            )
+        return new User(
+            result._id.toString(),
+            result.name,
+            result.email,
+            result.comm,
+            result.skills,
+            result.roles,
+            result.interests,
+            result.accounts,
+            result.projects,
+            result.invites
         );
     }
 
@@ -67,7 +63,7 @@ export class MongoUserRepository implements UserRepository {
 
         // if couldn't find by email
         if (!result) {
-            return Promise.resolve(undefined);
+            return undefined;
         }
 
         // compare hashed password
@@ -78,19 +74,17 @@ export class MongoUserRepository implements UserRepository {
             return undefined;
         }
 
-        return Promise.resolve(
-            new User(
-                result._id.toString(),
-                result.name,
-                result.email,
-                result.comm,
-                result.skills,
-                result.roles,
-                result.interests,
-                result.accounts,
-                result.projects,
-                result.invites
-            )
+        return new User(
+            result._id.toString(),
+            result.name,
+            result.email,
+            result.comm,
+            result.skills,
+            result.roles,
+            result.interests,
+            result.accounts,
+            result.projects,
+            result.invites
         );
     }
 
@@ -118,10 +112,10 @@ export class MongoUserRepository implements UserRepository {
             throw new Error("Failed to create user");
         }
 
-        return Promise.resolve(returning);
+        return returning;
     }
 
-    async UpdateUser(id: string, updates: Partial<User>): Promise<boolean> {
+    async Update(id: string, updates: Partial<User>): Promise<boolean> {
         const objectId = new ObjectId(id);
 
         const result = await this.collection.updateOne(

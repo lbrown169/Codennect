@@ -118,7 +118,7 @@ app.post("/api/edit-user-info", async (req, res) => {
 
     // uses an update user function in the repo itself
     // function takes in id and the updates and handles it internally
-    const success = await db.userRepository.UpdateUser(id, updates);
+    const success = await db.userRepository.Update(id, updates);
 
     if (!success) {
         return res
