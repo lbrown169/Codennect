@@ -2,6 +2,8 @@ import { config } from "dotenv";
 import { loadDatabaseDriver } from "./repo/Driver";
 import { User, UserRegistration, UserRepository } from "./domain/User";
 import { Request, Response, NextFunction } from "express";
+// import dotenv from "dotenv";
+// import { generateToken } from "./service/auth";
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -12,6 +14,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+// dotenv.config();
 config();
 
 let driver = loadDatabaseDriver();
@@ -47,6 +50,7 @@ app.post("/api/login", async (req: Request, res: Response, next: NextFunction) =
             .json({ error: "User with that email and password not found!" });
     }
 
+    // const token = generateToken(theUser._id); // Generate JWT token
     res.status(200).json({ id: theUser._id, name: theUser.name, error: "" });
 });
 
