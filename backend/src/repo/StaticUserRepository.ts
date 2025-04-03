@@ -1,7 +1,8 @@
-import { randomInt } from "crypto";
 import { Account } from "../domain/Account";
 import { Invite } from "../domain/Invite";
+import { HashPassword } from "../service/auth";
 import { User, UserRegistration, UserRepository } from "../domain/User";
+import { randomInt } from "crypto";
 import bcrypt from "bcrypt";
 
 class StaticUser extends User {
@@ -85,20 +86,20 @@ export class StaticUserRepository implements UserRepository {
         password: string
     ): Promise<User | undefined> {
         const user = this._internal.find((user) => user.email === email);
-    
+
         // if couldn't find by email
         if (!user) {
             return undefined;
         }
-    
+
         // compare hashed password
         const isMatch = await bcrypt.compare(password, user.password);
-        
+
         // if couldn't find by password
         if (!isMatch) {
-            return undefined
+            return undefined;
         }
-    
+
         return user;
     }
 
@@ -118,7 +119,7 @@ export class StaticUserRepository implements UserRepository {
             [],
             [],
             [],
-            user.password
+            await HashPassword(user.password)
         );
 
         this._internal.push(newUser);
@@ -128,11 +129,10 @@ export class StaticUserRepository implements UserRepository {
 
     async UpdateUser(id: string, updates: Partial<User>) {
         // find user, return false if not found
-        const user = this._internal.find(user => user._id === id);
-        
-        if (!user)
-            return false;
-    
+        const user = this._internal.find((user) => user._id === id);
+
+        if (!user) return false;
+
         // update the found user
         Object.assign(user, updates);
 

@@ -1,4 +1,6 @@
 import { User, UserRegistration, UserRepository } from "../domain/User";
+import { HashPassword } from "../service/auth";
+
 import { Collection, MongoClient, ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
 
@@ -60,9 +62,8 @@ export class MongoUserRepository implements UserRepository {
     async GetByEmailAndPassword(
         email: string,
         password: string
-    ): Promise<User | undefined> 
-    {
-        let result = await this.collection.findOne({email: email});
+    ): Promise<User | undefined> {
+        let result = await this.collection.findOne({ email: email });
 
         // if couldn't find by email
         if (!result) {
@@ -71,7 +72,7 @@ export class MongoUserRepository implements UserRepository {
 
         // compare hashed password
         const isMatch = await bcrypt.compare(password, result.password);
-    
+
         // if couldn't find by password
         if (!isMatch) {
             return undefined;
@@ -101,7 +102,7 @@ export class MongoUserRepository implements UserRepository {
         const result = await this.collection.insertOne({
             name: user.name,
             email: user.email,
-            password: user.password,
+            password: await HashPassword(user.password),
             accounts: {},
             comm: "",
             skills: [],
@@ -120,15 +121,15 @@ export class MongoUserRepository implements UserRepository {
         return Promise.resolve(returning);
     }
 
-    async UpdateUser(id: string, updates: Partial<User>) {
+    async UpdateUser(id: string, updates: Partial<User>): Promise<boolean> {
         const objectId = new ObjectId(id);
-    
+
         const result = await this.collection.updateOne(
             { _id: objectId }, // find by id
-            { $set: updates }  // do all the updates
+            { $set: updates } // do all the updates
         );
-    
+
         // true if updated
-        return result.modifiedCount > 0; 
+        return result.modifiedCount > 0;
     }
 }
