@@ -22,6 +22,20 @@
   width: 100%;
 }
 
+.infoBox {
+  background-color: white;
+  height: 500px;
+  position: relative;
+  border-radius: 12px;
+  border-width: 1px;
+  border-color: black;
+}
+
+.left-side {
+  display: inline-block;
+  width: 45%
+}
+
 .navBar {
   top: 0px;
   font-size: 22px;
@@ -42,12 +56,41 @@
   color: #B3B3B3;
 }
 
+.pfp-placeholder {
+  background-color: white;
+  border-radius: 12px;
+  position: relative;
+  height: 200px; 
+  border-color: black;
+  border-width: 1px;
+  top: -190px;
+}
+
 .profileBox {
   background-color: #EFF6E0;
-  padding: 18px;
+  padding: 24px;
   border-radius: 12px;
   color: black;
   font-size: 18px;
+  width: 95%;
+  margin: auto;
+  position: relative;
+  top: 40px;
+}
+
+.right-side {
+  display: inline-block;
+  width: 45%;
+  margin-left: 10%;
+}
+
+.userProfileButton {
+  background-color: white;
+  border-color: black;
+  width: 100%;
+  display: inline;
+  position: relative;
+  top: -190px;
 }
 
 .card {
