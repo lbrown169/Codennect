@@ -11,7 +11,16 @@ function UserProfile()
 
     return(
         <div id="userProfileBox" className="profileBox">
-            <p>Test</p>
+            <div id="leftDiv" className="left-side">
+                <div id="pfpPlaceholder" className="pfp-placeholder"></div>
+                <button type="button" id="profOverview" className="userProfileButton"></button>
+                <button type="button" id="profEdit" className="userProfileButton"></button>
+                <button type="button" id="profGithub" className="userProfileButton"></button>
+                <button type="button" id="profAccountInfo" className="userProfileButton"></button>
+            </div>
+            <div id="rightDiv" className="right-side">
+                <div id="infoBox" className="infoBox"></div>
+            </div>
         </div>
     );
 }
