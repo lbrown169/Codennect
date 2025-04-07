@@ -40,6 +40,4 @@ COPY --from=frontend-builder /app/frontend/dist ./build
 
 WORKDIR /app
 
-RUN ls -alh
-
 CMD ["node", "src/server.js"]

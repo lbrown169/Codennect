@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import { loadDatabaseDriver } from "./repo/Driver";
 import { User, UserRegistration, UserRepository } from "./domain/User";
+import { isProd } from "./utils";
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -106,7 +107,7 @@ app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname, "..", "build", "index.html"))
 );
 
-if (process.env.NODE_ENV === "production") {
+if (isProd()) {
     console.log("[PROD] Codennect web launching...");
 } else {
     console.log("[DEV] Codennect web launching...");

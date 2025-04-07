@@ -12,4 +12,8 @@ if [ ! -e "production.env" ]; then
 fi
 
 # Start deployment
-docker-compose up
+if [ "$1" == "true" ]; then
+    docker-compose up -d
+else
+    docker-compose up
+fi
