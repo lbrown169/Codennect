@@ -53,13 +53,13 @@ app.post("/api/register", async (req: Request, res: Response) => {
     html: `<p>Click <a href="${verificationLink}">here</a> to verify your email.</p>`,
   });
 
-  // TODO Delete the token display in the line below, this is for testing purposes
-  console.log("Verification email sent: %s (Token: %s)", info.messageId, token);
+  // Finish
+  console.log("Verification email sent.", info.messageId);
   res.json({ message: "Verification email sent." });
 });
 
 // Route to verify token
-app.get("/api/verify-email", async (req: Request, res: Response) => {
+app.post("/api/verify-email", async (req: Request, res: Response) => {
   // This is why we need the token in the database
   const { token, name, email, password } = req.body;
   const db = driver;
