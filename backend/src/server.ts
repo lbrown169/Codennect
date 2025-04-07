@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 import { loadDatabaseDriver } from "./repo/Driver";
 import { User, UserRegistration, UserRepository } from "./domain/User";
-import { isProd } from "./utils";
+import { getVersion, isProd } from "./utils";
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -108,9 +108,10 @@ app.get("*", (req, res) =>
 );
 
 if (isProd()) {
-    console.log("[PROD] Codennect web launching...");
+    console.info("[PROD] Codennect web launching...");
 } else {
-    console.log("[DEV] Codennect web launching...");
+    console.info("[DEV] Codennect web launching...");
 }
+console.info("Running on version " + getVersion());
 
 app.listen(5001);

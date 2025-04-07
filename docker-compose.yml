@@ -2,8 +2,14 @@ services:
     web:
         container_name: codennect-web
         restart: always
-        build: .
+        build:
+            context: .
+            args:
+                NODE_ENV: ${NODE_ENV}
+                VERSION: ${VERSION}
         ports:
             - "5001:5001"
         env_file:
             - ${ENVIRON}.env
+        environment:
+            - VERSION=${VERSION}

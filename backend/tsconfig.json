@@ -9,6 +9,7 @@
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "skipLibCheck": true,
+        "noImplicitAny": false,
         "moduleResolution": "node16"
     },
     "exclude": ["node_modules", "dist"]
