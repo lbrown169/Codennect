@@ -38,17 +38,14 @@ app.post("/api/register", async (req: Request, res: Response) => {
     return res.status(400).json({ error: "User already exists!" });
   }
 
-  /* TODO We don't want to create new user yet, but instead do that AFTER VERFICATION 
-  What we will want is to store the email in a "purgatory" assignment until verification is done.
-  Note: We will also want to see if the email is already in "purgatory", if it is, then we
-  just send a new verification token to the same email*/
+  // Enter user into verification purgatory and don't register until verification is complete
   await db.verificationRepository.DeleteVerification(email); // Delete if applicable
   const token = crypto.randomBytes(32).toString("hex"); // Generate token
   const notYetUser = db.verificationRepository.RegisterVerification(email, token); // Add
 
   // Link to email
   const verificationLink = `http://cop4331.tech/verify-email?token=${token}`;
-  // TODO This is all placeholder stuff to be resolved upon creation of proper transporter email
+  // Email
   const info = await transporter.sendMail({
     from: '"Codennect" <noreply.codennect@gmail.com>',
     to: email,
@@ -56,8 +53,8 @@ app.post("/api/register", async (req: Request, res: Response) => {
     html: `<p>Click <a href="${verificationLink}">here</a> to verify your email.</p>`,
   });
 
-  console.log("Verification email sent: %s", info.messageId);
-"test"
+  // TODO Delete the token display in the line below, this is for testing purposes
+  console.log("Verification email sent: %s (Token: %s)", info.messageId, token);
   res.json({ message: "Verification email sent." });
 });
 
@@ -121,8 +118,6 @@ app.post("/api/get-user-info", async (req: Request, res: Response) => {
 
   res.status(200).json({ theUser });
 });
-
-// TODO Split up register into two pieces: Part 1 Email -> Verify, Part 2 Set up password + info
 
 /*
 app.post("/api/register", async (req, res, next) => {
