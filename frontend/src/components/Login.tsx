@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
+import { isProd } from '../utils';
 
 const app_name = "cop4331.tech";
 
 function buildPath(route: string) : string {
-    if (process.env.NODE_ENV != "production") {
-        return 'http://localhost:5001' + route;
-    } else {
+    if (isProd()) {
         return 'http://' + app_name + route;
+    } else {
+        return 'http://localhost:5001' + route;
     }
 }
 
