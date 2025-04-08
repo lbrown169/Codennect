@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import '../integration/register_call.dart';
 
 class RegisterPage extends StatelessWidget {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController password2Controller = TextEditingController();
 
   RegisterPage({super.key});
 
@@ -64,7 +66,8 @@ class RegisterPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               TextField(
-                controller: passwordController,
+                controller: password2Controller,
+                obscureText: true,
                 decoration: const InputDecoration(
                   labelText: "Re-Enter Password:",
                   border: OutlineInputBorder(),
@@ -78,8 +81,58 @@ class RegisterPage extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   // Add register logic here
+                  String name = nameController.text;
+                  String email = emailController.text;
+                  String password = passwordController.text;
+                  String passwordCheck = password2Controller.text;
+
+                  // Check if password and confirmation match
+                  if (password != passwordCheck) {
+                    // Show an error message if passwords don't match
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: const Text('Passwords do not match!')),
+                    );
+                    return; // Don't proceed if passwords don't match
+                  }
+
+                  if (name.isEmpty || email.isEmpty || password.isEmpty) {
+                    // Handle empty fields
+                    return;
+                  }
+
+                  try {
+                    final authService = AuthService();
+                    final response = await authService.registerUser(
+                      name,
+                      email,
+                      password,
+                    );
+
+                    if (response['success']) {
+                      // Success: You can navigate to the home page or show a success message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Registration Successful! Welcome, ${response['name']}',
+                          ),
+                        ),
+                      );
+                      // Optionally navigate to another page (e.g., home page)
+                      Navigator.pushReplacementNamed(context, '/home');
+                    } else {
+                      // Failure: Show the error message from the API response
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error: ${response['error']}')),
+                      );
+                    }
+                  } catch (e) {
+                    // Handle any other errors (e.g., network issues)
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('An error occurred: $e')),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF598392), // Slate Blue
@@ -91,7 +144,10 @@ class RegisterPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text("Create Account", style: TextStyle(fontSize: 16)),
+                child: const Text(
+                  "Create Account",
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
               const SizedBox(height: 16),
               Row(
