@@ -144,9 +144,46 @@ app.post("/api/register", async (req, res, next) => {
   const registeredUser = await db.userRepository.Register(newUser);
 
   // return a successful registration message
-  res.status(201).json({ "User registered successfully!" });
+  res.status(201).json({ error: "User registered successfully!" });
+}); 
+
+app.post("/api/get-user-info", async (req, res) => {
+  // incoming: user id
+  // outgoing: all the user info
+
+  const { id } = req.body;
+  const db = driver;
+
+  const theUser = await db.userRepository.GetById(id);
+
+  // more specific error based on email OR password
+  if (theUser == null) {
+    return res.status(400).json({ error: "User not found!" });
+  }
+
+  res.status(200).json(theUser);
 });
 */
+
+// app.post("/api/edit-user-info", async (req, res) => {
+//   // incoming: user id
+//   // outgoing: all the user info
+
+//   const { id } = req.body;
+//   const db = driver;
+
+//   const theUser = await db.userRepository.GetById(id);
+
+//   // more specific error based on email OR password
+//   if (theUser == null) {
+//     return res.status(400).json({ error: "User not found!" });
+//   }
+
+//   // the same as getting the user up to this point, then get into editing it
+//     // 
+
+//   res.status(200).json(theUser);
+// });
 
 app.use(express.static(path.join(__dirname, "../build")));
 
