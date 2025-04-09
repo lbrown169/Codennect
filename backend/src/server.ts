@@ -9,10 +9,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
 
 // dotenv.config();
 config();
@@ -50,7 +52,11 @@ app.post("/api/login", async (req: Request, res: Response, next: NextFunction) =
             .json({ error: "User with that email and password not found!" });
     }
 
-    // const token = generateToken(theUser._id); // Generate JWT token
+    // TODO Figure out JWT_SECRET_KEY
+    const token = jwt.sign({ id: theUser._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: 86400
+    });
+
     res.status(200).json({ id: theUser._id, name: theUser.name, error: "" });
 });
 
@@ -147,4 +153,4 @@ app.get("*", (req: Request, res: Response) =>
     res.sendFile(path.resolve(__dirname, "..", "build", "index.html"))
 );
 
-app.listen(5001);
+app.listen(5001, () => console.log("Listening on 5001"));
