@@ -22,13 +22,37 @@
   width: 100%;
 }
 
+#editProfButtons {
+  position: relative;
+  margin-bottom: auto;
+}
+
 .infoBox {
   background-color: white;
-  height: 500px;
-  position: relative;
+  position: absolute;
   border-radius: 12px;
   border-width: 1px;
   border-color: black;
+  margin: auto;
+  top: 24px;
+  width: 43%;
+  height: 524px;
+  padding: 12px;
+  margin-right: 24px;
+}
+
+.infoDisplay {
+  height: 400px;
+  overflow: scroll;
+}
+
+.infoInput {
+  background-color: lightgray;
+  border: 1px solid black;
+  border-radius: 4px;
+  padding: 2px;
+  width: 100%;
+  resize: vertical;
 }
 
 .left-side {
@@ -63,7 +87,6 @@
   height: 200px; 
   border-color: black;
   border-width: 1px;
-  top: -190px;
 }
 
 .profileBox {
@@ -76,12 +99,29 @@
   margin: auto;
   position: relative;
   top: 40px;
+  height: 572px;
+}
+
+.resetButton {
+  padding: 2px;
+  background-color: white;
+  border: 1px solid black;
+  margin: auto;
 }
 
 .right-side {
   display: inline-block;
   width: 45%;
+  margin: auto;
   margin-left: 10%;
+  
+}
+
+.submitButton {
+  padding: 2px;
+  background-color: white;
+  border: 1px solid black;
+  margin: auto;
 }
 
 .userProfileButton {
@@ -90,7 +130,6 @@
   width: 100%;
   display: inline;
   position: relative;
-  top: -190px;
 }
 
 .card {
