@@ -2,17 +2,23 @@ import { MongoClient } from "mongodb";
 import { UserRepository } from "../domain/User";
 import { MongoUserRepository } from "./MongoUserRepository";
 import { StaticUserRepository } from "./StaticUserRepository";
+import { VerificationCodeRepository } from "../domain/Verification";
+import { StaticVerificationRepository } from "./StaticVerificationRepository";
+import { MongoVerificationRepository } from "./MongoVerificationRepository";
 
 export interface Driver {
     userRepository: UserRepository;
+    verificationRepository: VerificationCodeRepository;
     destroy(): Promise<void>;
 }
 
 class StaticDriver implements Driver {
     userRepository: UserRepository;
+    verificationRepository: VerificationCodeRepository;
 
     constructor() {
         this.userRepository = new StaticUserRepository();
+        this.verificationRepository = new StaticVerificationRepository();
     }
 
     async destroy() {}
@@ -21,6 +27,7 @@ class StaticDriver implements Driver {
 class MongoDriver implements Driver {
     private client: MongoClient;
     userRepository: UserRepository;
+    verificationRepository: VerificationCodeRepository;
 
     constructor() {
         if (!process.env.MONGODB_URI) {
@@ -31,6 +38,9 @@ class MongoDriver implements Driver {
         this.client = new MongoClient(process.env.MONGODB_URI);
         this.client.connect();
         this.userRepository = new MongoUserRepository(this.client);
+        this.verificationRepository = new MongoVerificationRepository(
+            this.client
+        );
     }
 
     async destroy() {
