@@ -58,6 +58,7 @@ export class Project {
 
 // very much needs to be made still!
 export interface ProjectRepository {
+    GetAll(): Promise<Project | undefined>;
     GetById(id: string): Promise<Project | undefined>;
     GetByName(name: string): Promise<Project | undefined>;
     // Register(user: UserRegistration): Promise<Project>;
