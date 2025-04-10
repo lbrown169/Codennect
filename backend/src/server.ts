@@ -58,14 +58,14 @@ app.post("/api/login", async (req: Request, res: Response, next: NextFunction) =
     const token = jwt.sign({ id: theUser._id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 
     // Cookie res
-    res.cookie('token', token, {
+    res.status(200).cookie('token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         maxAge: 3600000
     });
 
-    // JSON res that client-side can access
-    //res.status(200).json({ id: theUser._id, name: theUser.name, error: "" });
+    // JS
+    res.status(200).json({ id: theUser._id, name: theUser.name, error: "" });
 });
 
 // How to reassign to user (since user will not be const)
@@ -73,6 +73,7 @@ interface AuthenticatedRequest extends Request {
     user?: any;
 }
 
+// Powers the middleware
 const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     // Look for token in cookies or Authorization header (Bearer token)
     const tokenFromCookie = req.cookies?.token;
@@ -97,6 +98,7 @@ const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: NextFun
     }
 };
 
+// JWT cookie middleware
 app.get('/api/protected', authenticateJWT, (req: AuthenticatedRequest, res: Response) => {
   res.status(200).json({
     message: "This is protected data.",
