@@ -1,7 +1,9 @@
-import { randomInt } from "crypto";
 import { Account } from "../domain/Account";
 import { Invite } from "../domain/Invite";
+import { HashPassword } from "../service/auth";
 import { User, UserRegistration, UserRepository } from "../domain/User";
+import { randomInt } from "crypto";
+import bcrypt from "bcrypt";
 
 class StaticUser extends User {
     password: string;
@@ -51,7 +53,7 @@ export class StaticUserRepository implements UserRepository {
                 [],
                 [],
                 [],
-                "SuperSecret123!"
+                "$2b$10$px4/4rdjDTmlqv9nd0/A8OTOMwUUEx.wIgXua/AtS0IdTnzgGvAUG" //"SuperSecret123!"
             ),
             new StaticUser(
                 "1",
@@ -64,30 +66,39 @@ export class StaticUserRepository implements UserRepository {
                 [],
                 [],
                 [],
-                "VeryS3cureP4ssw0!d"
+                "$2b$10$Qs8T/bvyZ20GaQo2tLCEge1F3XGZkyODeibH2dTJbBmUet/WYnBje" //"VeryS3cureP4ssw0!d"
             ),
         ];
     }
 
     async GetById(id: string): Promise<User | undefined> {
-        return Promise.resolve(this._internal.find((user) => user._id === id));
+        return this._internal.find((user) => user._id === id);
     }
 
     async GetByEmail(email: string): Promise<User | undefined> {
-        return Promise.resolve(
-            this._internal.find((user) => user.email === email)
-        );
+        return this._internal.find((user) => user.email === email);
     }
 
     async GetByEmailAndPassword(
         email: string,
         password: string
     ): Promise<User | undefined> {
-        return Promise.resolve(
-            this._internal.find(
-                (user) => user.email === email && user.password === password
-            )
-        );
+        const user = this._internal.find((user) => user.email === email);
+
+        // if couldn't find by email
+        if (!user) {
+            return undefined;
+        }
+
+        // compare hashed password
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        // if couldn't find by password
+        if (!isMatch) {
+            return undefined;
+        }
+
+        return user;
     }
 
     async Register(user: UserRegistration): Promise<User> {
@@ -106,11 +117,23 @@ export class StaticUserRepository implements UserRepository {
             [],
             [],
             [],
-            user.password
+            await HashPassword(user.password)
         );
 
         this._internal.push(newUser);
 
-        return Promise.resolve(newUser);
+        return newUser;
+    }
+
+    async Update(id: string, updates: Partial<User>): Promise<boolean> {
+        // find user, return false if not found
+        const user = this._internal.find((user) => user._id === id);
+
+        if (!user) return false;
+
+        // update the found user
+        Object.assign(user, updates);
+
+        return true;
     }
 }

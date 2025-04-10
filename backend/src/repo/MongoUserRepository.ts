@@ -1,5 +1,8 @@
 import { User, UserRegistration, UserRepository } from "../domain/User";
+import { HashPassword } from "../service/auth";
+
 import { Collection, MongoClient, ObjectId } from "mongodb";
+import bcrypt from "bcrypt";
 
 export class MongoUserRepository implements UserRepository {
     private collection: Collection;
@@ -15,44 +18,40 @@ export class MongoUserRepository implements UserRepository {
     async GetById(id: string): Promise<User | undefined> {
         let result = await this.collection.findOne({ _id: new ObjectId(id) });
         if (!result) {
-            return Promise.resolve(undefined);
+            return undefined;
         }
 
-        return Promise.resolve(
-            new User(
-                result._id.toString(),
-                result.name,
-                result.email,
-                result.comm,
-                result.skills,
-                result.roles,
-                result.interests,
-                result.accounts,
-                result.projects,
-                result.invites
-            )
+        return new User(
+            result._id.toString(),
+            result.name,
+            result.email,
+            result.comm,
+            result.skills,
+            result.roles,
+            result.interests,
+            result.accounts,
+            result.projects,
+            result.invites
         );
     }
 
     async GetByEmail(email: string): Promise<User | undefined> {
         let result = await this.collection.findOne({ email: email });
         if (!result) {
-            return Promise.resolve(undefined);
+            return undefined;
         }
 
-        return Promise.resolve(
-            new User(
-                result._id.toString(),
-                result.name,
-                result.email,
-                result.comm,
-                result.skills,
-                result.roles,
-                result.interests,
-                result.accounts,
-                result.projects,
-                result.invites
-            )
+        return new User(
+            result._id.toString(),
+            result.name,
+            result.email,
+            result.comm,
+            result.skills,
+            result.roles,
+            result.interests,
+            result.accounts,
+            result.projects,
+            result.invites
         );
     }
 
@@ -60,27 +59,32 @@ export class MongoUserRepository implements UserRepository {
         email: string,
         password: string
     ): Promise<User | undefined> {
-        let result = await this.collection.findOne({
-            email: email,
-            password: password,
-        });
+        let result = await this.collection.findOne({ email: email });
+
+        // if couldn't find by email
         if (!result) {
-            return Promise.resolve(undefined);
+            return undefined;
         }
 
-        return Promise.resolve(
-            new User(
-                result._id.toString(),
-                result.name,
-                result.email,
-                result.comm,
-                result.skills,
-                result.roles,
-                result.interests,
-                result.accounts,
-                result.projects,
-                result.invites
-            )
+        // compare hashed password
+        const isMatch = await bcrypt.compare(password, result.password);
+
+        // if couldn't find by password
+        if (!isMatch) {
+            return undefined;
+        }
+
+        return new User(
+            result._id.toString(),
+            result.name,
+            result.email,
+            result.comm,
+            result.skills,
+            result.roles,
+            result.interests,
+            result.accounts,
+            result.projects,
+            result.invites
         );
     }
 
@@ -92,7 +96,7 @@ export class MongoUserRepository implements UserRepository {
         const result = await this.collection.insertOne({
             name: user.name,
             email: user.email,
-            password: user.password,
+            password: await HashPassword(user.password),
             accounts: {},
             comm: "",
             skills: [],
@@ -108,6 +112,18 @@ export class MongoUserRepository implements UserRepository {
             throw new Error("Failed to create user");
         }
 
-        return Promise.resolve(returning);
+        return returning;
+    }
+
+    async Update(id: string, updates: Partial<User>): Promise<boolean> {
+        const objectId = new ObjectId(id);
+
+        const result = await this.collection.updateOne(
+            { _id: objectId }, // find by id
+            { $set: updates } // do all the updates
+        );
+
+        // true if updated
+        return result.modifiedCount > 0;
     }
 }

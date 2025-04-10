@@ -58,4 +58,5 @@ export interface UserRepository {
         password: string
     ): Promise<User | undefined>;
     Register(user: UserRegistration): Promise<User>;
+    Update(id: string, updates: Partial<User>): Promise<boolean>;
 }
