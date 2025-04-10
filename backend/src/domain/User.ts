@@ -10,7 +10,7 @@ export class User {
     roles: string[];
     interests: string[];
     accounts: Account[];
-    projects: string[];
+    projects: string[];  // is this necessary? perhaps move
     invites: Invite[];
 
     constructor(
