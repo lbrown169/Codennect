@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class AuthService {
+class LoginCall {
   Future<Map<String, dynamic>> loginUser(String email, String password) async {
     // For normal request using emulator
     const url = 'http://10.0.2.2:5001/api/login';

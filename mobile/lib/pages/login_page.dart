@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'register_page.dart';
-import '../integration/login_call.dart';
+import '../../integration/login_call.dart';
 import 'home_page.dart';
+import '../../services/session_manager.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -156,28 +157,36 @@ class _LoginPageState extends State<LoginPage> {
                       child: GestureDetector(
                         // Calls API fucntion which calls API endpoint
                         onTap: () async {
-                          final authService = AuthService();
-
+                          final authService = LoginCall();
+                          String email = emailController.text.trim();
+                          String password = passwordController.text.trim();
                           try {
                             final result = await authService.loginUser(
-                              emailController.text.trim(),
-                              passwordController.text.trim(),
+                              email,
+                              password,
                             );
 
-                            setState(() {
-                              if (result['success']) {
+                            // Saves the user session if login is successful
+                            if (result['success']) {
+                              await SessionManager.saveSession(
+                                userId: email,
+                                userName: password,
+                              );
+                              setState(() {
                                 errorMessage = "";
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const HomePage(),
-                                  ),
-                                );
-                              } else {
+                              });
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const HomePage(),
+                                ),
+                              );
+                            } else {
+                              setState(() {
                                 errorMessage =
                                     result['error'] ?? "Login failed.";
-                              }
-                            });
+                              });
+                            }
                           } catch (e) {
                             setState(() {
                               errorMessage = "An unexpected error occurred.";

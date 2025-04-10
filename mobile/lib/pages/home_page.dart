@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/pages/browse_projects_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -143,6 +144,7 @@ class HomePage extends StatelessWidget {
                         Icons.explore,
                         "Browse Projects",
                         Color(0xFFFFFFFF),
+                        navigateTo: const BrowseProjectsPage(),
                       ),
                       _buildServiceCard(
                         context,
@@ -166,16 +168,16 @@ class HomePage extends StatelessWidget {
     IconData icon,
     String label,
     Color bgColor, {
-    bool navigate = false,
+    Widget? navigateTo,
   }) {
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
-        onTap: navigate
+        onTap: navigateTo != null
             ? () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const HomePage()),
+                  MaterialPageRoute(builder: (context) => navigateTo),
                 )
             : null,
         borderRadius: BorderRadius.circular(16),

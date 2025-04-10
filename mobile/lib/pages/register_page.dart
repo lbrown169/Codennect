@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../integration/register_call.dart';
+import '../../integration/register_call.dart';
 
 class RegisterPage extends StatelessWidget {
   final TextEditingController nameController = TextEditingController();
