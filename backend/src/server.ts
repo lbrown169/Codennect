@@ -10,14 +10,14 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
 const jwt = require("jsonwebtoken");
-const cookieParser = require("cookie-parser"); // 4/10 addition
+const cookieParser = require("cookie-parser");
 
 const app = express();
 const JWT_SECRET = process.env.JWT_SECRET_KEY || 'your-secret-key'; // Store secret in env variable
 const JWT_EXPIRES_IN = '1h';
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.json()); // middleware
+app.use(express.json());
 app.use(cookieParser());
 
 // dotenv.config();
@@ -82,7 +82,7 @@ const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: NextFun
     if(token) {
         try {
         // Verify the token; returns the decoded payload if the token is valid.
-        // TODO secret key stuff
+        // TODO secret key stuffprocess
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
 
         // Attach decoded information to the request
@@ -97,16 +97,12 @@ const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: NextFun
     }
 };
 
-/*
-// Example of a protected route that uses the middleware
 app.get('/api/protected', authenticateJWT, (req: AuthenticatedRequest, res: Response) => {
-  // Access the user context (set in the middleware)
   res.status(200).json({
     message: "This is protected data.",
     user: req.user,
   });
 });
-*/
 
 app.post("/api/register", async (req: Request, res: Response, next: NextFunction) => {
     // incoming: name, email, password
