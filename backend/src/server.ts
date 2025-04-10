@@ -10,11 +10,15 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
 const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser"); // 4/10 addition
 
 const app = express();
+const JWT_SECRET = process.env.JWT_SECRET_KEY || 'your-secret-key'; // Store secret in env variable
+const JWT_EXPIRES_IN = '1h';
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.json());
+app.use(express.json()); // middleware
+app.use(cookieParser());
 
 // dotenv.config();
 config();
@@ -46,19 +50,63 @@ app.post("/api/login", async (req: Request, res: Response, next: NextFunction) =
     );
 
     // make sure a user was found with that email and password
-    if (theUser == null) {
-        return res
-            .status(400)
-            .json({ error: "User with that email and password not found!" });
+    if (!theUser) {
+        return res.status(400).json({ error: "User with that email and password not found!" });
     }
 
     // TODO Figure out JWT_SECRET_KEY
-    const token = jwt.sign({ id: theUser._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: 86400
+    const token = jwt.sign({ id: theUser._id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+
+    // Cookie res
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 3600000
     });
 
-    res.status(200).json({ id: theUser._id, name: theUser.name, error: "" });
+    // JSON res that client-side can access
+    //res.status(200).json({ id: theUser._id, name: theUser.name, error: "" });
 });
+
+// How to reassign to user (since user will not be const)
+interface AuthenticatedRequest extends Request {
+    user?: any;
+}
+
+const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    // Look for token in cookies or Authorization header (Bearer token)
+    const tokenFromCookie = req.cookies?.token;
+    const authHeader = req.headers.authorization;
+    let token = tokenFromCookie || (authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null);
+  
+    if(token) {
+        try {
+        // Verify the token; returns the decoded payload if the token is valid.
+        // TODO secret key stuff
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+
+        // Attach decoded information to the request
+        req.user = decoded;
+        next(); // Pass control to middleware handler
+
+        } catch(err) {
+            return res.status(403).json({ error: "Invalid or expired token" });
+        }
+    } else { // No token provided
+      return res.status(401).json({ error: "Authentication token required" });
+    }
+};
+
+/*
+// Example of a protected route that uses the middleware
+app.get('/api/protected', authenticateJWT, (req: AuthenticatedRequest, res: Response) => {
+  // Access the user context (set in the middleware)
+  res.status(200).json({
+    message: "This is protected data.",
+    user: req.user,
+  });
+});
+*/
 
 app.post("/api/register", async (req: Request, res: Response, next: NextFunction) => {
     // incoming: name, email, password
