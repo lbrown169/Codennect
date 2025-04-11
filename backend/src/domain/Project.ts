@@ -82,4 +82,5 @@ export interface ProjectRepository {
     GetById(id: string): Promise<Project | undefined>;
     GetByName(name: string): Promise<Project | undefined>;
     Create(project: ProjectCreation): Promise<Project>;
+    Update(id: string, updates: Partial<Project>): Promise<boolean>
 }

@@ -97,4 +97,16 @@ export class MongoProjectRepository implements ProjectRepository {
     
         return returning;
     }
+
+    async Update(id: string, updates: Partial<Project>): Promise<boolean> {
+        const objectId = new ObjectId(id);
+
+        const result = await this.collection.updateOne(
+            { _id: objectId }, // find by id
+            { $set: updates } // do all the updates
+        );
+
+        // true if updated
+        return result.modifiedCount > 0;
+    }
 }

@@ -96,4 +96,16 @@ export class StaticProjectRepository implements ProjectRepository {
 
         return Promise.resolve(newProject);
     }
+
+    async Update(id: string, updates: Partial<Project>): Promise<boolean> {
+        // find project, return false if not found
+        const project = this._internal.find((project) => project._id === id);
+
+        if (!project) return false;
+
+        // update the found user
+        Object.assign(project, updates);
+
+        return true;
+    }
 }
