@@ -1,4 +1,4 @@
-import { Project, ProjectRepository } from "../domain/Project";
+import { Project, ProjectCreation, ProjectRepository } from "../domain/Project";
 import { Collection, MongoClient, ObjectId } from "mongodb";
 
 export class MongoProjectRepository implements ProjectRepository {
@@ -78,34 +78,23 @@ export class MongoProjectRepository implements ProjectRepository {
 
     async Create(project: ProjectCreation): Promise<Project> {
         const result = await this.collection.insertOne({
-            
-        })
+            name: project.name,
+            is_public: project.is_public,
+            creator_id: project.creator_id,
+            description: "",
+            required_skills: [],
+            member_ids: [],
+            applications: [],
+            github_link: [],
+            discord_link: []
+        });
+
+        let returning = await this.GetById(result.insertedId.toString());
+
+        if (!returning) {
+            throw new Error("Failed to create user");
+        }
+
+        return Promise.resolve(returning);
     }
-
-    // async Register(user: UserRegistration): Promise<User> {
-    //     if ((await this.GetByEmail(user.email)) !== undefined) {
-    //         throw new Error("A user with that email already exists");
-    //     }
-
-    //     const result = await this.collection.insertOne({
-    //         name: user.name,
-    //         email: user.email,
-    //         password: user.password,
-    //         accounts: {},
-    //         comm: "",
-    //         skills: [],
-    //         roles: [],
-    //         interests: [],
-    //         projects: [],
-    //         invites: [],
-    //     });
-
-    //     let returning = await this.GetById(result.insertedId.toString());
-
-    //     if (!returning) {
-    //         throw new Error("Failed to create user");
-    //     }
-
-    //     return Promise.resolve(returning);
-    // }
 }

@@ -60,5 +60,5 @@ export interface ProjectRepository {
     GetAll(): Promise<Project[] | undefined>;
     GetById(id: string): Promise<Project | undefined>;
     GetByName(name: string): Promise<Project | undefined>;
-    // Create(project: ProjectCreation): Promise<Project>;
+    Create(project: ProjectCreation): Promise<Project>;
 }
