@@ -154,7 +154,7 @@ app.post("/api/get-all-projects", async (req: Request, res: Response) => {
       );
     }
 
-    projects = projects.filter((project) => !project.is_public);
+    projects = projects.filter((project) => project.is_public);
 
     return res.status(200).json(projects);
   } catch (err) {
