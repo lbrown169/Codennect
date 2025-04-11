@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/pages/browse_projects_page.dart';
+import 'package:mobile/pages/profile_page.dart';
+import 'package:mobile/pages/my_projects_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -132,12 +134,14 @@ class HomePage extends StatelessWidget {
                         Icons.person_outline,
                         "My Profile",
                         Color(0xFFFFFFFF),
+                        navigateTo: const ProfilePage(),
                       ),
                       _buildServiceCard(
                         context,
                         Icons.folder_open,
                         "My Projects",
                         Color(0xFFFFFFFF),
+                        navigateTo: const MyProjectsPage(),
                       ),
                       _buildServiceCard(
                         context,
