@@ -38,19 +38,18 @@ export class StaticProjectRepository implements ProjectRepository {
 
     constructor() {
         this._internal = [
-            // new StaticUser(
-            //     "0",
-            //     "John Doe",
-            //     "john.doe@example.com",
-            //     "Online",
-            //     ["React", "Tailwind", "Typescript"],
-            //     ["frontend"],
-            //     ["games"],
-            //     [],
-            //     [],
-            //     [],
-            //     "SuperSecret123!"
-            // ),
+            new StaticProject(
+                "0",
+                "Project McProjectFace",
+                false,
+                "",
+                "The coolest project ever.",
+                [],
+                [],
+                [],
+                [],
+                []
+            ),
             // new StaticUser(
             //     "1",
             //     "Jane Doe",
