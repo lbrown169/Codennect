@@ -1,6 +1,6 @@
 function HeaderBar()
 {
-    const goHome = (event: React.MouseEvent) =>
+    const goHome = (_event: React.MouseEvent) =>
     {
         var _ud = localStorage.getItem('user_data');
         if(_ud == null) //redirect if user not found
