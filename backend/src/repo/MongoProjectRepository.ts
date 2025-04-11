@@ -19,14 +19,14 @@ export class MongoProjectRepository implements ProjectRepository {
             new Project(
                 result._id.toString(),
                 result.name,
-                result.is_public,
-                result.creator_id,
+                result.domain,
+                result.owner,
+                result.is_private,
                 result.description,
-                result.required_skills,
-                result.member_ids,
-                result.applications,
-                result.github_link,
-                result.discord_link
+                result.fields,
+                result.roles,
+                result.users,
+                result.required_skills
             )
         );
     }
@@ -41,14 +41,14 @@ export class MongoProjectRepository implements ProjectRepository {
             new Project(
                 result._id.toString(),
                 result.name,
-                result.is_public,
-                result.creator_id,
+                result.domain,
+                result.owner,
+                result.is_private,
                 result.description,
-                result.required_skills,
-                result.member_ids,
-                result.applications,
-                result.github_link,
-                result.discord_link
+                result.fields,
+                result.roles,
+                result.users,
+                result.required_skills
             )
         )
     }
@@ -64,14 +64,14 @@ export class MongoProjectRepository implements ProjectRepository {
             new Project(
                 result._id.toString(),
                 result.name,
-                result.is_public,
-                result.creator_id,
+                result.domain,
+                result.owner,
+                result.is_private,
                 result.description,
-                result.required_skills,
-                result.member_ids,
-                result.applications,
-                result.github_link,
-                result.discord_link
+                result.fields,
+                result.roles,
+                result.users,
+                result.required_skills
             )
         );
     }
@@ -79,14 +79,14 @@ export class MongoProjectRepository implements ProjectRepository {
     async Create(project: ProjectCreation): Promise<Project> {
         const result = await this.collection.insertOne({
             name: project.name,
-            is_public: project.is_public,
-            creator_id: project.creator_id,
+            domain: project.domain,
+            owner: project.owner,
+            is_private: project.is_private,
             description: project.description ?? "",
-            required_skills: project.required_skills ?? [],
-            member_ids: project.member_ids ?? [],
-            applications: project.applications ?? [],
-            github_link: project.github_link ?? [],
-            discord_link: project.discord_link ?? []
+            fields: [],
+            roles: [],
+            users: project.users ?? [],
+            required_skills: project.required_skills ?? []
         });
     
         let returning = await this.GetById(result.insertedId.toString());

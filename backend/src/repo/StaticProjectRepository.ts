@@ -1,5 +1,5 @@
 import { randomInt } from "crypto";
-import { Account } from "../domain/Account";
+import { fieldDetails } from "../domain/Project";
 import { Invite } from "../domain/Invite";
 import { Project, ProjectCreation, ProjectRepository } from "../domain/Project";
 
@@ -7,28 +7,26 @@ class StaticProject extends Project {
     constructor(
         _id: string,
         name: string,
-        is_public : boolean,
-
-        // require access
-        creator_id: string,
+        domain: string,
+        owner: string,
+        is_private: boolean,
         description: string,
-        required_skills: string[],
-        member_ids: string[],
-        applications: string[],
-        github_link: string[],
-        discord_link: string[]
+        fields: fieldDetails[],
+        roles: { [role: string]: number },
+        users: string[],
+        required_skills: string[]
     ) {
         super(
-            _id,
+            _id.toString(),
             name,
-            is_public,
-            creator_id,
+            domain,
+            owner,
+            is_private,
             description,
-            required_skills,
-            member_ids,
-            applications,
-            github_link,
-            discord_link,
+            fields,
+            roles,
+            users,
+            required_skills
         );
     }
 }
@@ -38,18 +36,18 @@ export class StaticProjectRepository implements ProjectRepository {
 
     constructor() {
         this._internal = [
-            new StaticProject(
-                "0",
-                "Project McProjectFace",
-                false,
-                "",
-                "The coolest project ever.",
-                [],
-                [],
-                [],
-                [],
-                []
-            ),
+            // new StaticProject(
+            //     "0",
+            //     "Project McProjectFace",
+            //     false,
+            //     "",
+            //     "The coolest project ever.",
+            //     [],
+            //     [],
+            //     [],
+            //     [],
+            //     []
+            // ),
             // new StaticUser(
             //     "1",
             //     "Jane Doe",
@@ -82,12 +80,12 @@ export class StaticProjectRepository implements ProjectRepository {
         const newProject = new StaticProject(
             randomInt(1000000).toString(),
             project.name,
-            project.is_public,
-            project.creator_id,
+            "",
+            project.owner,
+            project.is_private,
             "",
             [],
-            [],
-            [],
+            {},
             [],
             []
         );

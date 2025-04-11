@@ -1,79 +1,82 @@
 import { Account } from "./Account";
 import { Invite } from "./Invite";
 
+export type fieldDetails = {
+    name: string;
+    value: string;
+    private: boolean;
+};
+
 export class Project {
     _id: string;
     name: string;
-    is_public: boolean;
-
-    // require access
-    creator_id: string;
+    domain: string;
+    owner: string;
+    is_private: boolean;
     description: string;
+    fields: fieldDetails[];
+    roles: { [role: string]: number };
+    users: string[];
     required_skills: string[];
-    member_ids: string[];
-    applications: string[];
-    github_link: string[];
-    discord_link: string[];
+    
 
     constructor(
         _id: string,
         name: string,
-        is_public : boolean,
-
-        // require access
-        creator_id: string,
+        domain: string,
+        owner: string,
+        is_private: boolean,
         description: string,
-        required_skills: string[],
-        member_ids: string[],
-        applications: string[],
-        github_link: string[],
-        discord_link: string[]
+        fields: fieldDetails[],
+        roles: { [role: string]: number },
+        users: string[],
+        required_skills: string[]
     ) {
         this._id = _id;
         this.name = name;
-        this.is_public = is_public;
-        this.creator_id = creator_id;
+        this.domain = domain;
+        this.owner = owner;
+        this.is_private = is_private;
         this.description = description;
+        this.fields = fields;
+        this.roles = roles;
+        this.users = users;
         this.required_skills = required_skills;
-        this.member_ids = member_ids;
-        this.applications = applications;
-        this.github_link = github_link;
-        this.discord_link = discord_link;
     }
 }
 
 // the draft/base for a project
 export class ProjectCreation {
     name: string;
-    is_public: boolean;
-    creator_id: string;
-    description?: string;
+    domain?: string;
+    owner: string;
+    is_private: boolean;
+    description: string;
+    fields?: fieldDetails[];
+    roles?: { [role: string]: number };
+    users?: string[];
     required_skills?: string[];
-    member_ids?: string[];
-    applications?: string[];
-    github_link?: string[];
-    discord_link?: string[];
 
     constructor(
         name: string,
-        is_public: boolean,
-        creator_id: string,
+        domain: string = "",
+        owner: string,
+        is_private: boolean,
         description: string = "",
+        fields: fieldDetails[] = [],
+        roles: { [role: string]: number } = {},
+        users: string[] = [],
         required_skills: string[] = [],
-        member_ids: string[] = [],
-        applications: string[] = [],
-        github_link: string[] = [],
-        discord_link: string[] = []
     ) {
         this.name = name;
-        this.is_public = is_public;
-        this.creator_id = creator_id;
+        this.domain = domain;
+        this.owner = owner;
+        this.is_private = is_private;
         this.description = description;
+        this.fields = fields;
+        this.roles = roles;
+        this.users = users;
         this.required_skills = required_skills;
-        this.member_ids = member_ids;
-        this.applications = applications;
-        this.github_link = github_link;
-        this.discord_link = discord_link;
     }
 }
 
