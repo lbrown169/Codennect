@@ -133,11 +133,18 @@ app.post("/api/edit-project", async (req: Request, res: Response, next: NextFunc
     // format (within the json):
     // "id": "65a1b2c3d4e5f67890123456",
     // "updates": {
-    //    "name": "New Name",
-    //    "description": "Updated Discription",
-    //    "skills": ["JavaScript", "TypeScript"]
+    //      name: "New Name",
+    //      is_public: "T/F",
+    //      creator_id: THIS WILL NOT BE CHANGEABLE
+    //      description: "Updated Description",
+    //      required_skills: ["JavaScript", "TypeScript"]
+    //      member_ids: ["JavaScript", "TypeScript"]
+    //      applications: ["JavaScript", "TypeScript"]
+    //      github_link: ["JavaScript", "TypeScript"]
+    //      discord_link: ["JavaScript", "TypeScript"]
     // }
-    // outgoing: all the user info
+    //
+    // outgoing: all the project info
 
     const { id, updates } = req.body;
     const db = driver;
@@ -148,7 +155,7 @@ app.post("/api/edit-project", async (req: Request, res: Response, next: NextFunc
 
     // uses an update user function in the repo itself
     // function takes in id and the updates and handles it internally
-    const success = await db.userRepository.Update(id, updates);
+    const success = await db.projectRepository.Update(id, updates);
 
     if (!success) {
         return res
