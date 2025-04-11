@@ -1,18 +1,24 @@
 import { MongoClient } from "mongodb";
 import { UserRepository } from "../domain/User";
+import { ProjectRepository } from "../domain/Project";
 import { MongoUserRepository } from "./MongoUserRepository";
 import { StaticUserRepository } from "./StaticUserRepository";
+import { MongoProjectRepository } from "./MongoProjectRepository";
+import { StaticProjectRepository } from "./StaticProjectRepository";
 
 export interface Driver {
     userRepository: UserRepository;
+    projectRepository: ProjectRepository;
     destroy(): Promise<void>;
 }
 
 class StaticDriver implements Driver {
     userRepository: UserRepository;
+    projectRepository: ProjectRepository;
 
     constructor() {
         this.userRepository = new StaticUserRepository();
+        this.projectRepository = new StaticProjectRepository();
     }
 
     async destroy() {}
@@ -21,6 +27,7 @@ class StaticDriver implements Driver {
 class MongoDriver implements Driver {
     private client: MongoClient;
     userRepository: UserRepository;
+    projectRepository: ProjectRepository;
 
     constructor() {
         if (!process.env.MONGODB_URI) {
@@ -31,6 +38,7 @@ class MongoDriver implements Driver {
         this.client = new MongoClient(process.env.MONGODB_URI);
         this.client.connect();
         this.userRepository = new MongoUserRepository(this.client);
+        this.projectRepository = new MongoProjectRepository(this.client);
     }
 
     async destroy() {
