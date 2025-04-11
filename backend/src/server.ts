@@ -35,7 +35,8 @@ app.post("/api/register", async (req: Request, res: Response) => {
   // make sure there's not already a registered user with this login
   const existingUser = await db.userRepository.GetByEmail(email);
   if (existingUser != null) {
-    return res.status(400).json({ error: "User already exists!" });
+    // Silently fail to not expose existing user
+    return res.status(400).json({ message: "Verification email sent." });
   }
 
   // Enter user into verification purgatory and don't register until verification is complete
@@ -64,6 +65,11 @@ app.post("/api/verify-email", async (req: Request, res: Response) => {
   const { token, name, email, password } = req.body;
   const db = driver;
 
+  // Check that name and password are valid entries
+  if(!name || !password) {
+    return res.status(400).send("Invalid name or password.");
+  }
+
   // Validate token
   const verifyAttempt = await db.verificationRepository.ValidateVerification(email, token);
   if(!verifyAttempt) {
@@ -75,6 +81,7 @@ app.post("/api/verify-email", async (req: Request, res: Response) => {
 
   // insert the new user into the database using UserRepo
   const registeredUser = await db.userRepository.Register(newUser);
+  const deleteVerification = await db.verificationRepository.DeleteVerification(email);
 
   // return a successful registration message
   res.status(201).json({ log : "User registered successfully!" });
@@ -101,89 +108,6 @@ app.post("/api/login", async (req: Request, res: Response, next: NextFunction) =
 
   res.status(200).json({ id: theUser._id, name: theUser.name, error: "" });
 });
-
-app.post("/api/get-user-info", async (req: Request, res: Response) => {
-  // incoming: user id
-  // outgoing: all the user info
-
-  const { id } = req.body;
-  const db = driver;
-
-  const theUser = await db.userRepository.GetById(id);
-
-  // more specific error based on email OR password
-  if (theUser == null) {
-    return res.status(400).json({ error: "User not found!" });
-  }
-
-  res.status(200).json({ theUser });
-});
-
-/*
-app.post("/api/register", async (req, res, next) => {
-  // incoming: name, email, password
-  // outgoing: id, error
-  // return new credentials?
-
-  var error = "";
-  const { name, email, password } = req.body;
-  const db = driver;
-
-  // make sure there's not already a user with this login
-  const existingUser = await db.userRepository.GetByEmail(email);
-
-  // if there is one, send an error
-  if (existingUser != null) {
-    return res.status(400).json({ error: "User already exists!" });
-  }
-
-  // create new user instance
-  const newUser = new UserRegistration(name, email, password);
-
-  // insert the new user into the database using UserRepo
-  const registeredUser = await db.userRepository.Register(newUser);
-
-  // return a successful registration message
-  res.status(201).json({ error: "User registered successfully!" });
-}); 
-
-app.post("/api/get-user-info", async (req, res) => {
-  // incoming: user id
-  // outgoing: all the user info
-
-  const { id } = req.body;
-  const db = driver;
-
-  const theUser = await db.userRepository.GetById(id);
-
-  // more specific error based on email OR password
-  if (theUser == null) {
-    return res.status(400).json({ error: "User not found!" });
-  }
-
-  res.status(200).json(theUser);
-});
-*/
-
-// app.post("/api/edit-user-info", async (req, res) => {
-//   // incoming: user id
-//   // outgoing: all the user info
-
-//   const { id } = req.body;
-//   const db = driver;
-
-//   const theUser = await db.userRepository.GetById(id);
-
-//   // more specific error based on email OR password
-//   if (theUser == null) {
-//     return res.status(400).json({ error: "User not found!" });
-//   }
-
-//   // the same as getting the user up to this point, then get into editing it
-//     // 
-
-//   res.status(200).json(theUser);
-// });
 
 app.use(express.static(path.join(__dirname, "../build")));
 

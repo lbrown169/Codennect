@@ -9,7 +9,7 @@ export function loadTransporter() {
       secure: true,
       auth: {
         user: "noreply.codennect@gmail.com",
-        pass: "xrdfvnagkmawwalo"
+        pass: process.env.NODEMAILER_PASSWORD
       },
     });
 
