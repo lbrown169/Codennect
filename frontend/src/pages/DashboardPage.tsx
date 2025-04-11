@@ -1,13 +1,14 @@
-import LoggedIn from "../components/LoggedIn";
-import HeaderBar from "../components/HeaderBar";
-const DashboardPage = () =>
-{
-    return(
+import React from 'react';
+import HeaderBar from '../components/HeaderBar';
+import Menu from '../components/Menu';
+
+const DashboardPage: React.FC = () => {
+    return (
         <div>
             <HeaderBar />
-            <LoggedIn />
-            <h1 className="text-center">Welcome!</h1>
+            <Menu />
         </div>
     );
-}
+};
+
 export default DashboardPage;
