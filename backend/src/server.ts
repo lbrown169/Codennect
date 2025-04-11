@@ -127,6 +127,45 @@ app.post("/api/get-project-details", async (req: Request, res: Response) => {
   res.status(200).json(theProject);
 });
 
+// Project edit
+app.post("/api/edit-project", async (req: Request, res: Response, next: NextFunction) => {
+    // incoming: project id, updates to project
+    // format (within the json):
+    // "id": "65a1b2c3d4e5f67890123456",
+    // "updates": {
+    //    "name": "New Name",
+    //    "description": "Updated Discription",
+    //    "skills": ["JavaScript", "TypeScript"]
+    // }
+    // outgoing: all the user info
+
+    const { id, updates } = req.body;
+    const db = driver;
+
+    if (!id || !updates || typeof updates !== "object") {
+        return res.status(400).json({ error: "Invalid request format" });
+    }
+
+    // uses an update user function in the repo itself
+    // function takes in id and the updates and handles it internally
+    const success = await db.userRepository.Update(id, updates);
+
+    if (!success) {
+        return res
+            .status(400)
+            .json({ error: "User not found or no changes made" });
+    }
+
+    let theUser;
+    try {
+        theUser = await db.userRepository.GetById(id);
+    } catch {
+        return res.status(400).json({ error: "Invalid ID format!" });
+    }
+
+    res.status(200).json({ success: true, updatedUser: theUser });
+});
+
 app.post("/api/get-all-projects", async (req: Request, res: Response) => {
   // incoming: name/skill?
   // outgoing: all the projects
