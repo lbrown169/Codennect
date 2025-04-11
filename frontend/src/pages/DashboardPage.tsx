@@ -1,8 +1,7 @@
-import React from 'react';
 import HeaderBar from '../components/HeaderBar';
 import Menu from '../components/Menu';
 
-const DashboardPage: React.FC = () => {
+const DashboardPage = () => {
     return (
         <div>
             <HeaderBar />
