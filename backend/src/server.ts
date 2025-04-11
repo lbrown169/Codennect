@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 import { loadDatabaseDriver } from "./repo/Driver";
 import { User, UserRegistration, UserRepository } from "./domain/User";
-import { Project, ProjectRepository } from "./domain/Project";
+import { Project, ProjectCreation, ProjectRepository } from "./domain/Project";
 import { Request, Response, NextFunction } from "express";
 
 const express = require("express");
@@ -114,7 +114,6 @@ app.post("/api/get-project-details", async (req: Request, res: Response) => {
 
   let theProject;
   try {
-    // TODO: CHANGE TO PROJECT REPO
     theProject = await db.projectRepository.GetById(id);
   } catch {
     return res.status(400).json({ error: "Project ID error!" });
@@ -146,7 +145,7 @@ app.post("/api/edit-project", async (req: Request, res: Response, next: NextFunc
     //
     // outgoing: all the project info
 
-    const { id, updates } = req.body;
+    const { id, updates } = req.body; // TODO Double check with Logan that this works for updates
     const db = driver;
 
     if (!id || !updates || typeof updates !== "object") {
@@ -160,17 +159,17 @@ app.post("/api/edit-project", async (req: Request, res: Response, next: NextFunc
     if (!success) {
         return res
             .status(400)
-            .json({ error: "User not found or no changes made" });
+            .json({ error: "Project not found or no changes made" });
     }
 
-    let theUser;
+    let theProject;
     try {
-        theUser = await db.userRepository.GetById(id);
+        theProject = await db.projectRepository.GetById(id);
     } catch {
         return res.status(400).json({ error: "Invalid ID format!" });
     }
 
-    res.status(200).json({ success: true, updatedUser: theUser });
+    res.status(200).json({ success: true, updatedProject: theProject });
 });
 
 app.post("/api/get-all-projects", async (req: Request, res: Response) => {
@@ -230,17 +229,28 @@ app.post("/api/create-project", async (req: Request, res: Response, next: NextFu
 
     // Allows user to create project
     
-    // Parameters passed:
+    // Required parameters passed:
     /*
         name: string
         is_public: boolean
         creatorId: string
     */
-   const { name, is_public, creator_id } = req.body;
-   const db = driver;
+    const { name, is_public, creator_id,
+    description,required_skills, member_ids, applications, github_link, discord_link
+    } = req.body;
+    const db = driver;
 
-   // Creation stuff
+    // Check for the required parameters
+    if (!name) return res.status(400).json({ error: "Project name is required" });
+    if (!is_public) return res.status(400).json({ error: "Project visibility is required" });
+    if (!creator_id) return res.status(400).json({ error: "Creator's userId is required" });
 
+    // Creation stuff
+    const newProject = new ProjectCreation(name, is_public, creator_id,
+    description,required_skills, member_ids, applications, github_link, discord_link);
+    const enterProject = db.projectRepository.Create(newProject);
+
+    res.status(200).json({ success: "Project created!"});
 });
 
 // Project applications
