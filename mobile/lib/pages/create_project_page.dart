@@ -15,6 +15,7 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
   final _descriptionController = TextEditingController();
   final _memberCountController = TextEditingController();
   final _githubLinkController = TextEditingController();
+  bool _isPrivate = false;
   final _formKey = GlobalKey<FormState>();
 
   int _memberCount = 1;
@@ -175,6 +176,7 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
       print('Project Name: ${_nameController.text}');
       print('Description: ${_descriptionController.text}');
       print('Member Count: $_memberCount');
+      print('Is Private: $_isPrivate');
 
       final success = await CreateProjectCall.createProject(
         name: _nameController.text,
@@ -213,7 +215,7 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
           style: GoogleFonts.poppins(color: Colors.white),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -244,6 +246,16 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
               const SizedBox(height: 16),
               _buildTextInput('Github Link', _githubLinkController,
                   isRequired: false),
+              const SizedBox(height: 16),
+              CheckboxListTile(
+                title: Text('Make project private'),
+                value: _isPrivate,
+                onChanged: (bool? value) {
+                  setState(() {
+                    _isPrivate = value ?? false;
+                  });
+                },
+              ),
               const SizedBox(height: 16),
               Text('Skills',
                   style: GoogleFonts.poppins(

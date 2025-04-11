@@ -17,7 +17,6 @@ class _MyProjectsPageState extends State<MyProjectsPage> {
   @override
   void initState() {
     super.initState();
-    //Need to edit call to get only users projects
     _projectsFuture = GetProjectsListCall.getProjects().then((data) {
       return data.map((json) => Project.fromJson(json)).toList();
     });
@@ -45,7 +44,7 @@ class _MyProjectsPageState extends State<MyProjectsPage> {
           style: GoogleFonts.poppins(color: Colors.white),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: _goBack,
         ),
         actions: [
