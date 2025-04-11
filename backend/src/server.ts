@@ -82,25 +82,27 @@ app.post("/api/get-user-info", async (req: Request, res: Response) => {
   res.status(200).json(theUser);
 });
 
-// app.post("/api/edit-user-info", async (req, res) => {
-//   // incoming: user id
-//   // outgoing: all the user info
+app.post("/api/edit-user-info", async (req: Request, res: Response) => {
+  // incoming: user id
+  // outgoing: all the user info
 
-//   const { id } = req.body;
-//   const db = driver;
+  const { id } = req.body;
+  const db = driver;
 
-//   const theUser = await db.userRepository.GetById(id);
+  const theUser = await db.userRepository.GetById(id);
 
-//   // more specific error based on email OR password
-//   if (theUser == null) {
-//     return res.status(400).json({ error: "User not found!" });
-//   }
+  // more specific error based on email OR password
+  if (theUser == null) {
+    return res.status(400).json({ error: "User not found!" });
+  }
 
-//   // the same as getting the user up to this point, then get into editing it
-//     // 
+  // the same as getting the user up to this point, then get into editing it
+    // 
 
-//   res.status(200).json(theUser);
-// });
+  res.status(200).json(theUser);
+});
+
+// TODO search users
 
 // Project stuff
 app.post("/api/get-project-details", async (req: Request, res: Response) => {
@@ -158,15 +160,82 @@ app.post("/api/get-all-projects", async (req: Request, res: Response) => {
   }
 });
 
+app.post("/api/get-all-users", async (req: Request, res: Response) => {
+    // incoming: name/skill?
+    // outgoing: all the projects
+      // should be able to filter by name/skill
+  
+    // optional parameters
+    const { name, required_skills } = req.body;
+    const db = driver;
+  
+    try {
+      // repo needs to implement some sort of getall
+      let users = await db.userRepository.GetAll(); // TODO GetAll() for userRepository
+  
+      return res.status(200).json(users);
+    } catch (err) {
+      return res.status(500).json({ error: "Error retrieving users." });
+    }
+  });
+
 app.post("/api/create-project", async (req: Request, res: Response, next: NextFunction) => {
 
     // Allows user to create project
     
     // Parameters passed:
     /*
-        
+        name: string
+        is_public: boolean
+        creatorId: string
     */
+   const { name, is_public, creator_id } = req.body;
+   const db = driver;
 
+   // Creation stuff
+
+});
+
+// Project applications
+
+// RESTRICTED TO PROJECT CREATOR ONLY // TODO Figure out how to apply that
+app.post("/api/see-applications", async (req: Request, res: Response, next: NextFunction) => {
+    // Returns list of user profiles that have applied to a specific project that
+    // the user has created
+    const db = driver;
+
+    // 
+
+});
+
+app.post("/api/create-application", async (req: Request, res: Response, next: NextFunction) => {
+    // Creates a new project to join a project
+
+    // Passed
+    /*
+        userId: string
+        projectId: string
+        message: string
+    */
+    const { userId, projectId, message } = req.body;
+    const db = driver;
+});
+
+app.get("/api/see-sent-applications", async (req: Request, res: Response) => {
+    // Return list of projects that "I" have personally applied to
+
+    // So this is based off users, so we need a userId passed in
+    const { userId } = req.body;
+    const db = driver;
+
+    // Find project applications by userId
+});
+
+// RESTRICTED FOR CREATOR OF THE PROJECT ONLY // TODO Clarify how this is applied
+app.post("/api/approve-application", async (req: Request, res: Response, next: NextFunction) => {
+    // Accept or deny application to the project
+    
+    const db = driver;
 });
 
 app.use(express.static(path.join(__dirname, "../build")));
