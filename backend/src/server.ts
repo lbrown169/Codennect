@@ -248,7 +248,7 @@ app.post("/api/create-project", async (req: Request, res: Response, next: NextFu
     // Creation stuff
     const newProject = new ProjectCreation(name, is_public, creator_id,
     description,required_skills, member_ids, applications, github_link, discord_link);
-    const enterProject = db.projectRepository.Create(newProject);
+    const enterProject = await db.projectRepository.Create(newProject);
 
     res.status(200).json({ success: "Project created!"});
 });
