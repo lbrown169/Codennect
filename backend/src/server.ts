@@ -131,7 +131,7 @@ app.post("/api/get-all-projects", async (req: Request, res: Response) => {
     // should be able to filter by name/skill
 
   // optional parameters
-  const { name, skills } = req.body;
+  const { name, required_skills } = req.body;
   const db = driver;
 
   try {
@@ -146,9 +146,9 @@ app.post("/api/get-all-projects", async (req: Request, res: Response) => {
     }
 
     // Filter by skill if provided
-    if (skills) {
-      projects = projects.filter((project: { skills: string | any[]; }) =>
-        project.skills.includes(skills)
+    if (required_skills) {
+      projects = projects.filter((project) =>
+        project.required_skills.includes(required_skills)
       );
     }
 

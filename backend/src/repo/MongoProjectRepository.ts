@@ -12,7 +12,7 @@ export class MongoProjectRepository implements ProjectRepository {
         }
     }
 
-    async GetAll(): Promise<Project[] | undefined> {
+    async GetAll(): Promise<Project[]> {
         const results = await this.collection.find().toArray();
 
         return results.map((result) => 
