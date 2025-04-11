@@ -81,20 +81,20 @@ export class MongoProjectRepository implements ProjectRepository {
             name: project.name,
             is_public: project.is_public,
             creator_id: project.creator_id,
-            description: "",
-            required_skills: [],
-            member_ids: [],
-            applications: [],
-            github_link: [],
-            discord_link: []
+            description: project.description ?? "",
+            required_skills: project.required_skills ?? [],
+            member_ids: project.member_ids ?? [],
+            applications: project.applications ?? [],
+            github_link: project.github_link ?? [],
+            discord_link: project.discord_link ?? []
         });
-
+    
         let returning = await this.GetById(result.insertedId.toString());
-
+    
         if (!returning) {
-            throw new Error("Failed to create user");
+            throw new Error("Failed to create project");
         }
-
-        return Promise.resolve(returning);
+    
+        return returning;
     }
 }

@@ -51,6 +51,7 @@ export class UserRegistration {
 }
 
 export interface UserRepository {
+    GetAll(): Promise<User[]>;
     GetById(id: string): Promise<User | undefined>;
     GetByEmail(email: string): Promise<User | undefined>;
     GetByEmailAndPassword(

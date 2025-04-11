@@ -90,6 +90,10 @@ export class StaticUserRepository implements UserRepository {
         );
     }
 
+    async GetAll(): Promise<User[]> {
+        return Promise.resolve(this._internal);
+    }
+
     async Register(user: UserRegistration): Promise<User> {
         if ((await this.GetByEmail(user.email)) !== undefined) {
             throw new Error("A user with that email already exists");

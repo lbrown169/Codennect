@@ -12,6 +12,25 @@ export class MongoUserRepository implements UserRepository {
         }
     }
 
+    async GetAll(): Promise<User[]> {
+        const results = await this.collection.find().toArray();
+
+        return results.map((result) => 
+            new User(
+                result._id.toString(),
+                result.name,
+                result.email,
+                result.comm,
+                result.skills,
+                result.roles,
+                result.interests,
+                result.accounts,
+                result.projects,
+                result.invites
+            )
+        );
+    }
+
     async GetById(id: string): Promise<User | undefined> {
         let result = await this.collection.findOne({ _id: new ObjectId(id) });
         if (!result) {
