@@ -10,6 +10,14 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController commController = TextEditingController();
+  bool isPublic = true;
+
+  final TextEditingController githubController = TextEditingController();
+  final TextEditingController discordController = TextEditingController();
+
   List<String> skills = [];
   List<String> roles = [];
   List<String> interests = [];
@@ -17,7 +25,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final TextEditingController roleController = TextEditingController();
   final TextEditingController interestController = TextEditingController();
 
-List<String> skillBank = [
+  List<String> skillBank = [
     'Android (Kotlin/Java)',
     'Angular',
     'Arduino',
@@ -50,7 +58,7 @@ List<String> skillBank = [
     'TypeScript',
     'Vue.js'
   ];
-  List<String> roleBank = ['Frontend', 'Backend', 'Database', 'Tester'];
+  List<String> roleBank = ['Frontend', 'Backend', 'Database', 'Mobile'];
   List<String> interestBank = ['Gaming', 'Web Development', 'Mobile Development', 'Business'];
 
   void addCustomItem(String item, List<String> list) {

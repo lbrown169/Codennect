@@ -12,6 +12,14 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController commController = TextEditingController();
+  bool isPublic = true;
+
+  final TextEditingController githubController = TextEditingController();
+  final TextEditingController discordController = TextEditingController();
+
   List<String> skills = [];
   List<String> roles = [];
   List<String> interests = [];

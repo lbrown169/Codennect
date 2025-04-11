@@ -27,8 +27,7 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
   List<String> otherToolsSkills = [];
 
   final TextEditingController programLangController = TextEditingController();
-  final TextEditingController webDevelopmentController =
-      TextEditingController();
+  final TextEditingController webDevelopmentController = TextEditingController();
   final TextEditingController backendController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
   final TextEditingController otherToolsController = TextEditingController();
