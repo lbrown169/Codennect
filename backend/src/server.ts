@@ -70,7 +70,8 @@ app.post("/api/login", async (req: Request, res: Response, next: NextFunction) =
 
 // How to reassign to user (since user will not be const)
 interface AuthenticatedRequest extends Request {
-    user?: any;
+    user?: { id: string };
+    fullUser?: User;
 }
 
 // Powers the middleware
@@ -99,11 +100,22 @@ const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: NextFun
 };
 
 // JWT cookie middleware
-app.get('/api/protected', authenticateJWT, (req: AuthenticatedRequest, res: Response) => {
-  res.status(200).json({
-    message: "This is protected data.",
-    user: req.user,
-  });
+app.use(authenticateJWT);
+app.use(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+        const db = driver;
+
+        if(req.user?.id) {
+            const user = await db.userRepository.GetById(req.user.id);
+            req.fullUser = user;
+        }
+
+        next();
+
+    } catch(err) {
+        console.error("Error in user-loading middleware:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
 });
 
 app.post("/api/register", async (req: Request, res: Response, next: NextFunction) => {
@@ -133,7 +145,7 @@ app.post("/api/register", async (req: Request, res: Response, next: NextFunction
     res.status(201).json({ error: "User registered successfully!" });
 });
 
-app.post("/api/get-user-info", async (req: Request, res: Response) => {
+app.get("/api/get-user-info", async (req: Request, res: Response) => {
     // incoming: user id
     // outgoing: all the user info
 
@@ -153,6 +165,16 @@ app.post("/api/get-user-info", async (req: Request, res: Response) => {
     }
 
     res.status(200).json(theUser);
+});
+
+app.get("/api/get-me", async (req: AuthenticatedRequest, res: Response) => {
+    // incoming: user id
+    // outgoing: all the user info
+    if(!req.fullUser) {
+        return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    res.status(200).json(req.fullUser);
 });
 
 app.post("/api/edit-user-info", async (req: Request, res: Response) => {
