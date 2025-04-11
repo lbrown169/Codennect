@@ -161,17 +161,16 @@ app.post("/api/get-all-projects", async (req: Request, res: Response) => {
 });
 
 app.post("/api/get-all-users", async (req: Request, res: Response) => {
-    // incoming: name/skill?
-    // outgoing: all the projects
-      // should be able to filter by name/skill
+    // incoming: name
+    // outgoing: all the users
   
     // optional parameters
-    const { name, required_skills } = req.body;
     const db = driver;
   
     try {
-      // repo needs to implement some sort of getall
-      let users = await db.userRepository.GetAll(); // TODO GetAll() for userRepository
+      let users = await db.userRepository.GetAll();
+      // now get rid of any private ones
+      users = users.filter((user) => !user.isPrivate);
   
       return res.status(200).json(users);
     } catch (err) {

@@ -9,6 +9,7 @@ class StaticUser extends User {
     constructor(
         _id: string,
         name: string,
+        isPrivate: boolean,
         email: string,
         comm: string,
         skills: string[],
@@ -22,6 +23,7 @@ class StaticUser extends User {
         super(
             _id,
             name,
+            isPrivate,
             email,
             comm,
             skills,
@@ -43,6 +45,7 @@ export class StaticUserRepository implements UserRepository {
             new StaticUser(
                 "0",
                 "John Doe",
+                false,
                 "john.doe@example.com",
                 "Online",
                 ["React", "Tailwind", "Typescript"],
@@ -56,6 +59,7 @@ export class StaticUserRepository implements UserRepository {
             new StaticUser(
                 "1",
                 "Jane Doe",
+                true,
                 "jane.doe@example.com",
                 "In Person",
                 ["Python", "Flask", "SQL"],
@@ -102,6 +106,7 @@ export class StaticUserRepository implements UserRepository {
         const newUser = new StaticUser(
             randomInt(1000000).toString(),
             user.name,
+            false,
             user.email,
             "",
             [],

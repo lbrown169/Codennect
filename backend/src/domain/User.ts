@@ -4,6 +4,7 @@ import { Invite } from "./Invite";
 export class User {
     _id: string;
     name: string;
+    isPrivate: boolean;
     email: string;
     comm: string;
     skills: string[];
@@ -16,6 +17,7 @@ export class User {
     constructor(
         _id: string,
         name: string,
+        isPrivate: boolean,
         email: string,
         comm: string,
         skills: string[],
@@ -27,6 +29,7 @@ export class User {
     ) {
         this._id = _id;
         this.name = name;
+        this.isPrivate = isPrivate;
         this.email = email;
         this.comm = comm;
         this.skills = skills;

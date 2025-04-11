@@ -19,6 +19,7 @@ export class MongoUserRepository implements UserRepository {
             new User(
                 result._id.toString(),
                 result.name,
+                result.isPrivate,
                 result.email,
                 result.comm,
                 result.skills,
@@ -41,6 +42,7 @@ export class MongoUserRepository implements UserRepository {
             new User(
                 result._id.toString(),
                 result.name,
+                result.isPrivate,
                 result.email,
                 result.comm,
                 result.skills,
@@ -63,6 +65,7 @@ export class MongoUserRepository implements UserRepository {
             new User(
                 result._id.toString(),
                 result.name,
+                result.isPrivate,
                 result.email,
                 result.comm,
                 result.skills,
@@ -91,6 +94,7 @@ export class MongoUserRepository implements UserRepository {
             new User(
                 result._id.toString(),
                 result.name,
+                result.isPrivate,
                 result.email,
                 result.comm,
                 result.skills,
