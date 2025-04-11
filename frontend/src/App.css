@@ -1,36 +1,42 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+@import "tailwindcss";
+
+
+.accountBox {
+  background-color: #EFF6E0;
+  padding: 18px;
+  border-radius: 12px;
+  color: black;
+  font-size: 18px;
   text-align: center;
+  position: relative;
+  width: 60%;
+  margin: auto;
+  top: 100px;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.accountInput {
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 4px;
+  padding: 4px;
+  width: 100%;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.navBar {
+  top: 0px;
+  font-size: 22px;
+  padding: 10px;
+  color: white;
+  background-color: #01161E;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.navBar a {
+  color: white;
+  padding: 8px;
+}
+
+.navBar a:hover {
+  color: #B3B3B3;
 }
 
 .card {
