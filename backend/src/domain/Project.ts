@@ -42,24 +42,23 @@ export class Project {
     }
 }
 
-// // not sure whether to keep this and rework or just delete
-//     // will probably rework, good to have a less strict constructor than the full one
-// export class UserRegistration {
-//     name: string;
-//     email: string;
-//     password: string;
+// the draft/base for a project
+export class ProjectCreation {
+    name: string;
+    is_public: boolean;
+    creator_id: string;
 
-//     constructor(name: string, email: string, password: string) {
-//         this.name = name;
-//         this.email = email;
-//         this.password = password;
-//     }
-// }
+    constructor(name: string, is_public: boolean, creator_id: string) {
+        this.name = name;
+        this.is_public = is_public;
+        this.creator_id = creator_id;
+    }
+}
 
 // very much needs to be made still!
 export interface ProjectRepository {
-    GetAll(): Promise<Project | undefined>;
+    GetAll(): Promise<Project[] | undefined>;
     GetById(id: string): Promise<Project | undefined>;
     GetByName(name: string): Promise<Project | undefined>;
-    // Register(user: UserRegistration): Promise<Project>;
+    // Create(project: ProjectCreation): Promise<Project>;
 }
