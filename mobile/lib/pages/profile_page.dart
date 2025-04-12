@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'edit_profile_page.dart';
 import 'home_page.dart';
-import 'package:mobile/integration/get_user_info_call.dart';
+import 'package:mobile/integration/get_profile_call.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -12,71 +12,36 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  Map<String, dynamic>? profileInfo;
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController commController = TextEditingController();
   bool isPublic = true;
-
   final TextEditingController githubController = TextEditingController();
   final TextEditingController discordController = TextEditingController();
 
   List<String> skills = [];
   List<String> roles = [];
   List<String> interests = [];
-  final TextEditingController skillController = TextEditingController();
-  final TextEditingController roleController = TextEditingController();
-  final TextEditingController interestController = TextEditingController();
 
-  List<String> skillBank = [
-    'Android (Kotlin/Java)',
-    'Angular',
-    'Arduino',
-    'AWS',
-    'C#',
-    'C++',
-    'Dart',
-    'Docker',
-    'Express.js',
-    'Figma (UI/UX)',
-    'Firebase',
-    'Flutter',
-    'Google Cloud',
-    'GraphQL',
-    'iOS (Swift)',
-    'Java',
-    'JavaScript',
-    'Machine Learning',
-    'MongoDB',
-    'MySQL',
-    'Node.js',
-    'OpenAI API',
-    'PostgreSQL',
-    'Raspberry Pi',
-    'React',
-    'React Native',
-    'REST API',
-    'Swift',
-    'TensorFlow',
-    'TypeScript',
-    'Vue.js'
-  ];
-  List<String> roleBank = ['Frontend', 'Backend', 'Database', 'Mobile'];
-  List<String> interestBank = ['Gaming', 'Web Development', 'Mobile Development', 'Business'];
+  @override
+  void initState() {
+    super.initState();
+    fetchProfile();
+  }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   getUserInfo();
-  // }
+  Future<void> fetchProfile() async {
+    final profileData = await ProfileInfoService.getProfile('CHANGE STRING');
+    setState(() {
+      profileInfo = profileData;
+      skills = List<String>.from(profileInfo?['skills'] ?? []);
+      roles = List<String>.from(profileInfo?['roles'] ?? []);
+      interests = List<String>.from(profileInfo?['interests'] ?? []);
+    });
+  }
 
-  // Future<void> fetchProjects() async {
-  //   final projectData = await UserInfoService.getUserInfo();
-
-
-  // }
-
-  Widget buildSection(String title, List<String> list, List<String> bank,
-      TextEditingController controller, String inputHint) {
+  Widget buildSection(String title, List<String> list) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 2,
@@ -128,29 +93,16 @@ class _ProfilePageState extends State<ProfilePage> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white, width: 2),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: TextButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const EditProfilePage(),
-                    ),
-                  );
-                },
-                style: TextButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 1),
-                ),
-                child: Text(
-                  "Edit Profile",
-                  style: GoogleFonts.poppins(color: Colors.white),
-                ),
-              ),
+            child: IconButton(
+              icon: const Icon(Icons.edit, color: Colors.white),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const EditProfilePage(),
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -177,7 +129,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Row(
                       children: [
                         Text("Name: ", style: GoogleFonts.poppins()),
-                        Text("John Doe", // Replace with dynamic user name
+                        Text(profileInfo?['name'] ?? " ",
                             style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.w500)),
                       ],
@@ -186,7 +138,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Row(
                       children: [
                         Text("Email: ", style: GoogleFonts.poppins()),
-                        Text("johndoe@email.com", // Replace with dynamic email
+                        Text(profileInfo?['email'] ?? " ",
                             style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.w500)),
                       ],
@@ -196,8 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       children: [
                         Text("Preferred Method of Communication: ",
                             style: GoogleFonts.poppins()),
-                        Text(
-                            "Email", // Replace with dynamic preferred communication method
+                        Text(profileInfo?['preferredComm'] ?? " ",
                             style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.w500)),
                       ],
@@ -206,8 +157,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Row(
                       children: [
                         Text("Public Account: ", style: GoogleFonts.poppins()),
-                        Text(
-                            "Yes", // Replace with dynamic public account status
+                        Text(profileInfo?['isPublic'] == true ? "Yes" : "No",
                             style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.w500)),
                       ],
@@ -237,7 +187,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Text("GitHub: ", style: GoogleFonts.poppins()),
                         TextButton(
                           onPressed: () {},
-                          child: Text("github.com/user",
+                          child: Text(profileInfo?['github'] ?? "N/A",
                               style: GoogleFonts.poppins(
                                   color: const Color(0xFF124559))),
                         ),
@@ -248,7 +198,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Text("Discord: ", style: GoogleFonts.poppins()),
                         TextButton(
                           onPressed: () {},
-                          child: Text("discord.com/user",
+                          child: Text(profileInfo?['discord'] ?? "N/A",
                               style: GoogleFonts.poppins(
                                   color: const Color(0xFF124559))),
                         ),
@@ -259,12 +209,9 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
 
-            buildSection(
-                "Skills", skills, skillBank, skillController, "Enter a skill"),
-            buildSection(
-                "Roles", roles, roleBank, roleController, "Enter a role"),
-            buildSection("Interests", interests, interestBank,
-                interestController, "Enter an interest"),
+            buildSection("Skills", skills),
+            buildSection("Roles", roles),
+            buildSection("Interests", interests),
           ],
         ),
       ),
