@@ -27,6 +27,14 @@
   margin-bottom: auto;
 }
 
+#editProfResultDiv {
+  position: relative;
+  text-align: left;
+  height: 56px;
+  overflow: y;
+  overflow-y: scroll;
+}
+
 .infoBox {
   background-color: white;
   position: absolute;
@@ -36,13 +44,13 @@
   margin: auto;
   top: 24px;
   width: 43%;
-  height: 564px;
+  height: 604px;
   padding: 12px;
   margin-right: 24px;
 }
 
 .infoDisplay {
-  height: 440px;
+  height: 480px;
   overflow: scroll;
   overflow-y: scroll;
   text-align: left;
@@ -102,7 +110,7 @@
   margin: auto;
   position: relative;
   top: 40px;
-  height: 612px;
+  height: 652px;
 }
 
 .resetButton {

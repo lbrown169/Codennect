@@ -12,9 +12,9 @@ function UserProfile()
         return;
     }
 
-    var userData = JSON.parse(_ud);
+    //var userData = JSON.parse(_ud);
     //var userId = userData.id;
-    var userName = userData.name;
+    //var userName = userData.name;
 
     const profInfo = () =>
     {

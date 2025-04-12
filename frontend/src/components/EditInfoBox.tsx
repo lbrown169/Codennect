@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import getProfile from './InfoBox';
 function EditInfoBox()
 {
     var _ud = localStorage.getItem('user_data');
@@ -26,7 +25,7 @@ function EditInfoBox()
     const [skills, setSkills] = useState('');
     const [roles, setRoles] = useState('');
     const [interests, setInterests] = useState('');
-    const [editMessage, setEditMessage] = useState('Test'); //error message
+    const [editMessage, setEditMessage] = useState(''); //error message
 
     //stores initial values
     const [initFullName, setInitFullName] = useState('');
@@ -112,14 +111,29 @@ function EditInfoBox()
         setInterests(initInterests);
     }
 
+    const validateInput = () =>
+    {
+        if(!fullName) return 'Please enter a name';
+        if(!communication) return 'Please enter a communication method';
+        if(!skills) return 'Please enter at least one skill';
+        if(!roles) return 'Please enter at least one role';
+        if(!interests) return 'Please enter at least one interest';
+
+        return 'No errors detected';
+    }
+
     const confirmEdits = async (event: React.FormEvent) =>
     {
         event.preventDefault();
         alert('Not yet implemented');
+
+        //check for valid input
+        const inputError = validateInput();
+        setEditMessage(inputError);
     }
 
     return(
-        <form id="informationForm">
+        <form id="informationForm" onSubmit={confirmEdits}>
             <div id="info" className="infoDisplay">
                 <div id="newNameDiv">
                     <div id="newNameLabel">
@@ -149,6 +163,7 @@ function EditInfoBox()
                 <div id="newSkillsDiv" className="mt-2">
                     <div id="newSkillsLabel">
                         <label>Skills:</label>
+                        <p className="text-sm">Separate each skill with a comma and no space (EX: skill1,skill2,...)</p>
                     </div>
                     <textarea 
                         className = "infoInput"
@@ -161,6 +176,7 @@ function EditInfoBox()
                 <div id="NewRolesDiv" className="mt-2">
                     <div id="newRolesLabel">
                         <label>Roles:</label>
+                        <p className="text-sm">Separate each role with a comma and no space (EX: frontend,backend)</p>
                     </div>
                     <textarea
                         className = "infoInput"
@@ -176,7 +192,6 @@ function EditInfoBox()
                     </div>
                     <textarea 
                         className = "infoInput"
-                        rows = "2"
                         id = "newInterests"
                         placeholder = "Interests"
                         value = {interests}
@@ -189,7 +204,7 @@ function EditInfoBox()
             </div>
             <div id="editProfButtons">
                 <button type="reset" className="resetButton" onClick={handleReset}>Reset</button>
-                <button type="submit" className="submitButton" onClick={confirmEdits}>Submit</button>
+                <button type="submit" className="submitButton">Submit</button>
             </div>
         </form>
     );
