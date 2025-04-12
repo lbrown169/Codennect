@@ -36,14 +36,17 @@
   margin: auto;
   top: 24px;
   width: 43%;
-  height: 524px;
+  height: 564px;
   padding: 12px;
   margin-right: 24px;
 }
 
 .infoDisplay {
-  height: 400px;
+  height: 440px;
   overflow: scroll;
+  overflow-y: scroll;
+  text-align: left;
+  
 }
 
 .infoInput {
@@ -99,7 +102,7 @@
   margin: auto;
   position: relative;
   top: 40px;
-  height: 572px;
+  height: 612px;
 }
 
 .resetButton {
