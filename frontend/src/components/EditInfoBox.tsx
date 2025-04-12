@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import getProfile from './InfoBox';
 function EditInfoBox()
 {
     var _ud = localStorage.getItem('user_data');
@@ -8,39 +9,109 @@ function EditInfoBox()
         return;
     }
     var userData = JSON.parse(_ud);
-    //var userId = userData.id;
+    var userId = userData.id;
     var userName = userData.name;
 
+    const app_name = "cop4331.tech";
+    function buildPath(route: string) : string {
+        if (process.env.NODE_ENV != "production") {
+            return 'http://localhost:5001' + route;
+        } else {
+            return 'http://' + app_name + route;
+        }
+    }
+
     const [fullName, setFullName] = useState(userName);
-    const [description, setDescription] = useState('');
+    const [communication, setCommunication] = useState('');
     const [skills, setSkills] = useState('');
+    const [roles, setRoles] = useState('');
     const [interests, setInterests] = useState('');
-    const [editMessage, setEditMessage] = useState('Test');
+    const [editMessage, setEditMessage] = useState('Test'); //error message
+
+    //stores initial values
+    const [initFullName, setInitFullName] = useState('');
+    const [initCommunication, setInitCommunication] = useState('');
+    const [initSkills, setInitSkills] = useState('');
+    const [initRoles, setInitRoles] = useState('');
+    const [initInterests, setInitInterests] = useState('');
+
     
-    const handleSetFullName = (e: React.ChangeEvent<HTMLInputElement>) =>
+    const handleSetFullName = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
     {
         setFullName(e.target.value);
     }
-    const handleSetDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
+    const handleSetCommunication = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
     {
-        setDescription(e.target.value);
+        setCommunication(e.target.value);
     }
     const handleSetSkills = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
     {
         setSkills(e.target.value);
+    }
+    const handleSetRoles = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
+    {
+        setRoles(e.target.value);
     }
     const handleSetInterests = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
     {
         setInterests(e.target.value);
     }
 
+    //gets user data
+    const getProfile = async () =>
+    {
+            
+        const obj = {id: userId};
+        const js = JSON.stringify(obj);
+
+        try{
+            const response = await fetch(buildPath('/api/get-user-info'),
+            {
+                method: 'POST',
+                body: js,
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const res = await response.json(); // Parse response
+
+            if(res._id > 0)
+            {
+                alert('ERROR');
+            }
+            else
+            {
+                setFullName(res.name);
+                setCommunication(res.comm);
+                setSkills(res.skills);
+                setRoles(res.roles);
+                setInterests(res.interests);
+
+                setInitFullName(res.name);
+                setInitCommunication(res.comm);
+                setInitSkills(res.skills);
+                setInitRoles(res.roles);
+                setInitInterests(res.interests);
+            }
+        }
+        catch(error: any){
+            alert('Error');
+
+        }
+    }
+
+    useEffect(() => {
+
+        getProfile();
+    }, []);
+
     const handleReset = () =>
     {
-        setFullName(userName);
-        setDescription('');
-        setSkills('');
-        setInterests('');
+        setFullName(initFullName);
+        setCommunication(initCommunication);
+        setSkills(initSkills);
+        setRoles(initRoles);
+        setInterests(initInterests);
     }
+
     const confirmEdits = async (event: React.FormEvent) =>
     {
         event.preventDefault();
@@ -54,26 +125,25 @@ function EditInfoBox()
                     <div id="newNameLabel">
                         <label>Name:</label>
                     </div>
-                    <input
+                    <textarea
                         className = "infoInput"
-                        type = "text"
+                        rows = "1"
                         id = "newName"
                         placeholder = "Full Name"
                         value = {fullName}
                         onChange = {handleSetFullName}
                     />
                 </div>
-                <div id="newDescriptionDiv" className="mt-2">
-                    <div id="newDescriptionLabel">
-                        <label>Description:</label>
+                <div id="newCommunicationDiv" className="mt-2">
+                    <div id="newCommunicationLabel">
+                        <label>Preferred Communication Method:</label>
                     </div>
                     <textarea 
                         className = "infoInput"
-                        rows = "3"
-                        id = "newDescription"
-                        placeholder = "Description"
-                        value = {description}
-                        onChange = {handleSetDescription}
+                        id = "newCommunication"
+                        placeholder = "Preferred communication method"
+                        value = {communication}
+                        onChange = {handleSetCommunication}
                     />
                 </div>
                 <div id="newSkillsDiv" className="mt-2">
@@ -82,11 +152,22 @@ function EditInfoBox()
                     </div>
                     <textarea 
                         className = "infoInput"
-                        rows = "2"
                         id = "newSkills"
                         placeholder = "Skills"
                         value = {skills}
                         onChange = {handleSetSkills}
+                    />
+                </div>
+                <div id="NewRolesDiv" className="mt-2">
+                    <div id="newRolesLabel">
+                        <label>Roles:</label>
+                    </div>
+                    <textarea
+                        className = "infoInput"
+                        id = "newRoles"
+                        placeholder = "Roles"
+                        value = {roles}
+                        onChange = {handleSetRoles}
                     />
                 </div>
                 <div id="newInterestsDiv" className="mt-2">
