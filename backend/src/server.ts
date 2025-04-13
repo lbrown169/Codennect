@@ -185,7 +185,7 @@ app.post("/api/logout", async (req: Request, res: Response) => {
         res.clearCookie("token");
     }
 
-    res.status(204);
+    res.status(204).json();
 });
 
 app.get("/api/get-user-info", async (req, res) => {
