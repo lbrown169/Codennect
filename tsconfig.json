@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "es2016",
         "jsx": "preserve",
-        "module": "commonjs",
+        "module": "node16",
         "allowJs": true,
         "outDir": "./dist",
         "esModuleInterop": true,
@@ -10,7 +10,7 @@
         "strict": true,
         "skipLibCheck": true,
         "noImplicitAny": false,
-        "moduleResolution": "node"
+        "moduleResolution": "node16"
     },
     "exclude": ["node_modules", "dist"]
 }
