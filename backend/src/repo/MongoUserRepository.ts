@@ -31,8 +31,7 @@ export class MongoUserRepository implements UserRepository {
             result.roles,
             result.interests,
             result.accounts,
-            result.projects,
-            result.invites
+            result.projects
         );
     }
 
@@ -51,8 +50,7 @@ export class MongoUserRepository implements UserRepository {
             result.roles,
             result.interests,
             result.accounts,
-            result.projects,
-            result.invites
+            result.projects
         );
     }
 
@@ -84,8 +82,7 @@ export class MongoUserRepository implements UserRepository {
             result.roles,
             result.interests,
             result.accounts,
-            result.projects,
-            result.invites
+            result.projects
         );
     }
 
@@ -104,7 +101,6 @@ export class MongoUserRepository implements UserRepository {
             roles: [],
             interests: [],
             projects: [],
-            invites: [],
         });
 
         let returning = await this.GetById(result.insertedId.toString());

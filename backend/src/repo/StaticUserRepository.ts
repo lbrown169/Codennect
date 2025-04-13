@@ -18,7 +18,6 @@ class StaticUser extends User {
         interests: string[],
         accounts: Account[],
         projects: string[],
-        invites: Invite[],
         password: string
     ) {
         super(
@@ -30,8 +29,7 @@ class StaticUser extends User {
             roles,
             interests,
             accounts,
-            projects,
-            invites
+            projects
         );
         this.password = password;
     }
@@ -52,7 +50,6 @@ export class StaticUserRepository implements UserRepository {
                 ["games"],
                 [],
                 [],
-                [],
                 "$2b$10$px4/4rdjDTmlqv9nd0/A8OTOMwUUEx.wIgXua/AtS0IdTnzgGvAUG" //"SuperSecret123!"
             ),
             new StaticUser(
@@ -65,18 +62,32 @@ export class StaticUserRepository implements UserRepository {
                 ["games"],
                 [],
                 [],
-                [],
                 "$2b$10$Qs8T/bvyZ20GaQo2tLCEge1F3XGZkyODeibH2dTJbBmUet/WYnBje" //"VeryS3cureP4ssw0!d"
             ),
         ];
     }
 
+    _trim(user: StaticUser | undefined): User | undefined {
+        if (!user) return user;
+        return new User(
+            user._id.toString(),
+            user.name,
+            user.email,
+            user.comm,
+            user.skills,
+            user.roles,
+            user.interests,
+            user.accounts,
+            user.projects
+        );
+    }
+
     async GetById(id: string): Promise<User | undefined> {
-        return this._internal.find((user) => user._id === id);
+        return this._trim(this._internal.find((user) => user._id === id));
     }
 
     async GetByEmail(email: string): Promise<User | undefined> {
-        return this._internal.find((user) => user.email === email);
+        return this._trim(this._internal.find((user) => user.email === email));
     }
 
     async GetByEmailAndPassword(
@@ -98,7 +109,7 @@ export class StaticUserRepository implements UserRepository {
             return undefined;
         }
 
-        return user;
+        return this._trim(user);
     }
 
     async Register(user: UserRegistration): Promise<User> {
@@ -116,13 +127,12 @@ export class StaticUserRepository implements UserRepository {
             [],
             [],
             [],
-            [],
             await HashPassword(user.password)
         );
 
         this._internal.push(newUser);
 
-        return newUser;
+        return this._trim(newUser)!;
     }
 
     async Update(id: string, updates: Partial<User>): Promise<boolean> {
