@@ -5,7 +5,17 @@ import SignupPage from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
 import UserProfilePage from './pages/UserProfilePage';
 
+import { getVersion, isProd } from './utils';
 function App() {
+
+    if (isProd()) {
+        console.info("[PRODUCTION] Codennect Web")
+        console.info("Version: " + getVersion())
+    } else {
+        console.info("[DEVELOPMENT] Codennect Web")
+        console.info("Version: " + getVersion())
+    }
+
     return (
         <Router >
             <Routes>
