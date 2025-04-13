@@ -113,6 +113,24 @@
   height: 652px;
 }
 
+.projSearchCard {
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 12px;
+  padding: 4px;
+  margin: auto;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.projSearchCardDesc {
+  width: 50%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  white-space: nowrap;
+}
+
 .resetButton {
   padding: 2px;
   background-color: white;
