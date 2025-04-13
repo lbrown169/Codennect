@@ -1,7 +1,7 @@
 import { randomInt } from "crypto";
-import { Account } from "../domain/Account";
-import { Invite } from "../domain/Invite";
-import { User, UserRegistration, UserRepository } from "../domain/User";
+import { Account } from "../domain/Account.js";
+import { Invite } from "../domain/Invite.js";
+import { User, UserRegistration, UserRepository } from "../domain/User.js";
 
 class StaticUser extends User {
     password: string;

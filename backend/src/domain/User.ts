@@ -1,5 +1,5 @@
-import { Account } from "./Account";
-import { Invite } from "./Invite";
+import { Account } from "../domain/Account.js";
+import { Invite } from "../domain/Invite.js";
 
 export class User {
     _id: string;
