@@ -1,14 +1,15 @@
-import { User, UserRegistration, UserRepository } from "../domain/User";
-import { HashPassword } from "../service/auth";
+import { User, UserRegistration, UserRepository } from "../domain/User.js";
+import { HashPassword } from "../service/auth.js";
 
 import { Collection, MongoClient, ObjectId } from "mongodb";
+import { isProd } from "../utils.js";
 import bcrypt from "bcrypt";
 
 export class MongoUserRepository implements UserRepository {
     private collection: Collection;
 
     constructor(client: MongoClient) {
-        if (process.env.NODE_ENV === "production") {
+        if (isProd()) {
             this.collection = client.db("codennect").collection("users");
         } else {
             this.collection = client.db("development").collection("users");

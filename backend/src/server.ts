@@ -1,20 +1,22 @@
 import { config } from "dotenv";
-import { loadDatabaseDriver } from "./repo/Driver";
-import { User, UserRegistration, UserRepository } from "./domain/User";
 import { Request, Response, NextFunction } from "express";
-// import dotenv from "dotenv";
-// import { generateToken } from "./service/auth";
+import { loadDatabaseDriver } from "./repo/Driver.js";
+import { loadTransporter } from "./service/auth.js";
+import { UserRegistration } from "./domain/User.js";
+import { getVersion, isProd, buildUrl } from "./utils.js";
 
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const path = require("path");
-const jwt = require("jsonwebtoken");
-const cookieParser = require("cookie-parser");
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
+import path, { dirname } from "path";
+import { randomBytes } from "crypto";
+import { fileURLToPath } from "url";
+import { sign, verify } from "jsonwebtoken";
+import cookieParser from "cookie-parser";
 
 const app = express();
-const JWT_SECRET = process.env.JWT_SECRET_KEY || 'your-secret-key'; // Store secret in env variable
-const JWT_EXPIRES_IN = '1h';
+const JWT_SECRET = process.env.JWT_SECRET_KEY || "your-secret-key"; // Store secret in env variable
+const JWT_EXPIRES_IN = "1h";
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
@@ -24,8 +26,100 @@ app.use(cookieParser());
 config();
 
 let driver = loadDatabaseDriver();
+let transporter = loadTransporter();
 
-app.post("/api/login", async (req: Request, res: Response, next: NextFunction) => {
+// Route to accept email and send verification
+app.post("/api/register", async (req: Request, res: Response) => {
+    const { email } = req.body;
+    const db = driver;
+
+    // Check for email, then see if one ties to a user
+    if (!email) {
+        res.status(400).json({ error: "Email is required" });
+        return;
+    }
+
+    // make sure there's not already a registered user with this login
+    const existingUser = await db.userRepository.GetByEmail(email);
+    if (existingUser != null) {
+        // Silently fail to not expose existing user
+        res.json({ message: "Verification email sent." });
+        return;
+    }
+
+    // Enter user into verification purgatory and don't register until verification is complete
+    await db.verificationRepository.DeleteVerification(email); // Delete if applicable
+    const token = randomBytes(32).toString("hex"); // Generate token
+    const notYetUser = await db.verificationRepository.RegisterVerification(
+        email,
+        token
+    ); // Add
+
+    // Link to email
+    const verificationLink = buildUrl(`/verify-email?token=${token}`);
+    // Email
+    if (transporter) {
+        let message = `
+        Hey there ${email},<br /><br />
+
+        You're almost there! Click <a href="${verificationLink}">here</a> to finish your registration.
+        `;
+        const info = await transporter.messages.create(
+            process.env.MAILGUN_DOMAIN!,
+            {
+                from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
+                to: [email],
+                subject: "Verify your email",
+                html: message,
+            }
+        );
+        console.log("Verification email sent.", info);
+    } else {
+        console.info(
+            "Mailgun credentials were not specified, verification link:"
+        );
+        console.info(verificationLink);
+    }
+
+    // Finish
+    res.json({ message: "Verification email sent." });
+});
+
+// Route to verify token
+app.post("/api/verify-email", async (req: Request, res: Response) => {
+    // This is why we need the token in the database
+    const { token, name, email, password } = req.body;
+    const db = driver;
+
+    // Check that name and password are valid entries
+    if (!name || !password) {
+        res.status(400).send("Invalid name or password.");
+        return;
+    }
+
+    // Validate token
+    const verifyAttempt = await db.verificationRepository.ValidateVerification(
+        email,
+        token
+    );
+    if (!verifyAttempt) {
+        res.status(400).send("Invalid or expired token.");
+        return;
+    }
+
+    // At this point, email is verified and we can register user
+    const newUser = new UserRegistration(name, email, password);
+
+    // insert the new user into the database using UserRepo
+    const registeredUser = await db.userRepository.Register(newUser);
+    const deleteVerification =
+        await db.verificationRepository.DeleteVerification(email);
+
+    // return a successful registration message
+    res.status(201).json({ log: "User registered successfully!" });
+});
+
+app.post("/api/login", async (req: Request, res: Response) => {
     // incoming: email, password
     // outgoing: id, name, error
 
@@ -33,135 +127,33 @@ app.post("/api/login", async (req: Request, res: Response, next: NextFunction) =
     const { email, password } = req.body;
     const db = driver;
 
-    const theUserEmail = await db.userRepository.GetByEmail(email);
-
-    // make sure a user was found with that email
-    // this is basically for testing and can be removed later
-    if (theUserEmail == null) {
-        return res
-            .status(400)
-            .json({ error: "User with that email not found!" });
-    }
-
-    // now try the password
     const theUser = await db.userRepository.GetByEmailAndPassword(
         email,
         password
     );
 
-    // make sure a user was found with that email and password
-    if (!theUser) {
-        return res.status(400).json({ error: "User with that email and password not found!" });
+    // more specific error based on email OR password
+    if (theUser == null) {
+        res.status(400).json({ error: "User not found!" });
+        return;
     }
 
-    // TODO Figure out JWT_SECRET_KEY
-    const token = jwt.sign({ id: theUser._id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
-
-    // Cookie res
-    res.status(200).cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 3600000
-    });
-
-    // JS
     res.status(200).json({ id: theUser._id, name: theUser.name, error: "" });
 });
 
-// How to reassign to user (since user will not be const)
-interface AuthenticatedRequest extends Request {
-    user?: { id: string };
-    fullUser?: User;
-}
-
-// Powers the middleware
-const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    // Look for token in cookies or Authorization header (Bearer token)
-    const tokenFromCookie = req.cookies?.token;
-    const authHeader = req.headers.authorization;
-    let token = tokenFromCookie || (authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null);
-  
-    if(token) {
-        try {
-        // Verify the token; returns the decoded payload if the token is valid.
-        // TODO secret key stuffprocess
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
-
-        // Attach decoded information to the request
-        req.user = decoded;
-        next(); // Pass control to middleware handler
-
-        } catch(err) {
-            return res.status(403).json({ error: "Invalid or expired token" });
-        }
-    } else { // No token provided
-      return res.status(401).json({ error: "Authentication token required" });
-    }
-};
-
-// JWT cookie middleware
-app.use(authenticateJWT);
-app.use(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-        const db = driver;
-
-        if(req.user?.id) {
-            const user = await db.userRepository.GetById(req.user.id);
-            req.fullUser = user;
-        }
-
-        next();
-
-    } catch(err) {
-        console.error("Error in user-loading middleware:", err);
-        res.status(500).json({ error: "Internal server error" });
-    }
-});
-
-app.post("/api/register", async (req: Request, res: Response, next: NextFunction) => {
-    // incoming: name, email, password
-    // outgoing: id, error
-    // return new credentials?
-
-    var error = "";
-    const { name, email, password } = req.body;
-    const db = driver;
-
-    // make sure there's not already a user with this login
-    const existingUser = await db.userRepository.GetByEmail(email);
-
-    // if there is one, send an error
-    if (existingUser != null) {
-        return res.status(400).json({ error: "User already exists!" });
-    }
-
-    // create new user instance
-    const newUser = new UserRegistration(name, email, password);
-
-    // insert the new user into the database using UserRepo
-    const registeredUser = await db.userRepository.Register(newUser);
-
-    // return a successful registration message
-    res.status(201).json({ error: "User registered successfully!" });
-});
-
-app.get("/api/get-user-info", async (req: Request, res: Response) => {
+app.post("/api/get-user-info", async (req, res) => {
     // incoming: user id
     // outgoing: all the user info
 
     const { id } = req.body;
     const db = driver;
 
-    let theUser;
-    try {
-        theUser = await db.userRepository.GetById(id);
-    } catch {
-        return res.status(400).json({ error: "Invalid ID format!" });
-    }
+    const theUser = await db.userRepository.GetById(id);
 
-    // error if the user is not found
+    // more specific error based on email OR password
     if (theUser == null) {
-        return res.status(400).json({ error: "User not found!" });
+        res.status(400).json({ error: "User not found!" });
+        return;
     }
 
     res.status(200).json(theUser);
@@ -170,8 +162,9 @@ app.get("/api/get-user-info", async (req: Request, res: Response) => {
 app.get("/api/get-me", async (req: AuthenticatedRequest, res: Response) => {
     // incoming: user id
     // outgoing: all the user info
-    if(!req.fullUser) {
-        return res.status(403).json({ error: "Unauthorized" });
+    if (!req.fullUser) {
+        res.status(403).json({ error: "Unauthorized" });
+        return;
     }
 
     res.status(200).json(req.fullUser);
@@ -192,7 +185,8 @@ app.post("/api/edit-user-info", async (req: Request, res: Response) => {
     const db = driver;
 
     if (!id || !updates || typeof updates !== "object") {
-        return res.status(400).json({ error: "Invalid request format" });
+        res.status(400).json({ error: "Invalid request format" });
+        return;
     }
 
     // uses an update user function in the repo itself
@@ -200,16 +194,16 @@ app.post("/api/edit-user-info", async (req: Request, res: Response) => {
     const success = await db.userRepository.Update(id, updates);
 
     if (!success) {
-        return res
-            .status(400)
-            .json({ error: "User not found or no changes made" });
+        res.status(400).json({ error: "User not found or no changes made" });
+        return;
     }
 
     let theUser;
     try {
         theUser = await db.userRepository.GetById(id);
     } catch {
-        return res.status(400).json({ error: "Invalid ID format!" });
+        res.status(400).json({ error: "Invalid ID format!" });
+        return;
     }
 
     res.status(200).json({ success: true, updatedUser: theUser });
@@ -220,5 +214,19 @@ app.use(express.static(path.join(__dirname, "../build")));
 app.get("*", (req: Request, res: Response) =>
     res.sendFile(path.resolve(__dirname, "..", "build", "index.html"))
 );
+
+if (isProd()) {
+    console.info("[PROD] Codennect web launching...");
+} else {
+    console.info("[DEV] Codennect web launching...");
+}
+console.info("Running on version " + getVersion());
+
+if (isProd()) {
+    console.info("[PROD] Codennect web launching...");
+} else {
+    console.info("[DEV] Codennect web launching...");
+}
+console.info("Running on version " + getVersion());
 
 app.listen(5001, () => console.log("Listening on 5001"));
