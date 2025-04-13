@@ -222,11 +222,4 @@ if (isProd()) {
 }
 console.info("Running on version " + getVersion());
 
-if (isProd()) {
-    console.info("[PROD] Codennect web launching...");
-} else {
-    console.info("[DEV] Codennect web launching...");
-}
-console.info("Running on version " + getVersion());
-
 app.listen(5001, () => console.log("Listening on 5001"));
