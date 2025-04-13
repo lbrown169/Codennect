@@ -2,6 +2,12 @@
 export ENVIRON=production
 export NODE_ENV=production
 
+shopt -s expand_aliases
+
+if [ -e "~/.bash_aliases" ]; then
+    source ~/.bash_aliases
+fi
+
 # Check if production environment file exists
 if [ ! -e "production.env" ]; then
     echo "No production environment found, creating..."
