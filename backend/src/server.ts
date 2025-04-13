@@ -1,22 +1,119 @@
 import { config } from "dotenv";
-import { loadDatabaseDriver } from "./repo/Driver";
-import { User, UserRegistration, UserRepository } from "./domain/User";
-import { getVersion, isProd } from "./utils";
+import { Request, Response } from "express";
+import { loadDatabaseDriver } from "./repo/Driver.js";
+import { loadTransporter } from "./service/auth.js";
+import { UserRegistration } from "./domain/User.js";
+import { getVersion, isProd, buildUrl } from "./utils.js";
 
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const path = require("path");
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
+import path, { dirname } from "path";
+import { randomBytes } from "crypto";
+import { fileURLToPath } from "url";
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
 
 config();
 
 let driver = loadDatabaseDriver();
+let transporter = loadTransporter();
 
-app.post("/api/login", async (req, res, next) => {
+// Route to accept email and send verification
+app.post("/api/register", async (req: Request, res: Response) => {
+    const { email } = req.body;
+    const db = driver;
+
+    // Check for email, then see if one ties to a user
+    if (!email) {
+        res.status(400).json({ error: "Email is required" });
+        return;
+    }
+
+    // make sure there's not already a registered user with this login
+    const existingUser = await db.userRepository.GetByEmail(email);
+    if (existingUser != null) {
+        // Silently fail to not expose existing user
+        res.json({ message: "Verification email sent." });
+        return;
+    }
+
+    // Enter user into verification purgatory and don't register until verification is complete
+    await db.verificationRepository.DeleteVerification(email); // Delete if applicable
+    const token = randomBytes(32).toString("hex"); // Generate token
+    const notYetUser = await db.verificationRepository.RegisterVerification(
+        email,
+        token
+    ); // Add
+
+    // Link to email
+    const verificationLink = buildUrl(`/verify-email?token=${token}`);
+    // Email
+    if (transporter) {
+        let message = `
+        Hey there ${email},<br /><br />
+
+        You're almost there! Click <a href="${verificationLink}">here</a> to finish your registration.
+        `;
+        const info = await transporter.messages.create(
+            process.env.MAILGUN_DOMAIN!,
+            {
+                from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
+                to: [email],
+                subject: "Verify your email",
+                html: message,
+            }
+        );
+        console.log("Verification email sent.", info);
+    } else {
+        console.info(
+            "Mailgun credentials were not specified, verification link:"
+        );
+        console.info(verificationLink);
+    }
+
+    // Finish
+    res.json({ message: "Verification email sent." });
+});
+
+// Route to verify token
+app.post("/api/verify-email", async (req: Request, res: Response) => {
+    // This is why we need the token in the database
+    const { token, name, email, password } = req.body;
+    const db = driver;
+
+    // Check that name and password are valid entries
+    if (!name || !password) {
+        res.status(400).send("Invalid name or password.");
+        return;
+    }
+
+    // Validate token
+    const verifyAttempt = await db.verificationRepository.ValidateVerification(
+        email,
+        token
+    );
+    if (!verifyAttempt) {
+        res.status(400).send("Invalid or expired token.");
+        return;
+    }
+
+    // At this point, email is verified and we can register user
+    const newUser = new UserRegistration(name, email, password);
+
+    // insert the new user into the database using UserRepo
+    const registeredUser = await db.userRepository.Register(newUser);
+    const deleteVerification =
+        await db.verificationRepository.DeleteVerification(email);
+
+    // return a successful registration message
+    res.status(201).json({ log: "User registered successfully!" });
+});
+
+app.post("/api/login", async (req: Request, res: Response) => {
     // incoming: email, password
     // outgoing: id, name, error
 
@@ -31,79 +128,21 @@ app.post("/api/login", async (req, res, next) => {
 
     // more specific error based on email OR password
     if (theUser == null) {
-        return res.status(400).json({ error: "User not found!" });
+        res.status(400).json({ error: "User not found!" });
+        return;
     }
 
-    res.status(200).json({ id: theUser._id, name: theUser.name, error: "" });
+    res.json({
+        id: theUser._id,
+        name: theUser.name,
+        error: "",
+    });
 });
 
-app.post("/api/register", async (req, res, next) => {
-    // incoming: name, email, password
-    // outgoing: id, error
-    // return new credentials?
-
-    var error = "";
-    const { name, email, password } = req.body;
-    const db = driver;
-
-    // make sure there's not already a user with this login
-    const existingUser = await db.userRepository.GetByEmail(email);
-
-    // if there is one, send an error
-    if (existingUser != null) {
-        return res.status(400).json({ error: "User already exists!" });
-    }
-
-    // create new user instance
-    const newUser = new UserRegistration(name, email, password);
-
-    // insert the new user into the database using UserRepo
-    const registeredUser = await db.userRepository.Register(newUser);
-
-    // return a successful registration message
-    res.status(201).json({ error: "User registered successfully!" });
-});
-
-app.post("/api/get-user-info", async (req, res) => {
-    // incoming: user id
-    // outgoing: all the user info
-
-    const { id } = req.body;
-    const db = driver;
-
-    const theUser = await db.userRepository.GetById(id);
-
-    // more specific error based on email OR password
-    if (theUser == null) {
-        return res.status(400).json({ error: "User not found!" });
-    }
-
-    res.status(200).json(theUser);
-});
-
-// app.post("/api/edit-user-info", async (req, res) => {
-//   // incoming: user id
-//   // outgoing: all the user info
-
-//   const { id } = req.body;
-//   const db = driver;
-
-//   const theUser = await db.userRepository.GetById(id);
-
-//   // more specific error based on email OR password
-//   if (theUser == null) {
-//     return res.status(400).json({ error: "User not found!" });
-//   }
-
-//   // the same as getting the user up to this point, then get into editing it
-//     //
-
-//   res.status(200).json(theUser);
-// });
-
+const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static(path.join(__dirname, "../build")));
 
-app.get("*", (req, res) =>
+app.get("*", (req: Request, res: Response) =>
     res.sendFile(path.resolve(__dirname, "..", "build", "index.html"))
 );
 
