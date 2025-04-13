@@ -4,7 +4,7 @@ export NODE_ENV=production
 
 shopt -s expand_aliases
 
-if [ -e "~/.bash_aliases" ]; then
+if [ -e ~/.bash_aliases ]; then
     source ~/.bash_aliases
 fi
 
