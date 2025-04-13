@@ -1,6 +1,6 @@
-import { User, UserRegistration, UserRepository } from "src/domain/User.js";
+import { User, UserRegistration, UserRepository } from "../domain/User.js";
 import { Collection, MongoClient, ObjectId } from "mongodb";
-import { isProd } from "src/utils.js";
+import { isProd } from "../utils.js";
 
 export class MongoUserRepository implements UserRepository {
     private collection: Collection;

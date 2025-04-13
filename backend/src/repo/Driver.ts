@@ -1,11 +1,11 @@
 import { MongoClient } from "mongodb";
-import { UserRepository } from "src/domain/User.js";
-import { MongoUserRepository } from "src/repo/MongoUserRepository.js";
-import { StaticUserRepository } from "src/repo/StaticUserRepository.js";
+import { UserRepository } from "../domain/User.js";
+import { MongoUserRepository } from "./MongoUserRepository.js";
+import { StaticUserRepository } from "./StaticUserRepository.js";
 import { VerificationCodeRepository } from "src/domain/Verification.js";
-import { StaticVerificationRepository } from "src/repo/StaticVerificationRepository.js";
-import { MongoVerificationRepository } from "src/repo/MongoVerificationRepository.js";
-import { isProd } from "src/utils.js";
+import { StaticVerificationRepository } from "./StaticVerificationRepository.js";
+import { MongoVerificationRepository } from "./MongoVerificationRepository.js";
+import { isProd } from "../utils.js";
 
 export interface Driver {
     userRepository: UserRepository;
