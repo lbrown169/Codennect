@@ -1,29 +1,55 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'dart:io';
+
+import 'package:html/dom.dart';
+import 'package:html/parser.dart' as parser;
 
 class LoginCall {
   Future<Map<String, dynamic>> loginUser(String email, String password) async {
-    // For normal request using emulator
-    const url = 'http://10.0.2.2:5001/api/login';
+    const url = 'http://cop4331.tech/api/login';
+    final uri = Uri.parse(url);
 
-    // For request using real device
-    //const url = 'http://10.32.98.83:5001/api/login';
+    HttpClient client = HttpClient();
+    HttpClientRequest request = await client.postUrl(uri);
 
-    // URL USING NGROCK FOR WHEN AT UCF
-    //const url = 'https://49c0-132-170-212-55.ngrok-free.app/api/login';
+    request.headers.set('Content-Type', 'application/json');
+    request.add(utf8.encode(jsonEncode({'email': email, 'password': password})));
 
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'password': password}),
-    );
+    HttpClientResponse response = await request.close();
+    final responseBody = await response.transform(utf8.decoder).join();
+    final data = jsonDecode(responseBody);
 
-    final data = jsonDecode(response.body);
+    final cookies = response.cookies;
 
     if (response.statusCode == 200) {
-      return {'success': true, 'id': data['id'], 'name': data['name']};
+      return {
+        'success': true,
+        'id': data['id'],
+        'name': data['name'],
+        'cookies': cookies,
+      };
     } else {
-      return {'success': false, 'error': data['error']};
+      return {
+        'success': false,
+        'error': data['error'],
+      };
     }
   }
+}
+
+// You can keep parseHtml right here
+Future<void> parseHtml(List<Cookie> cookies) async {
+  HttpClient client = HttpClient();
+  HttpClientRequest request =
+      await client.getUrl(Uri.parse("http://www.example.com/"));
+
+  for (final cookie in cookies) {
+    request.cookies.add(cookie);
+  }
+
+  HttpClientResponse response = await request.close();
+  final body = await response.transform(utf8.decoder).join();
+  Document document = parser.parse(body);
+
+  print(document.body?.text); // safer than document.text
 }

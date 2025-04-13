@@ -3,6 +3,8 @@ import 'register_page.dart';
 import '../../integration/login_call.dart';
 import 'home_page.dart';
 import '../../services/session_manager.dart';
+import 'dart:io';
+import '../../services/session_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -79,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     // username label and input
                     const Text(
-                      'Username',
+                      'Email',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -172,6 +174,12 @@ class _LoginPageState extends State<LoginPage> {
                                 userId: email,
                                 userName: password,
                               );
+                              final cookies = result['cookies'] as List<Cookie>;
+                              await parseHtml(cookies);
+                              final sessionId = await SessionService.getSSID();
+                              if (sessionId != null) {
+                                  print("Successfully fetched session ID: $sessionId");
+                              }
                               setState(() {
                                 errorMessage = "";
                               });
