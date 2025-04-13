@@ -9,6 +9,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import { getVersion, isProd } from './utils';
 import ProjectPage from './pages/ProjectPage';
 import UserProfilePage from './pages/UserProfilePage';
+import BrowseProjectsPage from './pages/BrowseProjectsPage';
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/register" element={<SignupPage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/userprofile" element={<UserProfilePage />} />
+                <Route path="/browse" element={<BrowseProjectsPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/projects/:project_id" element={<ProjectPage />} />

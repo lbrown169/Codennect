@@ -128,6 +128,43 @@
   
 }
 
+.searchBox {
+  background-color: #EFF6E0;
+  margin: auto;
+  position: relative;
+  width: 95%;
+  border-radius: 12px;
+  padding: 24px;
+  top: 40px;
+}
+
+#searchBar {
+  color: black;
+  background-color: white;
+  padding: 2px;
+  border: 1px solid black;
+  border-radius: 8px;
+  width: 70%;
+}
+
+.searchButton {
+  color: white;
+  background-color: #598392;
+  margin-left: 10%;
+  width: 20%;
+  border-radius: 12px;
+}
+
+.searchButton:hover {
+  background-color: #90b0bb;
+}
+
+.searchResults {
+  position: relative;
+  top: 20px;
+  color: black;
+}
+
 .submitButton {
   padding: 2px;
   background-color: white;
