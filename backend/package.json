@@ -32,6 +32,19 @@
     "jest": "^29.7.0",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.3"
+  },
+  "jest": {
+    "rootDir": ".",
+    "modulePaths": [
+      "."
+    ],
+    "moduleDirectories": [
+      "node_modules",
+      "src/repo"
+    ],
+    "moduleNameMapper": {
+      "^(.+)\\.js": "$1"
+    }
   }
 }

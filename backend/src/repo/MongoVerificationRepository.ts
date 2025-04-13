@@ -2,8 +2,8 @@ import { Collection, MongoClient } from "mongodb";
 import {
     VerificationCodeRepository,
     VerificationReponse,
-} from "../domain/Verification.js";
-import { isProd } from "../utils.js";
+} from "src/domain/Verification.js";
+import { isProd } from "src/utils.js";
 
 export class MongoVerificationRepository implements VerificationCodeRepository {
     private collection: Collection;

@@ -1,9 +1,9 @@
 import { config } from "dotenv";
 import { Request, Response } from "express";
-import { loadDatabaseDriver } from "./repo/Driver.js";
-import { loadTransporter } from "./service/auth.js";
-import { UserRegistration } from "./domain/User.js";
-import { getVersion, isProd, buildUrl } from "./utils.js";
+import { loadDatabaseDriver } from "src/repo/Driver.js";
+import { loadTransporter } from "src/service/auth.js";
+import { UserRegistration } from "src/domain/User.js";
+import { getVersion, isProd, buildUrl } from "src/utils.js";
 
 import express from "express";
 import bodyParser from "body-parser";

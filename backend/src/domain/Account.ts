@@ -1,4 +1,4 @@
-import { ProviderName } from "../integration/Provider.js";
+import { ProviderName } from "src/integration/Provider.js";
 
 export type Account = {
     [provider in ProviderName]: AccountDetails;
