@@ -2,12 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  Future<Map<String, dynamic>> registerUser(
-    String name,
-    String email,
-    String password,
-  ) async {
-    const url = 'http://10.0.2.2:5001/api/register';
+  Future<Map<String, dynamic>> registerUser(String email) async {
+    const url = 'http://cop4331.tech/api/register';
 
     // For request using real device
     //const url = 'http://10.32.98.83:5001/api/register';
@@ -18,13 +14,13 @@ class AuthService {
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'name': name, 'email': email, 'password': password}),
+      body: jsonEncode({'email': email}),
     );
 
     final data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      return {'success': true, 'id': data['id'], 'name': data['name']};
+      return {'success': true};
     } else {
       return {'success': false, 'error': data['error']};
     }

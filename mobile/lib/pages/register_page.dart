@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
 import '../../integration/register_call.dart';
-import 'home_page.dart';
-import '../../services/session_manager.dart';
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -10,13 +8,7 @@ class RegisterPage extends StatefulWidget {
   State<RegisterPage> createState() => _RegisterPageState();
 }
 class _RegisterPageState extends State<RegisterPage> {
-  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController password2Controller = TextEditingController();
-
-  // controls password visibility
-  bool isPasswordVisible = false;
 
   // shows login error if any
   String errorMessage = "";
@@ -76,24 +68,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Name',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    TextField(
-                      controller: nameController,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter your name',
-                        hintStyle: TextStyle(fontSize: 14),
-                        border: UnderlineInputBorder(),
-                        prefixIcon: Icon(Icons.perm_identity, size: 20),
-                      ),
-                    ),
                     const SizedBox(height: 24),
                     const Text(
                       'Email',
@@ -111,76 +85,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         hintStyle: TextStyle(fontSize: 14),
                         border: UnderlineInputBorder(),
                         prefixIcon: Icon(Icons.email_outlined, size: 20),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    const Text(
-                      'Password',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    TextField(
-                      controller: passwordController,
-                      obscureText: !isPasswordVisible,
-                      decoration: InputDecoration(
-                        hintText: 'Enter your password',
-                        hintStyle: const TextStyle(fontSize: 14),
-                        border: const UnderlineInputBorder(),
-                        prefixIcon: const Icon(Icons.lock_outline, size: 20),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            isPasswordVisible
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            size: 20,
-                          ),
-                          onPressed: () {
-                            // password visible thingy
-                            setState(() {
-                              isPasswordVisible = !isPasswordVisible;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Re-Enter Password',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    TextField(
-                      controller: password2Controller,
-                      obscureText: !isPasswordVisible,
-                      decoration: InputDecoration(
-                        hintText: 'Re-Enter your password',
-                        hintStyle: const TextStyle(fontSize: 14),
-                        border: const UnderlineInputBorder(),
-                        prefixIcon: const Icon(Icons.lock_outline, size: 20),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            isPasswordVisible
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            size: 20,
-                          ),
-                          onPressed: () {
-                            // password visible thingy
-                            setState(() {
-                              isPasswordVisible = !isPasswordVisible;
-                            });
-                          },
-                        ),
                       ),
                     ),
 
@@ -208,56 +112,30 @@ class _RegisterPageState extends State<RegisterPage> {
                         // Calls API fucntion which calls API endpoint
                         onTap: () async {
                           // Add register logic here
-                          String name = nameController.text.trim();
                           String email = emailController.text.trim();
-                          String password = passwordController.text.trim();
-                          String passwordCheck =
-                              password2Controller.text.trim();
 
-                          // Check if password and confirmation match
-                          if (password != passwordCheck) {
-                            // Show an error message if passwords don't match
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content:
-                                      const Text('Passwords do not match!')),
-                            );
-                            return; // Don't proceed if passwords don't match
-                          }
-
-                          if (name.isEmpty ||
-                              email.isEmpty ||
-                              password.isEmpty) {
+                          if (email.isEmpty) {
                             // Handle empty fields
                             return;
                           }
 
                           try {
                             final authService = AuthService();
-                            final response = await authService.registerUser(
-                              name,
-                              email,
-                              password,
-                            );
+                            final response = await authService.registerUser(email);
 
                             if (response['success']) {
                               // Success: You can navigate to the home page or show a success message
-                              await SessionManager.saveSession(
-                                userId: email,
-                                userName: password,
-                              );
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    'Registration Successful! Welcome, ${response['name']}',
+                                    'Check Your Email to Finish Signing Up',
                                   ),
                                 ),
                               );
-
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const HomePage(),
+                                  builder: (context) => const LoginPage(),
                                 ),
                               );
                             } else {
@@ -269,9 +147,9 @@ class _RegisterPageState extends State<RegisterPage> {
                               );
                             }
                           } catch (e) {
-                            // setState(() {
-                            //   errorMessage = "An unexpected error occurred.";
-                            // });
+                            setState(() {
+                              errorMessage = "Invalid Email.";
+                            });
                           }
                         },
                         child: Container(
