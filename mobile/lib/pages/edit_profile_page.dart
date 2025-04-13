@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_page.dart';
 import 'package:mobile/integration/get_profile_call.dart';
 import 'package:mobile/integration/edit_profile_call.dart';
@@ -12,6 +13,9 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
+  String? userId;
+  String? userName;
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController commController = TextEditingController();
@@ -73,25 +77,39 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
+    _loadUserSession();
     fetchProfileData();
   }
 
+  Future<void> _loadUserSession() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userId = prefs.getString('userId');
+      userName = prefs.getString('userName');
+    });
+  }
+
   Future<void> fetchProfileData() async {
-    final profileData = await ProfileInfoService.getProfile(
-        'CHANGE STRING'); // Replace with user ID or token
-    if (profileData != null) {
-      setState(() {
-        profileId = profileData['id'];
-        nameController.text = profileData['name'] ?? '';
-        emailController.text = profileData['email'] ?? '';
-        commController.text = profileData['preferredComm'] ?? '';
-        githubController.text = profileData['github'] ?? '';
-        discordController.text = profileData['discord'] ?? '';
-        isPublic = profileData['isPublic'] ?? true;
-        skills = List<String>.from(profileData['skills'] ?? []);
-        roles = List<String>.from(profileData['roles'] ?? []);
-        interests = List<String>.from(profileData['interests'] ?? []);
-      });
+    if (userId != null) {
+      final profileData = await ProfileInfoService.getProfile(
+          userId!); // Replace with user ID or token
+      if (profileData != null) {
+        setState(() {
+          profileId = profileData['id'];
+          nameController.text = profileData['name'] ?? '';
+          emailController.text = profileData['email'] ?? '';
+          commController.text = profileData['preferredComm'] ?? '';
+          githubController.text = profileData['github'] ?? '';
+          discordController.text = profileData['discord'] ?? '';
+          isPublic = profileData['isPublic'] ?? true;
+          skills = List<String>.from(profileData['skills'] ?? []);
+          roles = List<String>.from(profileData['roles'] ?? []);
+          interests = List<String>.from(profileData['interests'] ?? []);
+        });
+      }
+    } else {
+      // Handle case where userId is null (perhaps show a message or return)
+      print("Error: userId is null");
     }
   }
 
@@ -286,13 +304,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
               title: Text("Public Account"),
               value: isPublic,
               onChanged: (value) => setState(() => isPublic = value ?? true),
+              activeColor: const Color(0xFF124559),
             ),
             const SizedBox(height: 16),
             _buildTextInput("GitHub", githubController),
             const SizedBox(height: 12),
             _buildTextInput("Discord", discordController),
             const SizedBox(height: 16),
-
             buildSection(
                 "Skills", skills, skillBank, skillController, "Enter a skill"),
             buildSection(

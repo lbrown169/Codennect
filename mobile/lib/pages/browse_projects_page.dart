@@ -131,14 +131,17 @@ class _BrowseProjectsPageState extends State<BrowseProjectsPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF124559),
                         ),
-                        child: const Text("Apply"),
+                        child: const Text("See Details", style: TextStyle(color: Colors.white),),
                       ),
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  ProjectDetailPage(project: project)),
+                              builder: (context) => ProjectDetailPage(
+                                    project: project,
+                                    showApplyButton: true,
+                                    showApplicationsButton: false,
+                                  )),
                         );
                       },
                     ),

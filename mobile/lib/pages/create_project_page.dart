@@ -17,7 +17,6 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
   final _githubLinkController = TextEditingController();
   bool _isPrivate = false;
   final _formKey = GlobalKey<FormState>();
-
   int _memberCount = 1;
 
   List<String> programSkills = [];
@@ -103,10 +102,17 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
               spacing: 8,
               runSpacing: 8,
               children: list
-                  .map((item) => Chip(
-                        label: Text(item, style: GoogleFonts.poppins()),
-                        backgroundColor: const Color(0xFF9DB4C0),
-                        labelStyle: const TextStyle(color: Colors.black),
+                  .map((item) => GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            list.remove(item);
+                          });
+                        },
+                        child: Chip(
+                          label: Text(item, style: GoogleFonts.poppins()),
+                          backgroundColor: const Color(0xFF9DB4C0),
+                          labelStyle: const TextStyle(color: Colors.black),
+                        ),
                       ))
                   .toList(),
             ),
@@ -254,6 +260,7 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
                     _isPrivate = value ?? false;
                   });
                 },
+                activeColor: const Color(0xFF124559),
               ),
               const SizedBox(height: 16),
               Text('Skills',

@@ -6,6 +6,7 @@ class Project {
   final List<String> requiredSkills;
   final int currentMembers;
   final int memberLimit;
+  final bool is_private;
 
   Project({
     required this.id,
@@ -15,6 +16,7 @@ class Project {
     required this.requiredSkills,
     required this.currentMembers,
     required this.memberLimit,
+    required this.is_private,
   });
 
   factory Project.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class Project {
       requiredSkills: List<String>.from(json['requiredSkills']),
       currentMembers: json['currentMembers'],
       memberLimit: json['memberLimit'],
+      is_private: json['is_private']
     );
   }
 
@@ -37,5 +40,6 @@ class Project {
         'requiredSkills': requiredSkills,
         'currentMembers': currentMembers,
         'memberLimit': memberLimit,
+        'is_private' : is_private,
       };
 }

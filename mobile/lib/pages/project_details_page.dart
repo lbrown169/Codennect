@@ -1,18 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'project_application_page.dart';
+import 'show_project_apps_page.dart';
+import 'edit_project_page.dart';
 import '../objects/project.dart';
 
 class ProjectDetailPage extends StatelessWidget {
   final Project project;
-  const ProjectDetailPage({super.key, required this.project});
+  final bool showApplyButton;
+  final bool showApplicationsButton;
+
+  const ProjectDetailPage({
+    super.key,
+    required this.project,
+    this.showApplyButton = true,
+    this.showApplicationsButton = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Project Details', style: GoogleFonts.poppins()),
+        title: Text('Project Details',
+            style: GoogleFonts.poppins(color: Colors.white)),
         backgroundColor: const Color(0xFF598392),
+        actions: [
+          if (showApplicationsButton)
+            IconButton(
+              icon: const Icon(Icons.edit, color: Colors.white),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditProjectPage(project: project),
+                  ),
+                );
+              },
+            ),
+        ],
       ),
       backgroundColor: const Color(0xFFEFF6E0),
       body: Padding(
@@ -26,11 +51,12 @@ class ProjectDetailPage extends StatelessWidget {
             const SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.group, color: Colors.black54),
+                const Icon(Icons.group, color: Colors.black54),
                 const SizedBox(width: 8),
                 Text(
-                    '${project.currentMembers} Members (${project.memberLimit - project.currentMembers} spots left)',
-                    style: GoogleFonts.poppins(fontSize: 16)),
+                  '${project.currentMembers} Members (${project.memberLimit - project.currentMembers} spots left)',
+                  style: GoogleFonts.poppins(fontSize: 16),
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -76,27 +102,46 @@ class ProjectDetailPage extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            ApplicationPage(project: project)),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF124559),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+            if ((showApplyButton && !showApplicationsButton) ||
+                (!showApplyButton && showApplicationsButton))
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (showApplyButton) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ApplicationPage(project: project),
+                        ),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ShowApplicationsPage(project: project),
+                        ),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF124559),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: Text(
+                    showApplyButton
+                        ? 'Apply to Join'
+                        : 'See Project Applications',
+                    style:
+                        GoogleFonts.poppins(fontSize: 16, color: Colors.white),
+                  ),
                 ),
-                child: Text('Apply to Join',
-                    style: GoogleFonts.poppins(fontSize: 16)),
               ),
-            )
+            const SizedBox(height: 20),
           ],
         ),
       ),

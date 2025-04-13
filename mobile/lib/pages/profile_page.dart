@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'edit_profile_page.dart';
 import 'home_page.dart';
 import 'package:mobile/integration/get_profile_call.dart';
@@ -12,6 +13,9 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String? userId;
+  String? userName;
+
   Map<String, dynamic>? profileInfo;
 
   final TextEditingController nameController = TextEditingController();
@@ -28,18 +32,32 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+    _loadUserSession();
     fetchProfile();
   }
 
-  Future<void> fetchProfile() async {
-    final profileData = await ProfileInfoService.getProfile('CHANGE STRING');
+  Future<void> _loadUserSession() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userId = prefs.getString('userId');
+      userName = prefs.getString('userName');
+    });
+  }
+
+Future<void> fetchProfile() async {
+  if (userId != null) {
+    final profileData = await ProfileInfoService.getProfile(userId!);
     setState(() {
       profileInfo = profileData;
       skills = List<String>.from(profileInfo?['skills'] ?? []);
       roles = List<String>.from(profileInfo?['roles'] ?? []);
       interests = List<String>.from(profileInfo?['interests'] ?? []);
     });
+  } else {
+    // Handle case where userId is null (perhaps show a message or return)
+    print("Error: userId is null");
   }
+}
 
   Widget buildSection(String title, List<String> list) {
     return Card(
@@ -79,7 +97,7 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: const Color(0xFFEFF6E0),
       appBar: AppBar(
         backgroundColor: const Color(0xFF598392),
-        title: Text("User Profile",
+        title: Text("Your Profile",
             style: GoogleFonts.poppins(color: Colors.white)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
