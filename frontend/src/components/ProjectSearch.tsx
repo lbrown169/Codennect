@@ -1,5 +1,7 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { renderToString } from 'react-dom/server';
+import ProjectPreview from './ProjectPreview';
+
 
 function ProjectSearch(this: any)
 {
@@ -10,7 +12,9 @@ function ProjectSearch(this: any)
         return;
     }
 
-    const createNewCard = (num: number) =>
+    const [testPrev, editTestPrev] = useState(<ProjectPreview />)
+
+    function createNewCard(num: number)
     {
         var theKey = "item" + num;
         return(
@@ -18,7 +22,7 @@ function ProjectSearch(this: any)
                 <div className="projSearchCard">
                     <p>Project Name</p>
                     <p className="text-right"># of Members</p>
-                    <div className="projSearchCardDesc">Description here</div>
+                    <div className="projSearchCardDesc w-[50%]">Description here</div>
                     <button type="button" onClick={projMoreInfo}>Test</button>
                 </div> 
             </li>
@@ -56,12 +60,13 @@ function ProjectSearch(this: any)
                         <div className="projSearchCard">
                             <p>Project Name</p>
                             <p className="text-right"># of Members</p>
-                            <div className="projSearchCardDesc">Description here</div>
+                            <div className="projSearchCardDesc w-[50%]">Description here</div>
                             <button type="button" onClick={projMoreInfo}>Test</button>
                         </div> 
                     </li>
                 </ul>
             </span>
+            {testPrev}
         </div>
 
     );
