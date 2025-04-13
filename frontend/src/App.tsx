@@ -5,9 +5,7 @@ import SignupPage from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
 import { getVersion, isProd } from './utils';
 import UserProfilePage from './pages/UserProfilePage';
-
 import { getVersion, isProd } from './utils';
-import UserProfilePage from './pages/UserProfilePage';
 
 function App() {
 
