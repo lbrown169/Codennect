@@ -1,10 +1,11 @@
 import { MongoClient } from "mongodb";
-import { UserRepository } from "../domain/User";
-import { MongoUserRepository } from "./MongoUserRepository";
-import { StaticUserRepository } from "./StaticUserRepository";
-import { VerificationCodeRepository } from "../domain/Verification";
-import { StaticVerificationRepository } from "./StaticVerificationRepository";
-import { MongoVerificationRepository } from "./MongoVerificationRepository";
+import { UserRepository } from "../domain/User.js";
+import { MongoUserRepository } from "./MongoUserRepository.js";
+import { StaticUserRepository } from "./StaticUserRepository.js";
+import { VerificationCodeRepository } from "../domain/Verification.js";
+import { StaticVerificationRepository } from "./StaticVerificationRepository.js";
+import { MongoVerificationRepository } from "./MongoVerificationRepository.js";
+import { isProd } from "../utils.js";
 
 export interface Driver {
     userRepository: UserRepository;
@@ -49,10 +50,7 @@ class MongoDriver implements Driver {
 }
 
 export function loadDatabaseDriver(): Driver {
-    if (
-        process.env.NODE_ENV != "production" &&
-        process.env.EXPLICIT_USE_MONGO != "true"
-    ) {
+    if (!isProd() && process.env.EXPLICIT_USE_MONGO != "true") {
         return new StaticDriver();
     } else {
         return new MongoDriver();

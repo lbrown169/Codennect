@@ -1,11 +1,12 @@
-import { User, UserRegistration, UserRepository } from "../domain/User";
+import { User, UserRegistration, UserRepository } from "../domain/User.js";
 import { Collection, MongoClient, ObjectId } from "mongodb";
+import { isProd } from "../utils.js";
 
 export class MongoUserRepository implements UserRepository {
     private collection: Collection;
 
     constructor(client: MongoClient) {
-        if (process.env.NODE_ENV === "production") {
+        if (isProd()) {
             this.collection = client.db("codennect").collection("users");
         } else {
             this.collection = client.db("development").collection("users");

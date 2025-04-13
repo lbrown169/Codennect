@@ -2,13 +2,14 @@ import { Collection, MongoClient } from "mongodb";
 import {
     VerificationCodeRepository,
     VerificationReponse,
-} from "../domain/Verification";
+} from "../domain/Verification.js";
+import { isProd } from "../utils.js";
 
 export class MongoVerificationRepository implements VerificationCodeRepository {
     private collection: Collection;
 
     constructor(client: MongoClient) {
-        if (process.env.NODE_ENV === "production") {
+        if (isProd()) {
             this.collection = client
                 .db("codennect")
                 .collection("verifications");

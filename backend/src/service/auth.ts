@@ -1,18 +1,17 @@
+import Mailgun from "mailgun.js";
+import FormData from "form-data";
+
 export function loadTransporter() {
+    if (!(process.env.MAILGUN_API_KEY && process.env.MAILGUN_DOMAIN)) {
+        return null;
+    }
 
-    const nodemailer = require("nodemailer");
+    const mailgun = new Mailgun(FormData);
 
-    // TODO Set up a gmail email for the sole purpose of email verification for this project
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: "noreply.codennect@gmail.com",
-        pass: process.env.NODEMAILER_PASSWORD
-      },
+    const mg = mailgun.client({
+        username: "api",
+        key: process.env.MAILGUN_API_KEY,
     });
 
-    return transporter;
-
+    return mg;
 }

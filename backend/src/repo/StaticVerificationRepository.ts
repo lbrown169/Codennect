@@ -1,4 +1,4 @@
-import { VerificationCodeRepository } from "../domain/Verification";
+import { VerificationCodeRepository } from "../domain/Verification.js";
 
 interface Verification {
     code: string;
