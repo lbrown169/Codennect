@@ -12,7 +12,8 @@ import UserProfilePage from './pages/UserProfilePage';
 import BrowseProjectsPage from './pages/BrowseProjectsPage';
 import ProjectPage from './pages/ProjectPage';
 
-import { getVersion, isProd } from './utils';
+
+
 function App() {
 
     if (isProd()) {
