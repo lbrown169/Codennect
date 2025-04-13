@@ -22,6 +22,23 @@
   width: 100%;
 }
 
+.applyButton {
+  position: relative;
+  margin: auto;
+  padding: 8px;
+  text-align: center;
+  border-radius: 15px;
+  width: 50%;
+  margin-left: 25%;
+  color: white;
+  background-color: #598392;
+}
+
+.closeButton {
+  padding: 4px;
+  border-radius: 12px;
+}
+
 #editProfButtons {
   position: relative;
   margin-bottom: auto;
@@ -113,6 +130,20 @@
   height: 652px;
 }
 
+.projPreview {
+  position: fixed;
+  margin: auto;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 12px;
+  padding: 15px;
+  width: 90%;
+  overflow: auto;
+  left: 5%;
+  color: black;
+  display: block;
+}
+
 .projSearchCard {
   background-color: white;
   border: 1px solid black;
@@ -124,7 +155,6 @@
 }
 
 .projSearchCardDesc {
-  width: 50%;
   overflow: hidden;
   text-overflow: ellipsis;
   display: inline-block;
