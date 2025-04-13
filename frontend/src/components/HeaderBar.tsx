@@ -35,6 +35,7 @@ function HeaderBar()
         <div id="headerBar" className="navBar space-x-4">
             <a href="#" onClick={goHome}>Home</a>
             <a href="/userprofile">Profile</a>
+            <a href="/browse">Browse Projects</a>
             <a href="#" className="float-right inset-y-[-8px]" onClick={doLogout}>Log Out</a>
         </div>
     );

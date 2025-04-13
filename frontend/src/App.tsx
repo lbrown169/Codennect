@@ -5,6 +5,7 @@ import SignupPage from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
 import { getVersion, isProd } from './utils';
 import UserProfilePage from './pages/UserProfilePage';
+import BrowseProjectsPage from './pages/BrowseProjectsPage';
 
 function App() {
 
@@ -28,6 +29,8 @@ function App() {
                 <Route path="/dashboard" element={<DashboardPage />}>
                 </Route>
                 <Route path="/userprofile" element={<UserProfilePage />}>
+                </Route>
+                <Route path="/browse" element={<BrowseProjectsPage />}>
                 </Route>
             </Routes>
         </Router>
