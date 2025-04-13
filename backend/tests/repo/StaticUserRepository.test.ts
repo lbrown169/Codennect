@@ -1,5 +1,6 @@
 import { UserRegistration } from "src/domain/User.js";
 import { loadDatabaseDriver } from "src/repo/Driver.js";
+import { test, expect } from "@jest/globals";
 
 test("Tests getting a static user by ID", async () => {
     let driver = loadDatabaseDriver();
