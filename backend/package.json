@@ -51,6 +51,7 @@
       "src/repo"
     ],
     "moduleNameMapper": {
+      "mailgun.js": "mailgun.js",
       "^(.+)\\.js": "$1"
     }
   }
