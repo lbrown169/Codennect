@@ -34,6 +34,11 @@ class StaticUser extends User {
         );
         this.password = password;
     }
+
+    toJson(): Object {
+        const { email, projects, password, ...trimmed } = this;
+        return trimmed;
+    }
 }
 
 export class StaticUserRepository implements UserRepository {
@@ -51,7 +56,7 @@ export class StaticUserRepository implements UserRepository {
                 ["frontend"],
                 ["games"],
                 [],
-                [],
+                ["1234-5678", "8765-4321"],
                 "$2b$10$px4/4rdjDTmlqv9nd0/A8OTOMwUUEx.wIgXua/AtS0IdTnzgGvAUG" //"SuperSecret123!"
             ),
             new StaticUser(
@@ -64,7 +69,7 @@ export class StaticUserRepository implements UserRepository {
                 ["backend", "database"],
                 ["games"],
                 [],
-                [],
+                ["8765-4321"],
                 "$2b$10$Qs8T/bvyZ20GaQo2tLCEge1F3XGZkyODeibH2dTJbBmUet/WYnBje" //"VeryS3cureP4ssw0!d"
             ),
         ];
@@ -117,7 +122,7 @@ export class StaticUserRepository implements UserRepository {
     }
 
     async GetAll(): Promise<User[]> {
-        return Promise.resolve(this._internal);
+        return this._internal.filter((user) => !user.isPrivate);
     }
 
     async Register(user: UserRegistration): Promise<User> {

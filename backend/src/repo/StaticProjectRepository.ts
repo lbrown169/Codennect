@@ -27,19 +27,21 @@ export class StaticProjectRepository implements ProjectRepository {
                 []
             ),
             new Project(
-                "1234-5678",
-                "Testing Project",
+                "8765-4321",
+                "Another Testing Project",
                 "",
-                "0",
+                "1",
                 false,
-                "A testing project for a testing world",
+                "Another Teating Project",
                 [],
                 {
                     manager: 1,
-                    frontend: 2,
+                    frontend: 1,
+                    backend: 1,
                 },
                 {
-                    manager: ["0"],
+                    manager: ["1"],
+                    frontend: ["0"],
                 },
                 []
             ),

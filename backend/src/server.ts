@@ -3,7 +3,7 @@ import { Request, Response as ExpressResponse, NextFunction } from "express";
 import { loadDatabaseDriver } from "./repo/Driver.js";
 import { loadTransporter } from "./service/auth.js";
 import { User, UserRegistration } from "./domain/User.js";
-import { ProjectCreation } from "./domain/Project.js";
+import { Project, ProjectCreation } from "./domain/Project.js";
 import { getVersion, isProd, buildUrl } from "./utils.js";
 
 import express from "express";
@@ -188,7 +188,7 @@ app.post("/api/logout", async (req: Request, res: Response) => {
 });
 
 // TODO search users
-app.post("/api/get-all-users", async (req: Request, res: Response) => {
+app.get("/api/get-all-users", async (req: Request, res: Response) => {
     // incoming: name
     // outgoing: all the users
 
@@ -210,7 +210,7 @@ app.post("/api/get-all-users", async (req: Request, res: Response) => {
 });
 
 // Project stuff
-app.post("/api/get-project", async (req: Request, res: Response) => {
+app.get("/api/get-project", async (req: Request, res: Response) => {
     // incoming: project id
     // outgoing: all the project info
 
@@ -238,6 +238,24 @@ app.post("/api/get-project", async (req: Request, res: Response) => {
     }
 
     res.status(200).json(theProject);
+});
+
+app.get("/api/get-my-projects", async (req: Request, res: Response) => {
+    if (!res.locals.user) {
+        res.status(401).json({
+            error: "Unauthorized. You must be logged in to perform this action.",
+        });
+        return;
+    }
+
+    let projects: Project[] = [];
+    for (let pid of res.locals.user.projects) {
+        let p = await driver.projectRepository.GetById(pid);
+        if (p) {
+            projects.push(p);
+        }
+    }
+    res.status(200).json(projects);
 });
 
 // Project edit
@@ -310,7 +328,7 @@ app.post("/api/edit-project", async (req: Request, res: Response) => {
     res.status(200).json({ success: true, updatedProject: project });
 });
 
-app.post("/api/get-all-projects", async (req: Request, res: Response) => {
+app.get("/api/get-all-projects", async (req: Request, res: Response) => {
     // incoming: name/skill?
     // outgoing: all the projects
     // should be able to filter by name/skill
@@ -328,7 +346,7 @@ app.post("/api/get-all-projects", async (req: Request, res: Response) => {
 
     try {
         // repo needs to implement some sort of getall
-        let projects = await db.projectRepository.GetByPartialName(name); // get all first
+        let projects = await db.projectRepository.GetByPartialName(name || ""); // get all first
 
         // Filter by skill if provided
         if (required_skills) {
