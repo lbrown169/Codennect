@@ -77,9 +77,9 @@ export class ProjectCreation {
 }
 
 export interface ProjectRepository {
-    GetAll(): Promise<Project[]>;
     GetById(id: string): Promise<Project | undefined>;
-    GetByName(name: string): Promise<Project | undefined>;
+    GetByPartialName(name: string): Promise<Project[]>;
+    GetAll(): Promise<Project[]>;
     Create(project: ProjectCreation): Promise<Project>;
     Update(id: string, updates: Partial<Project>): Promise<boolean>;
 }

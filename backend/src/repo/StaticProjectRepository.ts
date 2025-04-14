@@ -38,19 +38,17 @@ export class StaticProjectRepository implements ProjectRepository {
     }
 
     async GetById(id: string): Promise<Project | undefined> {
-        return Promise.resolve(
-            this._internal.find((project) => project._id === id)
-        );
+        return this._internal.find((project) => project._id === id);
     }
 
-    async GetByName(name: string): Promise<Project | undefined> {
-        return Promise.resolve(
-            this._internal.find((project) => project.name === name)
+    async GetByPartialName(name: string): Promise<Project[]> {
+        return this._internal.filter(
+            (project) => project.name.includes(name) && !project.is_private
         );
     }
 
     async GetAll(): Promise<Project[]> {
-        return Promise.resolve(this._internal);
+        return this._internal.filter((project) => !project.is_private);
     }
 
     async Create(project: ProjectCreation): Promise<Project> {
@@ -69,7 +67,7 @@ export class StaticProjectRepository implements ProjectRepository {
 
         this._internal.push(newProject);
 
-        return Promise.resolve(newProject);
+        return newProject;
     }
 
     async Update(id: string, updates: Partial<Project>): Promise<boolean> {

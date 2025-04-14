@@ -4,7 +4,6 @@ import {
     ProjectRepository,
 } from "../domain/Project.js";
 import { Collection, Db, ObjectId } from "mongodb";
-
 export class MongoProjectRepository implements ProjectRepository {
     private collection: Collection;
 
@@ -13,7 +12,9 @@ export class MongoProjectRepository implements ProjectRepository {
     }
 
     async GetAll(): Promise<Project[]> {
-        const results = await this.collection.find().toArray();
+        const results = await this.collection
+            .find({ isPrivate: false })
+            .toArray();
 
         return results.map(
             (result) =>
@@ -22,7 +23,7 @@ export class MongoProjectRepository implements ProjectRepository {
                     result.name,
                     result.domain,
                     result.owner,
-                    result.is_private,
+                    result.isPrivate,
                     result.description,
                     result.fields,
                     result.roles,
@@ -35,44 +36,42 @@ export class MongoProjectRepository implements ProjectRepository {
     async GetById(id: string): Promise<Project | undefined> {
         let result = await this.collection.findOne({ _id: new ObjectId(id) });
         if (!result) {
-            return Promise.resolve(undefined);
+            return undefined;
         }
 
-        return Promise.resolve(
-            new Project(
-                result._id.toString(),
-                result.name,
-                result.domain,
-                result.owner,
-                result.is_private,
-                result.description,
-                result.fields,
-                result.roles,
-                result.users,
-                result.required_skills
-            )
+        return new Project(
+            result._id.toString(),
+            result.name,
+            result.domain,
+            result.owner,
+            result.isPrivate,
+            result.description,
+            result.fields,
+            result.roles,
+            result.users,
+            result.required_skills
         );
     }
 
-    async GetByName(name: string): Promise<Project | undefined> {
-        let result = await this.collection.findOne({ name: name });
-        if (!result) {
-            return Promise.resolve(undefined);
-        }
+    async GetByPartialName(name: string): Promise<Project[]> {
+        let results = await this.collection
+            .find({ name: { $regex: name }, isPrivate: false })
+            .toArray();
 
-        return Promise.resolve(
-            new Project(
-                result._id.toString(),
-                result.name,
-                result.domain,
-                result.owner,
-                result.is_private,
-                result.description,
-                result.fields,
-                result.roles,
-                result.users,
-                result.required_skills
-            )
+        return results.map(
+            (result) =>
+                new Project(
+                    result._id.toString(),
+                    result.name,
+                    result.domain,
+                    result.owner,
+                    result.isPrivate,
+                    result.description,
+                    result.fields,
+                    result.roles,
+                    result.users,
+                    result.required_skills
+                )
         );
     }
 
@@ -81,7 +80,7 @@ export class MongoProjectRepository implements ProjectRepository {
             name: project.name,
             domain: project.domain,
             owner: project.owner,
-            is_private: project.is_private,
+            isPrivate: project.is_private,
             description: project.description ?? "",
             fields: [],
             roles: [],
