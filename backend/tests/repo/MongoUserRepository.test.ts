@@ -18,7 +18,7 @@ afterEach(async () => {
 
 test("Tests getting a mongo user by ID", async () => {
     let result = await driver.userRepository.GetById(
-        "67bf9446fc89bb9e490cfe40"
+        "67fc7b497e97216a448d06c1"
     );
     expect(result).toBeDefined();
 });

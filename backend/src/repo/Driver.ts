@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+import { Db, MongoClient } from "mongodb";
 import { UserRepository } from "../domain/User.js";
 import { MongoUserRepository } from "./MongoUserRepository.js";
 import { StaticUserRepository } from "./StaticUserRepository.js";
@@ -45,11 +45,17 @@ class MongoDriver implements Driver {
         }
         this.client = new MongoClient(process.env.MONGODB_URI);
         this.client.connect();
-        this.userRepository = new MongoUserRepository(this.client);
-        this.verificationRepository = new MongoVerificationRepository(
-            this.client
-        );
-        this.requestRepository = new MongoRequestRepository(this.client);
+
+        let db: Db;
+        if (isProd()) {
+            db = this.client.db("codennect");
+        } else {
+            db = this.client.db("development");
+        }
+
+        this.userRepository = new MongoUserRepository(db);
+        this.verificationRepository = new MongoVerificationRepository(db);
+        this.requestRepository = new MongoRequestRepository(db);
     }
 
     async destroy() {
