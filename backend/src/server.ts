@@ -512,30 +512,59 @@ app.post("/api/edit-me", async (req: Request, res: Response) => {
 
         async CreateRequest(req: Request)
         async DeleteRequest(req: Request)
-    
-    
 */
 
-// Requests: Applications
-app.post("/api/create-application", async (req: Request, res: Response, next: NextFunction) => {
+// Requests: General
+app.post("/api/create-request", async (req: Request, res: Response, next: NextFunction) => {
     // Creates new application to join a project
-    // Passed: userId, projectId, message (all strings)user_id
-});
-
-app.post("/api/accept-application", async (req: Request, res: Response, next: NextFunction) => {
-    // Either approve or deny a user's application
-    // Restricted for creator of project only
+    // Passed: user_id, projectId, message (all strings)
     if (!res.locals.user) {
         res.status(401).json({
             error: "Unauthorized. You must be logged in to perform this action.",
         });
         return;
     }
-    // Change application status (Unchecked to either approved or denied)
-    // USER CAN ALSO DELETE THEIR OWN APPLICATION BUT CAN'T APPROVE IT THEMSELVES
+    let { user_id, project_id, is_invite, roles, message } =
+        req.body;
+    const db = driver;
+
+    // Check for the other required parameters
+    if ([user_id, project_id, is_invite].includes(undefined)) {
+        res.status(400).json({
+            error: "Need info for user, project, and request type",
+        });
+        return;
+    }
+
+    // If application, user_id is from the authenticated user; otherwise a passed user_id
+    if(!is_invite) {
+        user_id = res.locals.user?._id;
+    }
+
+    // Create new request
+    const newRequest = await db.requestRepository.CreateRequest(req.body);
+    res.status(200).json({
+        success: "Request sent!",
+        request: newRequest,
+    });
 });
 
-app.post("/api/check-applications", async (req: Request, res: Response, next: NextFunction) => {
+app.post("/api/accept-request", async (req: Request, res: Response, next: NextFunction) => {
+    // Either approve or deny a user's request
+    // Restricted for creator of project OR receiver of the invite ONLY
+    if (!res.locals.user) {
+        res.status(401).json({
+            error: "Unauthorized. You must be logged in to perform this action.",
+        });
+        return;
+    }
+    // If accept, update project access
+    // Delete request upon finish
+    // USER CAN ALSO DELETE THEIR OWN SENT REQUEST BUT CAN'T APPROVE IT THEMSELVES
+});
+
+// Requests: Applications
+app.post("/api/project-applications", async (req: Request, res: Response, next: NextFunction) => {
     // Returns list of user priorities that have applied to a specific project I have created
     // Restricted for creator of project only
     if (!res.locals.user) {
@@ -546,30 +575,12 @@ app.post("/api/check-applications", async (req: Request, res: Response, next: Ne
     }
 });
 
-app.get("/api/my-applications", async (req: Request, res: Response) => {
+app.get("/api/user-applications", async (req: Request, res: Response) => {
     // Returns list of projects that I have applied to
 });
 
 // Requests: Invites
-app.post("/api/create-invite", async (req: Request, res: Response, next: NextFunction) => {
-    // Creates new invite for someone to join a project
-    // Passed: sender userId, target userId, projectId, message (all strings)
-});
-
-app.post("/api/accept-invite", async (req: Request, res: Response, next: NextFunction) => {
-    // Either approve or deny a user's invite
-    // Restricted for viewer of invite only
-    if (!res.locals.user) {
-        res.status(401).json({
-            error: "Unauthorized. You must be logged in to perform this action.",
-        });
-        return;
-    }
-    // Change invite status (Unchecked to either approved or denied)
-    // USER CAN ALSO DELETE THEIR OWN INVITE BUT CAN'T ACCEPT IT FOR ANOTHER PERSON
-});
-
-app.post("/api/check-invites", async (req: Request, res: Response, next: NextFunction) => {
+app.post("/api/project-invites", async (req: Request, res: Response, next: NextFunction) => {
     // Returns list of user priorities that have applied to a specific project I have created
     // Restricted for creator of project only
     if (!res.locals.user) {
@@ -580,7 +591,7 @@ app.post("/api/check-invites", async (req: Request, res: Response, next: NextFun
     }
 });
 
-app.get("/api/my-invites", async (req: Request, res: Response) => {
+app.get("/api/user-invites", async (req: Request, res: Response) => {
     // Returns list of projects that I have applied to
 });
 
