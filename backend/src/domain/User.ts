@@ -1,5 +1,4 @@
-import { Account } from "./Account";
-import { Invite } from "./Invite";
+import { Account } from "../domain/Account.js";
 
 export class User {
     _id: string;
@@ -11,7 +10,6 @@ export class User {
     interests: string[];
     accounts: Account[];
     projects: string[];
-    invites: Invite[];
 
     constructor(
         _id: string,
@@ -22,8 +20,7 @@ export class User {
         roles: string[],
         interests: string[],
         accounts: Account[],
-        projects: string[],
-        invites: Invite[]
+        projects: string[]
     ) {
         this._id = _id;
         this.name = name;
@@ -34,7 +31,11 @@ export class User {
         this.interests = interests;
         this.accounts = accounts;
         this.projects = projects;
-        this.invites = invites;
+    }
+
+    toJson(): Object {
+        const { email, projects, ...trimmed } = this;
+        return trimmed;
     }
 }
 
@@ -58,4 +59,5 @@ export interface UserRepository {
         password: string
     ): Promise<User | undefined>;
     Register(user: UserRegistration): Promise<User>;
+    Update(id: string, updates: Partial<User>): Promise<boolean>;
 }
