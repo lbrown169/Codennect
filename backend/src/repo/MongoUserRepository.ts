@@ -13,7 +13,9 @@ export class MongoUserRepository implements UserRepository {
     }
 
     async GetAll(): Promise<User[]> {
-        const results = await this.collection.find().toArray();
+        const results = await this.collection
+            .find({ isPrivate: false })
+            .toArray();
 
         return results.map(
             (result) =>
