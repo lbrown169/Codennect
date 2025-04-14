@@ -3,6 +3,7 @@ import { Account } from "../domain/Account.js";
 export class User {
     _id: string;
     name: string;
+    isPrivate: boolean;
     email: string;
     comm: string;
     skills: string[];
@@ -14,6 +15,7 @@ export class User {
     constructor(
         _id: string,
         name: string,
+        isPrivate: boolean,
         email: string,
         comm: string,
         skills: string[],
@@ -24,6 +26,7 @@ export class User {
     ) {
         this._id = _id;
         this.name = name;
+        this.isPrivate = isPrivate;
         this.email = email;
         this.comm = comm;
         this.skills = skills;
@@ -52,6 +55,7 @@ export class UserRegistration {
 }
 
 export interface UserRepository {
+    GetAll(): Promise<User[]>;
     GetById(id: string): Promise<User | undefined>;
     GetByEmail(email: string): Promise<User | undefined>;
     GetByEmailAndPassword(

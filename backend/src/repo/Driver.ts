@@ -1,17 +1,24 @@
 import { Db, MongoClient } from "mongodb";
-import { UserRepository } from "../domain/User.js";
-import { MongoUserRepository } from "./MongoUserRepository.js";
-import { StaticUserRepository } from "./StaticUserRepository.js";
-import { VerificationCodeRepository } from "src/domain/Verification.js";
-import { StaticVerificationRepository } from "./StaticVerificationRepository.js";
-import { MongoVerificationRepository } from "./MongoVerificationRepository.js";
 import { isProd } from "../utils.js";
+
+import { UserRepository } from "../domain/User.js";
+import { ProjectRepository } from "../domain/Project.js";
 import { RequestRepository } from "src/domain/Request.js";
+import { VerificationCodeRepository } from "src/domain/Verification.js";
+
+import { StaticUserRepository } from "./StaticUserRepository.js";
+import { StaticProjectRepository } from "./StaticProjectRepository.js";
 import { StaticRequestRepository } from "./StaticRequestRepository.js";
+import { StaticVerificationRepository } from "./StaticVerificationRepository.js";
+
+import { MongoUserRepository } from "./MongoUserRepository.js";
+import { MongoProjectRepository } from "./MongoProjectRepository.js";
 import { MongoRequestRepository } from "./MongoRequestRepository.js";
+import { MongoVerificationRepository } from "./MongoVerificationRepository.js";
 
 export interface Driver {
     userRepository: UserRepository;
+    projectRepository: ProjectRepository;
     verificationRepository: VerificationCodeRepository;
     requestRepository: RequestRepository;
     destroy(): Promise<void>;
@@ -19,11 +26,13 @@ export interface Driver {
 
 class StaticDriver implements Driver {
     userRepository: UserRepository;
+    projectRepository: ProjectRepository;
     verificationRepository: VerificationCodeRepository;
     requestRepository: RequestRepository;
 
     constructor() {
         this.userRepository = new StaticUserRepository();
+        this.projectRepository = new StaticProjectRepository();
         this.verificationRepository = new StaticVerificationRepository();
         this.requestRepository = new StaticRequestRepository();
     }
@@ -34,6 +43,7 @@ class StaticDriver implements Driver {
 class MongoDriver implements Driver {
     private client: MongoClient;
     userRepository: UserRepository;
+    projectRepository: ProjectRepository;
     verificationRepository: VerificationCodeRepository;
     requestRepository: RequestRepository;
 
@@ -54,6 +64,7 @@ class MongoDriver implements Driver {
         }
 
         this.userRepository = new MongoUserRepository(db);
+        this.projectRepository = new MongoProjectRepository(db);
         this.verificationRepository = new MongoVerificationRepository(db);
         this.requestRepository = new MongoRequestRepository(db);
     }

@@ -10,6 +10,7 @@ class StaticUser extends User {
     constructor(
         _id: string,
         name: string,
+        isPrivate: boolean,
         email: string,
         comm: string,
         skills: string[],
@@ -22,6 +23,7 @@ class StaticUser extends User {
         super(
             _id,
             name,
+            isPrivate,
             email,
             comm,
             skills,
@@ -31,6 +33,11 @@ class StaticUser extends User {
             projects
         );
         this.password = password;
+    }
+
+    toJson(): Object {
+        const { email, projects, password, ...trimmed } = this;
+        return trimmed;
     }
 }
 
@@ -42,25 +49,27 @@ export class StaticUserRepository implements UserRepository {
             new StaticUser(
                 "0",
                 "John Doe",
+                false,
                 "john.doe@example.com",
                 "Online",
                 ["React", "Tailwind", "Typescript"],
                 ["frontend"],
                 ["games"],
                 [],
-                [],
+                ["1234-5678", "8765-4321"],
                 "$2b$10$px4/4rdjDTmlqv9nd0/A8OTOMwUUEx.wIgXua/AtS0IdTnzgGvAUG" //"SuperSecret123!"
             ),
             new StaticUser(
                 "1",
                 "Jane Doe",
+                true,
                 "jane.doe@example.com",
                 "In Person",
                 ["Python", "Flask", "SQL"],
                 ["backend", "database"],
                 ["games"],
                 [],
-                [],
+                ["8765-4321"],
                 "$2b$10$Qs8T/bvyZ20GaQo2tLCEge1F3XGZkyODeibH2dTJbBmUet/WYnBje" //"VeryS3cureP4ssw0!d"
             ),
         ];
@@ -71,6 +80,7 @@ export class StaticUserRepository implements UserRepository {
         return new User(
             user._id.toString(),
             user.name,
+            user.isPrivate,
             user.email,
             user.comm,
             user.skills,
@@ -111,6 +121,10 @@ export class StaticUserRepository implements UserRepository {
         return this._trim(user);
     }
 
+    async GetAll(): Promise<User[]> {
+        return this._internal.filter((user) => !user.isPrivate);
+    }
+
     async Register(user: UserRegistration): Promise<User> {
         if ((await this.GetByEmail(user.email)) !== undefined) {
             throw new Error("A user with that email already exists");
@@ -119,6 +133,7 @@ export class StaticUserRepository implements UserRepository {
         const newUser = new StaticUser(
             randomInt(1000000).toString(),
             user.name,
+            true,
             user.email,
             "",
             [],
