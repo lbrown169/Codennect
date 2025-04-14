@@ -276,21 +276,49 @@ app.post("/api/edit-me", async (req: Request, res: Response) => {
     res.status(200).json({ success: true, updatedUser: theUser });
 });
 
+/*
+    Database notes:
+
+    RequestRepository:
+        async GetUserInvites(user_id: string)               invites I've sent
+        async GetUserApplications(user_id: string)          applications I've sent
+        async GetProjectInvites(project_id: string)         invites to my project
+        async GetProjectApplications(project_id: string)    applications for my project
+
+        async CreateRequest(req: Request)
+        async DeleteRequest(req: Request)
+    
+    
+*/
+
 // Requests: Applications
 app.post("/api/create-application", async (req: Request, res: Response, next: NextFunction) => {
     // Creates new application to join a project
-    // Passed: userId, projectId, message (all strings)
+    // Passed: userId, projectId, message (all strings)user_id
 });
 
 app.post("/api/accept-application", async (req: Request, res: Response, next: NextFunction) => {
     // Either approve or deny a user's application
     // Restricted for creator of project only
+    if (!res.locals.user) {
+        res.status(401).json({
+            error: "Unauthorized. You must be logged in to perform this action.",
+        });
+        return;
+    }
     // Change application status (Unchecked to either approved or denied)
+    // USER CAN ALSO DELETE THEIR OWN APPLICATION BUT CAN'T APPROVE IT THEMSELVES
 });
 
 app.post("/api/check-applications", async (req: Request, res: Response, next: NextFunction) => {
     // Returns list of user priorities that have applied to a specific project I have created
     // Restricted for creator of project only
+    if (!res.locals.user) {
+        res.status(401).json({
+            error: "Unauthorized. You must be logged in to perform this action.",
+        });
+        return;
+    }
 });
 
 app.get("/api/my-applications", async (req: Request, res: Response) => {
@@ -306,22 +334,29 @@ app.post("/api/create-invite", async (req: Request, res: Response, next: NextFun
 app.post("/api/accept-invite", async (req: Request, res: Response, next: NextFunction) => {
     // Either approve or deny a user's invite
     // Restricted for viewer of invite only
+    if (!res.locals.user) {
+        res.status(401).json({
+            error: "Unauthorized. You must be logged in to perform this action.",
+        });
+        return;
+    }
     // Change invite status (Unchecked to either approved or denied)
+    // USER CAN ALSO DELETE THEIR OWN INVITE BUT CAN'T ACCEPT IT FOR ANOTHER PERSON
 });
 
 app.post("/api/check-invites", async (req: Request, res: Response, next: NextFunction) => {
     // Returns list of user priorities that have applied to a specific project I have created
     // Restricted for creator of project only
+    if (!res.locals.user) {
+        res.status(401).json({
+            error: "Unauthorized. You must be logged in to perform this action.",
+        });
+        return;
+    }
 });
 
 app.get("/api/my-invites", async (req: Request, res: Response) => {
     // Returns list of projects that I have applied to
-});
-
-// Requests: Applications and invites
-app.post("/api/cancel-request", async (req: Request, res: Response, next: NextFunction) => {
-    // Only the user can do this
-    // DeleteRequest
 });
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
