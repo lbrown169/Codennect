@@ -47,10 +47,8 @@ class _MyProjectsPageState extends State<MyProjectsPage> {
   }
 
   void _openProjectDetails(Project project) {
-
     //Checks if the creatorName on the project matches the userName for the session
     if (userName != null && project.creatorName == userName) {
-      
       //They match so the the current user is the creator and can see the project's applications
       Navigator.push(
         context,

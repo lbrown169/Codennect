@@ -1,55 +1,45 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:html/dom.dart';
-import 'package:html/parser.dart' as parser;
+import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginCall {
   Future<Map<String, dynamic>> loginUser(String email, String password) async {
-    const url = 'http://cop4331.tech/api/login';
-    final uri = Uri.parse(url);
+    final dio = Dio();
 
-    HttpClient client = HttpClient();
-    HttpClientRequest request = await client.postUrl(uri);
+    final response = await dio.post(
+      'http://cop4331.tech/api/login',
+      data: {
+        'email': email,
+        'password': password,
+      },
+      options: Options(
+        headers: {'Content-Type': 'application/json'},
+        followRedirects: false,
+        validateStatus: (status) => status! < 500,
+      ),
+    );
 
-    request.headers.set('Content-Type', 'application/json');
-    request.add(utf8.encode(jsonEncode({'email': email, 'password': password})));
+    // Attempt to grab the Set-Cookie header from the response
+    final cookie = response.headers.map['set-cookie']?.first;
+    print('Received cookie: $cookie'); // Debug print to verify cookie
 
-    HttpClientResponse response = await request.close();
-    final responseBody = await response.transform(utf8.decoder).join();
-    final data = jsonDecode(responseBody);
-
-    final cookies = response.cookies;
+    // store it in local storage using SharedPreferences
+    if (cookie != null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('auth_token',
+          cookie); // Save the full cookie string under the key 'auth_token'
+    }
 
     if (response.statusCode == 200) {
       return {
         'success': true,
-        'id': data['id'],
-        'name': data['name'],
-        'cookies': cookies,
+        'id': response.data['id'],
+        'name': response.data['name'],
       };
     } else {
       return {
         'success': false,
-        'error': data['error'],
+        'error': response.data['error'] ?? "Login failed."
       };
     }
   }
-}
-
-// You can keep parseHtml right here
-Future<void> parseHtml(List<Cookie> cookies) async {
-  HttpClient client = HttpClient();
-  HttpClientRequest request =
-      await client.getUrl(Uri.parse("http://www.example.com/"));
-
-  for (final cookie in cookies) {
-    request.cookies.add(cookie);
-  }
-
-  HttpClientResponse response = await request.close();
-  final body = await response.transform(utf8.decoder).join();
-  Document document = parser.parse(body);
-
-  print(document.body?.text); // safer than document.text
 }

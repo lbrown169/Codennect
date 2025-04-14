@@ -6,7 +6,9 @@ class ProfileInfoService {
 
   static Future<Map<String, dynamic>?> getProfile(String userId) async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/get-me'),);
+      final response = await http.get(
+        Uri.parse('$baseUrl/get-me'),
+      );
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);

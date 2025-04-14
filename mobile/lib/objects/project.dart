@@ -28,7 +28,7 @@ class Project {
       requiredSkills: List<String>.from(json['requiredSkills']),
       currentMembers: json['currentMembers'],
       memberLimit: json['memberLimit'],
-      is_private: json['is_private']
+      is_private: json['is_private'],
     );
   }
 
@@ -40,6 +40,6 @@ class Project {
         'requiredSkills': requiredSkills,
         'currentMembers': currentMembers,
         'memberLimit': memberLimit,
-        'is_private' : is_private,
+        'is_private': is_private,
       };
 }

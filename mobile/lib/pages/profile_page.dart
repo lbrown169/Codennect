@@ -44,20 +44,20 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-Future<void> fetchProfile() async {
-  if (userId != null) {
-    final profileData = await ProfileInfoService.getProfile(userId!);
-    setState(() {
-      profileInfo = profileData;
-      skills = List<String>.from(profileInfo?['skills'] ?? []);
-      roles = List<String>.from(profileInfo?['roles'] ?? []);
-      interests = List<String>.from(profileInfo?['interests'] ?? []);
-    });
-  } else {
-    // Handle case where userId is null (perhaps show a message or return)
-    print("Error: userId is null");
+  Future<void> fetchProfile() async {
+    if (userId != null) {
+      final profileData = await ProfileInfoService.getProfile(userId!);
+      setState(() {
+        profileInfo = profileData;
+        skills = List<String>.from(profileInfo?['skills'] ?? []);
+        roles = List<String>.from(profileInfo?['roles'] ?? []);
+        interests = List<String>.from(profileInfo?['interests'] ?? []);
+      });
+    } else {
+      // Handle case where userId is null (perhaps show a message or return)
+      print("Error: userId is null");
+    }
   }
-}
 
   Widget buildSection(String title, List<String> list) {
     return Card(

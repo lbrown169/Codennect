@@ -1,15 +1,77 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/pages/browse_projects_page.dart';
+import 'package:mobile/pages/browse_users_page.dart';
 import 'package:mobile/pages/profile_page.dart';
 import 'package:mobile/pages/my_projects_page.dart';
+import 'package:mobile/pages/login_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(color: Color(0xFF598392)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 28,
+                    backgroundImage:
+                        AssetImage('assets/images/Codennect_Logo.png'),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    'Welcome!',
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('My Profile'),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const ProfilePage()));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.folder),
+              title: Text('My Projects'),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const MyProjectsPage()));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('Log Out'),
+              onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.clear();
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/login', (route) => false);
+              },
+            ),
+          ],
+        ),
+      ),
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -26,7 +88,7 @@ class HomePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top floating menu BAR
+                // Top bar with logo and menu
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -53,22 +115,29 @@ class HomePage extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          'Hello, Nicolas!',
+                          'Codennect',
                           style: GoogleFonts.poppins(
-                            fontSize: 18,
+                            fontSize: 20,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
                           ),
                         ),
                       ],
                     ),
-                    const Icon(Icons.menu, color: Colors.white),
+                    Builder(
+                      builder: (context) => IconButton(
+                        icon: const Icon(Icons.menu, color: Colors.white),
+                        onPressed: () {
+                          Scaffold.of(context).openDrawer();
+                        },
+                      ),
+                    ),
                   ],
                 ),
 
                 const SizedBox(height: 32),
 
-                // Floating welcome box with separate title and body
+                // Welcome box
                 Center(
                   child: Container(
                     padding: const EdgeInsets.all(24),
@@ -103,7 +172,6 @@ class HomePage extends StatelessWidget {
                           style: GoogleFonts.poppins(
                             color: Colors.white70,
                             fontSize: 14,
-                            fontWeight: FontWeight.normal,
                           ),
                         ),
                       ],
@@ -145,16 +213,17 @@ class HomePage extends StatelessWidget {
                       ),
                       _buildServiceCard(
                         context,
+                        Icons.people_alt_rounded,
+                        "Search People",
+                        Color(0xFFFFFFFF),
+                        navigateTo: const BrowseUsersPage(),
+                      ),
+                      _buildServiceCard(
+                        context,
                         Icons.explore,
                         "Browse Projects",
                         Color(0xFFFFFFFF),
                         navigateTo: const BrowseProjectsPage(),
-                      ),
-                      _buildServiceCard(
-                        context,
-                        Icons.settings,
-                        "Settings",
-                        Color(0xFFFFFFFF),
                       ),
                     ],
                   ),

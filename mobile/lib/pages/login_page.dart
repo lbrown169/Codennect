@@ -3,8 +3,6 @@ import 'register_page.dart';
 import '../../integration/login_call.dart';
 import 'home_page.dart';
 import '../../services/session_manager.dart';
-import 'dart:io';
-import '../../services/session_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -81,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     // username label and input
                     const Text(
-                      'Email',
+                      'Username',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -162,32 +160,26 @@ class _LoginPageState extends State<LoginPage> {
                           final authService = LoginCall();
                           String email = emailController.text.trim();
                           String password = passwordController.text.trim();
-                          try {
-                            final result = await authService.loginUser(
-                              email,
-                              password,
-                            );
 
-                            // Saves the user session if login is successful
+                          try {
+                            final result =
+                                await authService.loginUser(email, password);
+
                             if (result['success']) {
                               await SessionManager.saveSession(
                                 userId: email,
                                 userName: password,
+                                authToken: result['token'], // Pass it here!
                               );
-                              final cookies = result['cookies'] as List<Cookie>;
-                              await parseHtml(cookies);
-                              final sessionId = await SessionService.getSSID();
-                              if (sessionId != null) {
-                                  print("Successfully fetched session ID: $sessionId");
-                              }
+
                               setState(() {
                                 errorMessage = "";
                               });
+
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const HomePage(),
-                                ),
+                                    builder: (context) => const HomePage()),
                               );
                             } else {
                               setState(() {
@@ -201,6 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                             });
                           }
                         },
+
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 28,
@@ -221,6 +214,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),

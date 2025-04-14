@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
 import '../../integration/register_call.dart';
+
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
+
 class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController emailController = TextEditingController();
 
@@ -121,7 +123,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
                           try {
                             final authService = AuthService();
-                            final response = await authService.registerUser(email);
+                            final response =
+                                await authService.registerUser(email);
 
                             if (response['success']) {
                               // Success: You can navigate to the home page or show a success message

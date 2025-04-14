@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'project_application_page.dart';
+import '../objects/project.dart';
 import 'show_project_apps_page.dart';
 import 'edit_project_page.dart';
-import '../objects/project.dart';
 
 class ProjectDetailPage extends StatelessWidget {
   final Project project;
@@ -54,9 +54,8 @@ class ProjectDetailPage extends StatelessWidget {
                 const Icon(Icons.group, color: Colors.black54),
                 const SizedBox(width: 8),
                 Text(
-                  '${project.currentMembers} Members (${project.memberLimit - project.currentMembers} spots left)',
-                  style: GoogleFonts.poppins(fontSize: 16),
-                ),
+                    '${project.currentMembers} Members (${project.memberLimit - project.currentMembers} spots left)',
+                    style: GoogleFonts.poppins(fontSize: 16)),
               ],
             ),
             const SizedBox(height: 20),
@@ -120,7 +119,7 @@ class ProjectDetailPage extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              ShowApplicationsPage(project: project),
+                              ApplicationPage(project: project),
                         ),
                       );
                     }

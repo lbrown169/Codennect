@@ -60,8 +60,10 @@ class _EditProjectPageState extends State<EditProjectPage> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.project.title);
-    _descriptionController = TextEditingController(text: widget.project.description);
-    _memberLimitController = TextEditingController(text: widget.project.memberLimit.toString());
+    _descriptionController =
+        TextEditingController(text: widget.project.description);
+    _memberLimitController =
+        TextEditingController(text: widget.project.memberLimit.toString());
     _skills = List<String>.from(widget.project.requiredSkills);
     _isPrivate = widget.project.is_private;
   }
@@ -86,7 +88,8 @@ class _EditProjectPageState extends State<EditProjectPage> {
     });
   }
 
-  void openBankDialog(BuildContext context, List<String> bank, Function(String) onItemSelected) {
+  void openBankDialog(BuildContext context, List<String> bank,
+      Function(String) onItemSelected) {
     showDialog(
       context: context,
       builder: (context) {
@@ -126,7 +129,9 @@ class _EditProjectPageState extends State<EditProjectPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))
+        ],
       ),
       child: TextFormField(
         controller: controller,
@@ -148,7 +153,8 @@ class _EditProjectPageState extends State<EditProjectPage> {
         ),
         onChanged: onChanged,
         validator: isRequired
-            ? (val) => (val == null || val.isEmpty) ? '$label is required' : null
+            ? (val) =>
+                (val == null || val.isEmpty) ? '$label is required' : null
             : null,
       ),
     );
@@ -165,7 +171,9 @@ class _EditProjectPageState extends State<EditProjectPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20)),
+            Text(title,
+                style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold, fontSize: 20)),
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,
@@ -185,9 +193,12 @@ class _EditProjectPageState extends State<EditProjectPage> {
             Row(
               children: [
                 ElevatedButton(
-                  onPressed: () => openBankDialog(context, bank, (item) => addItemFromBank(item, list)),
-                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF598392)),
-                  child: Text("Add from list", style: GoogleFonts.poppins(color: Colors.white)),
+                  onPressed: () => openBankDialog(
+                      context, bank, (item) => addItemFromBank(item, list)),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF598392)),
+                  child: Text("Add from list",
+                      style: GoogleFonts.poppins(color: Colors.white)),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
@@ -196,7 +207,8 @@ class _EditProjectPageState extends State<EditProjectPage> {
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: Text('Enter $title', style: GoogleFonts.poppins()),
+                          title: Text('Enter $title',
+                              style: GoogleFonts.poppins()),
                           content: TextField(
                             controller: controller,
                             decoration: InputDecoration(hintText: inputHint),
@@ -215,8 +227,10 @@ class _EditProjectPageState extends State<EditProjectPage> {
                       },
                     );
                   },
-                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF598392)),
-                  child: Text("Add custom", style: GoogleFonts.poppins(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF598392)),
+                  child: Text("Add custom",
+                      style: GoogleFonts.poppins(color: Colors.white)),
                 ),
               ],
             ),
@@ -235,7 +249,8 @@ class _EditProjectPageState extends State<EditProjectPage> {
       creatorName: widget.project.creatorName,
       requiredSkills: _skills,
       currentMembers: widget.project.currentMembers,
-      memberLimit: int.tryParse(_memberLimitController.text) ?? widget.project.memberLimit,
+      memberLimit: int.tryParse(_memberLimitController.text) ??
+          widget.project.memberLimit,
       is_private: _isPrivate,
     );
 
@@ -248,7 +263,8 @@ class _EditProjectPageState extends State<EditProjectPage> {
       backgroundColor: const Color(0xFFEFF6E0),
       appBar: AppBar(
         backgroundColor: const Color(0xFF598392),
-        title: Text('Edit Project', style: GoogleFonts.poppins(color: Colors.white)),
+        title: Text('Edit Project',
+            style: GoogleFonts.poppins(color: Colors.white)),
         leading: BackButton(color: Colors.black),
       ),
       body: Padding(
@@ -258,25 +274,31 @@ class _EditProjectPageState extends State<EditProjectPage> {
           child: ListView(
             children: [
               const SizedBox(height: 16),
-              _buildTextInput('Project Name', _titleController, isRequired: true),
-              _buildTextInput('Description', _descriptionController, isRequired: true, maxLines: 3),
+              _buildTextInput('Project Name', _titleController,
+                  isRequired: true),
+              _buildTextInput('Description', _descriptionController,
+                  isRequired: true, maxLines: 3),
               CheckboxListTile(
-                title: Text('Make project private', style: GoogleFonts.poppins()),
+                title:
+                    Text('Make project private', style: GoogleFonts.poppins()),
                 value: _isPrivate,
                 onChanged: (val) => setState(() => _isPrivate = val ?? false),
                 activeColor: const Color(0xFF124559),
               ),
               const SizedBox(height: 25),
-              _buildTextInput('Member Limit', _memberLimitController, isRequired: true, isNumber: true),          
+              _buildTextInput('Member Limit', _memberLimitController,
+                  isRequired: true, isNumber: true),
               const SizedBox(height: 16),
-              buildSection("Required Skills", _skills, skillBank, skillsController, "Enter a skill"),
+              buildSection("Required Skills", _skills, skillBank,
+                  skillsController, "Enter a skill"),
               ElevatedButton(
                 onPressed: saveProject,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF124559),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                child: Text('Save Changes', style: GoogleFonts.poppins(color: Colors.white)),
+                child: Text('Save Changes',
+                    style: GoogleFonts.poppins(color: Colors.white)),
               ),
             ],
           ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/integration/create_project_call.dart';
+//import 'package:mobile/integration/create_project_call.dart';
 import 'my_projects_page.dart';
 
 class CreateProjectsPage extends StatefulWidget {
@@ -26,7 +26,8 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
   List<String> otherToolsSkills = [];
 
   final TextEditingController programLangController = TextEditingController();
-  final TextEditingController webDevelopmentController = TextEditingController();
+  final TextEditingController webDevelopmentController =
+      TextEditingController();
   final TextEditingController backendController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
   final TextEditingController otherToolsController = TextEditingController();
@@ -177,36 +178,36 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
   }
 
   void _saveProject() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      print('Project Name: ${_nameController.text}');
-      print('Description: ${_descriptionController.text}');
-      print('Member Count: $_memberCount');
-      print('Is Private: $_isPrivate');
+    //   if (_formKey.currentState?.validate() ?? false) {
+    //     print('Project Name: ${_nameController.text}');
+    //     print('Description: ${_descriptionController.text}');
+    //     print('Member Count: $_memberCount');
+    //     print('Is Private: $_isPrivate');
 
-      final success = await CreateProjectCall.createProject(
-        name: _nameController.text,
-        description: _descriptionController.text,
-        memberLimit: _memberCount,
-      );
+    //     // final success = await CreateProjectCall.createProject(
+    //     //   name: _nameController.text,
+    //     //   description: _descriptionController.text,
+    //     //   memberLimit: _memberCount,
+    //     // );
 
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Project saved successfully!')),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MyProjectsPage()),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to save project.')),
-        );
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all required fields.')),
-      );
-    }
+    //     if (success) {
+    //       ScaffoldMessenger.of(context).showSnackBar(
+    //         const SnackBar(content: Text('Project saved successfully!')),
+    //       );
+    //       Navigator.pushReplacement(
+    //         context,
+    //         MaterialPageRoute(builder: (context) => const MyProjectsPage()),
+    //       );
+    //     } else {
+    //       ScaffoldMessenger.of(context).showSnackBar(
+    //         const SnackBar(content: Text('Failed to save project.')),
+    //       );
+    //     }
+    //   } else {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(content: Text('Please fill in all required fields.')),
+    //     );
+    //   }
   }
 
   @override
@@ -325,21 +326,21 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
         decoration: InputDecoration(
           labelText: label,
           filled: true,
-          fillColor: Colors.white, 
+          fillColor: Colors.white,
           border: OutlineInputBorder(
-            borderRadius:
-                BorderRadius.circular(12), 
+            borderRadius: BorderRadius.circular(12),
           ),
           enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.transparent, // Border color when not focused
-            width: 2.0, // Border width
+            borderSide: BorderSide(
+              color: Colors.transparent, // Border color when not focused
+              width: 2.0, // Border width
+            ),
+            borderRadius: BorderRadius.circular(12), // Same rounded corners
           ),
-          borderRadius: BorderRadius.circular(12), // Same rounded corners
-        ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: const Color.fromARGB(255, 80, 145, 142), // Border color when focused
+              color: const Color.fromARGB(
+                  255, 80, 145, 142), // Border color when focused
               width: 2.0, // Border width
             ),
             borderRadius: BorderRadius.circular(12), // Same rounded corners
@@ -353,7 +354,8 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: Colors.red, // Border color when focused and there's an error
+              color:
+                  Colors.red, // Border color when focused and there's an error
               width: 2.0, // Border width
             ),
             borderRadius: BorderRadius.circular(12), // Same rounded corners

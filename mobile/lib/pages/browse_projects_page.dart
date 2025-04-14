@@ -131,7 +131,8 @@ class _BrowseProjectsPageState extends State<BrowseProjectsPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF124559),
                         ),
-                        child: const Text("See Details", style: TextStyle(color: Colors.white),),
+                        child: const Text("See Details",
+                            style: TextStyle(color: Colors.white)),
                       ),
                       onTap: () {
                         Navigator.push(

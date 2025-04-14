@@ -6,7 +6,8 @@ import '../integration/get_user_info_call.dart';
 class ApplicantProfilePage extends StatefulWidget {
   final Project project;
   final String applicantId;
-  const ApplicantProfilePage({super.key, required this.project, required this.applicantId});
+  const ApplicantProfilePage(
+      {super.key, required this.project, required this.applicantId});
 
   @override
   State<ApplicantProfilePage> createState() => _ApplicantProfilePageState();
@@ -207,22 +208,24 @@ class _ApplicantProfilePageState extends State<ApplicantProfilePage> {
                 ElevatedButton(
                   onPressed: _goBack,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        const Color.fromARGB(255, 18, 69, 89), 
+                    backgroundColor: const Color.fromARGB(255, 18, 69, 89),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24, vertical: 12),
                   ),
-                  child: Text("Approve", style: GoogleFonts.poppins(color: const Color.fromARGB(255, 255, 255, 255))),
+                  child: Text("Approve",
+                      style: GoogleFonts.poppins(
+                          color: const Color.fromARGB(255, 255, 255, 255))),
                 ),
                 ElevatedButton(
                   onPressed: _goBack,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        const Color.fromARGB(255, 89, 18, 18), 
+                    backgroundColor: const Color.fromARGB(255, 89, 18, 18),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24, vertical: 12),
                   ),
-                  child: Text("Deny", style: GoogleFonts.poppins(color: const Color.fromARGB(255, 255, 255, 255))),
+                  child: Text("Deny",
+                      style: GoogleFonts.poppins(
+                          color: const Color.fromARGB(255, 255, 255, 255))),
                 ),
               ],
             ),

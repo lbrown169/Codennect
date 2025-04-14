@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 
 class GetProjectsListCall {
   //CHANGE THIS URL WHEN TESTING
-  static const String baseUrl = 'https://yourapi.com/api';
+
+  static const String baseUrl = 'https://cop4331.tech.com/api';
 
   static Future<List<Map<String, dynamic>>> getProjects() async {
     try {
