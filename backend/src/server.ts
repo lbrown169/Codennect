@@ -501,17 +501,6 @@ app.post("/api/edit-me", async (req: Request, res: Response) => {
     res.status(200).json({ success: true, updatedUser: theUser });
 });
 
-/*
-    RequestRepository:
-        async GetUserInvites(user_id: string)               invites I've sent
-        async GetUserApplications(user_id: string)          applications I've sent
-        async GetProjectInvites(project_id: string)         invites to my project
-        async GetProjectApplications(project_id: string)    applications for my project
-
-        async CreateRequest(req: Request)
-        async DeleteRequest(req: Request)
-*/
-
 // Requests: General
 app.post("/api/create-request", async (req: Request, res: Response, next: NextFunction) => {
     // Creates new application to join a project
@@ -666,10 +655,48 @@ app.post("/api/project-applications", async (req: Request, res: Response, next: 
         });
         return;
     }
+    const { project_id } = req.body;
+    const db = driver;
+
+    // async GetProjectApplications(project_id: string)    applications for my project
+    let projectCheck;
+    try {
+        projectCheck = await db.projectRepository.GetById(project_id);
+    } catch {
+        res.status(400).json({ error: "Project ID error!" });
+        return;
+    }
+
+    const projApps = await db.requestRepository.GetProjectApplications(project_id);
+    res.status(200).json({
+        projApps
+    });
 });
 
 app.get("/api/user-applications", async (req: Request, res: Response) => {
     // Returns list of projects that I have applied to
+    if (!res.locals.user) {
+        res.status(401).json({
+            error: "Unauthorized. You must be logged in to perform this action.",
+        });
+        return;
+    }
+    const { user_id } = req.body;
+    const db = driver;
+
+    // async GetUserApplications(user_id: string)          applications I've sent
+    let userCheck;
+    try {
+        userCheck = await db.userRepository.GetById(user_id);
+    } catch {
+        res.status(400).json({ error: "User ID error!" });
+        return;
+    }
+
+    const userApps = await db.requestRepository.GetUserApplications(user_id);
+    res.status(200).json({
+        userApps
+    });
 });
 
 // Requests: Invites
@@ -682,10 +709,48 @@ app.post("/api/project-invites", async (req: Request, res: Response, next: NextF
         });
         return;
     }
+    const { project_id } = req.body;
+    const db = driver;
+
+    // async GetProjectInvites(project_id: string)         invites to my project
+    let projectCheck;
+    try {
+        projectCheck = await db.projectRepository.GetById(project_id);
+    } catch {
+        res.status(400).json({ error: "Project ID error!" });
+        return;
+    }
+
+    const projInvs = await db.requestRepository.GetProjectInvites(project_id);
+    res.status(200).json({
+        projInvs
+    });
 });
 
 app.get("/api/user-invites", async (req: Request, res: Response) => {
     // Returns list of projects that I have applied to
+    if (!res.locals.user) {
+        res.status(401).json({
+            error: "Unauthorized. You must be logged in to perform this action.",
+        });
+        return;
+    }
+    const { user_id } = req.body;
+    const db = driver;
+
+    // async GetUserInvites(user_id: string)               invites I've sent
+    let userCheck;
+    try {
+        userCheck = await db.userRepository.GetById(user_id);
+    } catch {
+        res.status(400).json({ error: "User ID error!" });
+        return;
+    }
+
+    const userInvs = await db.requestRepository.GetUserInvites(user_id);
+    res.status(200).json({
+        userInvs
+    });
 });
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
