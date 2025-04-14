@@ -574,9 +574,10 @@ app.post("/api/approve-request", async (req: Request, res: Response, next: NextF
     }
 
     // Insert project_id into user's projects and update it into user repository
+    res.locals.user.projects.push(project_id);
     const success = await db.userRepository.Update(user_id, {
-        $push: {projects: project_id}
-    } as any);
+        projects: res.locals.user.projects
+    });
     if (!success) {
         res.status(400).json({ error: "Project not found" });
         return;
