@@ -1,33 +1,34 @@
-import { Project, ProjectCreation, ProjectRepository } from "../domain/Project";
-import { Collection, MongoClient, ObjectId } from "mongodb";
+import {
+    Project,
+    ProjectCreation,
+    ProjectRepository,
+} from "../domain/Project.js";
+import { Collection, Db, ObjectId } from "mongodb";
 
 export class MongoProjectRepository implements ProjectRepository {
     private collection: Collection;
 
-    constructor(client: MongoClient) {
-        if (process.env.NODE_ENV === "production") {
-            this.collection = client.db("codennect").collection("users");
-        } else {
-            this.collection = client.db("development").collection("users");
-        }
+    constructor(db: Db) {
+        this.collection = db.collection("projects");
     }
 
     async GetAll(): Promise<Project[]> {
         const results = await this.collection.find().toArray();
 
-        return results.map((result) => 
-            new Project(
-                result._id.toString(),
-                result.name,
-                result.domain,
-                result.owner,
-                result.is_private,
-                result.description,
-                result.fields,
-                result.roles,
-                result.users,
-                result.required_skills
-            )
+        return results.map(
+            (result) =>
+                new Project(
+                    result._id.toString(),
+                    result.name,
+                    result.domain,
+                    result.owner,
+                    result.is_private,
+                    result.description,
+                    result.fields,
+                    result.roles,
+                    result.users,
+                    result.required_skills
+                )
         );
     }
 
@@ -50,9 +51,8 @@ export class MongoProjectRepository implements ProjectRepository {
                 result.users,
                 result.required_skills
             )
-        )
+        );
     }
-       
 
     async GetByName(name: string): Promise<Project | undefined> {
         let result = await this.collection.findOne({ name: name });
@@ -86,15 +86,15 @@ export class MongoProjectRepository implements ProjectRepository {
             fields: [],
             roles: [],
             users: project.users ?? [],
-            required_skills: project.required_skills ?? []
+            required_skills: project.required_skills ?? [],
         });
-    
+
         let returning = await this.GetById(result.insertedId.toString());
-    
+
         if (!returning) {
             throw new Error("Failed to create project");
         }
-    
+
         return returning;
     }
 
