@@ -1,19 +1,15 @@
 import { User, UserRegistration, UserRepository } from "../domain/User.js";
 import { HashPassword } from "../service/auth.js";
 
-import { Collection, MongoClient, ObjectId } from "mongodb";
+import { Collection, Db, ObjectId } from "mongodb";
 import { isProd } from "../utils.js";
 import bcrypt from "bcrypt";
 
 export class MongoUserRepository implements UserRepository {
     private collection: Collection;
 
-    constructor(client: MongoClient) {
-        if (isProd()) {
-            this.collection = client.db("codennect").collection("users");
-        } else {
-            this.collection = client.db("development").collection("users");
-        }
+    constructor(db: Db) {
+        this.collection = db.collection("users");
     }
 
     async GetById(id: string): Promise<User | undefined> {
