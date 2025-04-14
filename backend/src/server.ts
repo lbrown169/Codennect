@@ -276,13 +276,26 @@ app.post("/api/edit-me", async (req: Request, res: Response) => {
     res.status(200).json({ success: true, updatedUser: theUser });
 });
 
-
-
 // Project applications
 app.post("/api/create-application", async (req: Request, res: Response, next: NextFunction) => {
     // Creates new application to join a project
     // Passed: userId, projectId, message (all strings)
 });
+
+app.post("/api/approve-application", async (req: Request, res: Response, next: NextFunction) => {
+    // Either approve or deny a user's application
+    // Restricted for creator of project only
+    // Change application status (Unchecked to either approved or denied)
+});
+
+app.post("/api/check-applications", async (req: Request, res: Response, next: NextFunction) => {
+    // Returns list of user priorities that have applied to a specific project I have created
+    // Restricted for creator of project only
+});
+
+app.get("/api/my-applications", async (req: Request, res: Response) => {
+    // Returns list of projects that I have applied to
+})
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static(path.join(__dirname, "../build")));
