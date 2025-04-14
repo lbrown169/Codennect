@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import { renderToString } from 'react-dom/server';
 import ProjectPreview from './ProjectPreview';
 
 
@@ -14,20 +13,22 @@ function ProjectSearch(this: any)
 
     const [testPrev, editTestPrev] = useState(<ProjectPreview />)
 
-    function createNewCard(num: number)
+    //note: later, make the div or li hold id equal to project id
+    const createNewCard = (num: number) =>
     {
-        var theKey = "item" + num;
+        var theKey: string = num.toString();
         return(
-            <li key={theKey}>
-                <div className="projSearchCard">
-                    <p>Project Name</p>
-                    <p className="text-right"># of Members</p>
-                    <div className="projSearchCardDesc w-[50%]">Description here</div>
-                    <button type="button" onClick={projMoreInfo}>Test</button>
+            <li>
+                <div className="projSearchCard" id={theKey}>
+                    <p id="projName">Project Name</p>
+                    <p id="memberCount" className="text-right"># of Members</p>
+                    <div id="projDesc" className="projSearchCardDesc w-[50%]">Description here</div>
+                    <button type="button" id="moreInfoButton" className="moreInfoButton" onClick={projMoreInfo}>Test</button>
                 </div> 
             </li>
         );
     }
+    const [theResults, setTheResults] = useState<React.ReactElement[]>([]);
 
     createNewCard.onClick = () =>
     {
@@ -39,13 +40,19 @@ function ProjectSearch(this: any)
         event.preventDefault();
         var theList = document.getElementById("resultList");
         if(theList == null ) return;
-        var t = createNewCard(2);
-        theList.innerHTML += renderToString(t);
+        let newList: React.ReactElement[] = [];
+        for(let i=0; i<3; ++i)
+        {
+            let t = createNewCard(i);
+            newList = [...newList, t];
+        }
+        setTheResults(newList);
     }
 
     function projMoreInfo()
     {
         alert("WIP");
+        //later: redirect to '/projects/{id}'
     }
 
     return(
@@ -56,14 +63,7 @@ function ProjectSearch(this: any)
             </div>
             <span id="searchResults" className="searchResults">
                 <ul id="resultList">
-                    <li>
-                        <div className="projSearchCard">
-                            <p>Project Name</p>
-                            <p className="text-right"># of Members</p>
-                            <div className="projSearchCardDesc w-[50%]">Description here</div>
-                            <button type="button" onClick={projMoreInfo}>Test</button>
-                        </div> 
-                    </li>
+                    {theResults}
                 </ul>
             </span>
             {testPrev}
