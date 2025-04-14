@@ -276,13 +276,13 @@ app.post("/api/edit-me", async (req: Request, res: Response) => {
     res.status(200).json({ success: true, updatedUser: theUser });
 });
 
-// Project applications
+// Requests: Applications
 app.post("/api/create-application", async (req: Request, res: Response, next: NextFunction) => {
     // Creates new application to join a project
     // Passed: userId, projectId, message (all strings)
 });
 
-app.post("/api/approve-application", async (req: Request, res: Response, next: NextFunction) => {
+app.post("/api/accept-application", async (req: Request, res: Response, next: NextFunction) => {
     // Either approve or deny a user's application
     // Restricted for creator of project only
     // Change application status (Unchecked to either approved or denied)
@@ -295,7 +295,34 @@ app.post("/api/check-applications", async (req: Request, res: Response, next: Ne
 
 app.get("/api/my-applications", async (req: Request, res: Response) => {
     // Returns list of projects that I have applied to
-})
+});
+
+// Requests: Invites
+app.post("/api/create-invite", async (req: Request, res: Response, next: NextFunction) => {
+    // Creates new invite for someone to join a project
+    // Passed: sender userId, target userId, projectId, message (all strings)
+});
+
+app.post("/api/accept-invite", async (req: Request, res: Response, next: NextFunction) => {
+    // Either approve or deny a user's invite
+    // Restricted for viewer of invite only
+    // Change invite status (Unchecked to either approved or denied)
+});
+
+app.post("/api/check-invites", async (req: Request, res: Response, next: NextFunction) => {
+    // Returns list of user priorities that have applied to a specific project I have created
+    // Restricted for creator of project only
+});
+
+app.get("/api/my-invites", async (req: Request, res: Response) => {
+    // Returns list of projects that I have applied to
+});
+
+// Requests: Applications and invites
+app.post("/api/cancel-request", async (req: Request, res: Response, next: NextFunction) => {
+    // Only the user can do this
+    // DeleteRequest
+});
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static(path.join(__dirname, "../build")));
