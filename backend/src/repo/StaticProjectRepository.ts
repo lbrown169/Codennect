@@ -1,38 +1,11 @@
-import { randomInt } from "crypto";
-import { fieldDetails } from "../domain/Project";
-import { Invite } from "../domain/Invite";
-import { Project, ProjectCreation, ProjectRepository } from "../domain/Project";
-
-class StaticProject extends Project {
-    constructor(
-        _id: string,
-        name: string,
-        domain: string,
-        owner: string,
-        is_private: boolean,
-        description: string,
-        fields: fieldDetails[],
-        roles: { [role: string]: number },
-        users: string[],
-        required_skills: string[]
-    ) {
-        super(
-            _id.toString(),
-            name,
-            domain,
-            owner,
-            is_private,
-            description,
-            fields,
-            roles,
-            users,
-            required_skills
-        );
-    }
-}
+import {
+    Project,
+    ProjectCreation,
+    ProjectRepository,
+} from "../domain/Project.js";
 
 export class StaticProjectRepository implements ProjectRepository {
-    private _internal: StaticProject[];
+    private _internal: Project[];
 
     constructor() {
         this._internal = [
@@ -65,11 +38,15 @@ export class StaticProjectRepository implements ProjectRepository {
     }
 
     async GetById(id: string): Promise<Project | undefined> {
-        return Promise.resolve(this._internal.find((project) => project._id === id));
+        return Promise.resolve(
+            this._internal.find((project) => project._id === id)
+        );
     }
 
     async GetByName(name: string): Promise<Project | undefined> {
-        return Promise.resolve(this._internal.find((project) => project.name === name));
+        return Promise.resolve(
+            this._internal.find((project) => project.name === name)
+        );
     }
 
     async GetAll(): Promise<Project[]> {
@@ -77,8 +54,8 @@ export class StaticProjectRepository implements ProjectRepository {
     }
 
     async Create(project: ProjectCreation): Promise<Project> {
-        const newProject = new StaticProject(
-            randomInt(1000000).toString(),
+        const newProject = new Project(
+            crypto.randomUUID(),
             project.name,
             "",
             project.owner,

@@ -1,6 +1,3 @@
-import { Account } from "./Account";
-import { Invite } from "./Invite";
-
 export type fieldDetails = {
     name: string;
     value: string;
@@ -18,7 +15,6 @@ export class Project {
     roles: { [role: string]: number };
     users: string[];
     required_skills: string[];
-    
 
     constructor(
         _id: string,
@@ -66,7 +62,7 @@ export class ProjectCreation {
         fields: fieldDetails[] = [],
         roles: { [role: string]: number } = {},
         users: string[] = [],
-        required_skills: string[] = [],
+        required_skills: string[] = []
     ) {
         this.name = name;
         this.domain = domain;
@@ -85,5 +81,5 @@ export interface ProjectRepository {
     GetById(id: string): Promise<Project | undefined>;
     GetByName(name: string): Promise<Project | undefined>;
     Create(project: ProjectCreation): Promise<Project>;
-    Update(id: string, updates: Partial<Project>): Promise<boolean>
+    Update(id: string, updates: Partial<Project>): Promise<boolean>;
 }

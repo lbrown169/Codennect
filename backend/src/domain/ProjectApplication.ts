@@ -1,7 +1,3 @@
-import { stat } from "fs";
-import { Account } from "./Account";
-import { Invite } from "./Invite";
-
 export class ProjectApplication {
     _id: string;
     applicant_id: string;
@@ -15,7 +11,6 @@ export class ProjectApplication {
         project_id: string,
         message: string, // not sure how to make optional
         status: string // should be from an enum
-
     ) {
         this._id = _id;
         this.applicant_id = applicant_id;
@@ -42,7 +37,9 @@ export class ProjectApplication {
 // very much needs to be made still!
 export interface ProjectApplicationRepository {
     GetById(id: string): Promise<ProjectApplication | undefined>;
-    GetByApplicantID(applicant_id: string): Promise<ProjectApplication | undefined>;
+    GetByApplicantID(
+        applicant_id: string
+    ): Promise<ProjectApplication | undefined>;
     GetByProjectID(project_id: string): Promise<ProjectApplication | undefined>;
     // Register(user: UserRegistration): Promise<Project>;
 }

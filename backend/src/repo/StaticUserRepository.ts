@@ -75,6 +75,7 @@ export class StaticUserRepository implements UserRepository {
         return new User(
             user._id.toString(),
             user.name,
+            user.isPrivate,
             user.email,
             user.comm,
             user.skills,
@@ -127,7 +128,7 @@ export class StaticUserRepository implements UserRepository {
         const newUser = new StaticUser(
             randomInt(1000000).toString(),
             user.name,
-            false,
+            true,
             user.email,
             "",
             [],
