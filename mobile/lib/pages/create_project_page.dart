@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-//import 'package:mobile/integration/create_project_call.dart';
+import 'package:mobile/integration/create_project_call.dart';
 import 'my_projects_page.dart';
+import '../objects/field_details.dart';
+import '../objects/project.dart';
 
 class CreateProjectsPage extends StatefulWidget {
   const CreateProjectsPage({super.key});
@@ -13,11 +15,13 @@ class CreateProjectsPage extends StatefulWidget {
 class _CreateProjectsPageState extends State<CreateProjectsPage> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _memberCountController = TextEditingController();
-  final _githubLinkController = TextEditingController();
   bool _isPrivate = false;
   final _formKey = GlobalKey<FormState>();
-  int _memberCount = 1;
+  int _frontendCount = 0;
+  int _backendCount = 0;
+  int _databaseCount = 0;
+  int _mobileCount = 0;
+  List<Map<String, String>> _links = [];
 
   List<String> programSkills = [];
   List<String> webDevelopmentSkills = [];
@@ -25,9 +29,12 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
   List<String> mobileSkills = [];
   List<String> otherToolsSkills = [];
 
+  final _frontendController = TextEditingController(text: '0');
+  final _backendController = TextEditingController(text: '0');
+  final _databaseController = TextEditingController(text: '0');
+  final _mobileController = TextEditingController(text: '0');
   final TextEditingController programLangController = TextEditingController();
-  final TextEditingController webDevelopmentController =
-      TextEditingController();
+  final TextEditingController webDevelopmentController = TextEditingController();
   final TextEditingController backendController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
   final TextEditingController otherToolsController = TextEditingController();
@@ -83,6 +90,18 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
   void addItemFromBank(String item, List<String> list) {
     setState(() {
       if (!list.contains(item)) list.add(item);
+    });
+  }
+
+    void _addLink() {
+    setState(() {
+      _links.add({"label": "", "url": ""});
+    });
+  }
+
+  void _removeLink(int index) {
+    setState(() {
+      _links.removeAt(index);
     });
   }
 
@@ -178,36 +197,57 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
   }
 
   void _saveProject() async {
-    //   if (_formKey.currentState?.validate() ?? false) {
-    //     print('Project Name: ${_nameController.text}');
-    //     print('Description: ${_descriptionController.text}');
-    //     print('Member Count: $_memberCount');
-    //     print('Is Private: $_isPrivate');
+      if (_formKey.currentState?.validate() ?? false) {
+        List<String> allSkills = [
+          ...programSkills,
+          ...webDevelopmentSkills,
+          ...backendSkills,
+          ...mobileSkills,
+        ...otherToolsSkills,
+      ];
 
-    //     // final success = await CreateProjectCall.createProject(
-    //     //   name: _nameController.text,
-    //     //   description: _descriptionController.text,
-    //     //   memberLimit: _memberCount,
-    //     // );
+      Map<String, int> roles = {
+        'Frontend': _frontendCount,
+        'API': _backendCount,
+        'Database': _databaseCount,
+        'Mobile': _mobileCount,
+      };
+      
+      final success = await CreateProjectCall.createProject(
+        name: _nameController.text.trim(),
+        description: _descriptionController.text.trim(),
+        is_private: _isPrivate,
+        required_skills: allSkills,
+        fields: _links.map((link) {
+          final label = link['label'] ?? '';
+          final url = link['url'] ?? '';
+          return {
+            'name': label,
+            'value': url,
+            'private': false,
+          };
+        }).toList(),
+        roles: roles,
+      );
 
-    //     if (success) {
-    //       ScaffoldMessenger.of(context).showSnackBar(
-    //         const SnackBar(content: Text('Project saved successfully!')),
-    //       );
-    //       Navigator.pushReplacement(
-    //         context,
-    //         MaterialPageRoute(builder: (context) => const MyProjectsPage()),
-    //       );
-    //     } else {
-    //       ScaffoldMessenger.of(context).showSnackBar(
-    //         const SnackBar(content: Text('Failed to save project.')),
-    //       );
-    //     }
-    //   } else {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       const SnackBar(content: Text('Please fill in all required fields.')),
-    //     );
-    //   }
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Project saved successfully!')),
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const MyProjectsPage()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to save project.')),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please fill in all required fields.')),
+        );
+      }
   }
 
   @override
@@ -236,23 +276,13 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
           key: _formKey,
           child: ListView(
             children: [
+              const SizedBox(height: 16),
               _buildTextInput('Project Name', _nameController,
                   isRequired: true),
               const SizedBox(height: 16),
               _buildTextInput('Description', _descriptionController,
                   isRequired: true, maxLines: 3),
-              const SizedBox(height: 16),
-              _buildTextInput(
-                'Number of Members',
-                _memberCountController,
-                isNumber: true,
-                onChanged: (val) =>
-                    setState(() => _memberCount = int.tryParse(val) ?? 1),
-              ),
-              const SizedBox(height: 16),
-              _buildTextInput('Github Link', _githubLinkController,
-                  isRequired: false),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               CheckboxListTile(
                 title: Text('Make project private'),
                 value: _isPrivate,
@@ -263,10 +293,57 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
                 },
                 activeColor: const Color(0xFF124559),
               ),
-              const SizedBox(height: 16),
-              Text('Skills',
-                  style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.bold, fontSize: 20)),
+              const SizedBox(height: 15),
+              // Roles Section
+              Text('Roles', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              SizedBox(height: 5),
+
+              _buildRoleCountField('Frontend', _frontendController, (value) {
+                _frontendCount = value;
+              }),
+              _buildRoleCountField('API', _backendController, (value) {
+                _backendCount = value;
+              }),
+              _buildRoleCountField('Database', _databaseController, (value) {
+                _databaseCount = value;
+              }),
+              _buildRoleCountField('Mobile', _mobileController, (value) {
+                _mobileCount = value;
+              }),
+              SizedBox(height: 25),
+
+              // Links Section
+              Text('Project Links',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              SizedBox(height: 8),
+              for (int i = 0; i < _links.length; i++) 
+                LinkRow(
+                  link: _links[i],
+                  onLabelChanged: (newLabel) {
+                    setState(() {
+                      _links[i]['label'] = newLabel;
+                    });
+                  },
+                  onUrlChanged: (newUrl) {
+                    setState(() {
+                      _links[i]['url'] = newUrl;
+                    });
+                  },
+                  onRemove: () => _removeLink(i),
+                ),
+                SizedBox(height: 25),
+              ElevatedButton(
+                onPressed: _addLink,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF598392),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                child: Text('Add Another Link', style: GoogleFonts.poppins(color: Colors.white)),
+              ),
+
+              //Skills section
+              const SizedBox(height: 25),
+              Text('Skills', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               buildSection("Programming Languages", programSkills,
                   programLangBank, programLangController, "Enter a skill"),
               buildSection(
@@ -331,29 +408,29 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
             borderRadius: BorderRadius.circular(12),
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               color: Colors.transparent, // Border color when not focused
               width: 2.0, // Border width
             ),
             borderRadius: BorderRadius.circular(12), // Same rounded corners
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: const Color.fromARGB(
+            borderSide: const BorderSide(
+              color: Color.fromARGB(
                   255, 80, 145, 142), // Border color when focused
               width: 2.0, // Border width
             ),
             borderRadius: BorderRadius.circular(12), // Same rounded corners
           ),
           errorBorder: OutlineInputBorder(
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               color: Colors.red, // Border color when there is an error
               width: 2.0, // Border width
             ),
             borderRadius: BorderRadius.circular(12), // Same rounded corners
           ),
           focusedErrorBorder: OutlineInputBorder(
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               color:
                   Colors.red, // Border color when focused and there's an error
               width: 2.0, // Border width
@@ -369,6 +446,24 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
       ),
     );
   }
+
+  Widget _buildRoleCountField(String role, TextEditingController controller, Function(int) onChanged) {
+    return TextFormField(
+    controller: controller,
+    keyboardType: TextInputType.number,
+    decoration: InputDecoration(labelText: '$role Roles'),
+    onChanged: (value) {
+      onChanged(int.tryParse(value) ?? 0);
+    },
+    validator: (value) {
+      if (int.tryParse(value ?? '') == null || int.tryParse(value ?? '')! < 0) {
+        return '$role role count must be a valid number';
+      }
+      return null;
+    },
+  );
+}
+
 
   void openBankDialog(BuildContext context, List<String> bank,
       Function(String) onItemSelected) {
@@ -395,6 +490,46 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
           ),
         );
       },
+    );
+  }
+}
+class LinkRow extends StatelessWidget {
+  final Map<String, String> link;
+  final ValueChanged<String> onLabelChanged;
+  final ValueChanged<String> onUrlChanged;
+  final VoidCallback onRemove;
+
+  LinkRow({
+    required this.link,
+    required this.onLabelChanged,
+    required this.onUrlChanged,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            decoration: InputDecoration(labelText: 'Link Label'),
+            onChanged: onLabelChanged,
+            controller: TextEditingController(text: link['label']),
+          ),
+        ),
+        SizedBox(width: 8),
+        Expanded(
+          child: TextField(
+            decoration: InputDecoration(labelText: 'Link URL'),
+            onChanged: onUrlChanged,
+            controller: TextEditingController(text: link['url']),
+          ),
+        ),
+        IconButton(
+          icon: Icon(Icons.remove_circle),
+          onPressed: onRemove,
+        ),
+      ],
     );
   }
 }
