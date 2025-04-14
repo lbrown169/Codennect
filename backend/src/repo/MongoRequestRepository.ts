@@ -1,4 +1,4 @@
-import { Collection, MongoClient, WithId } from "mongodb";
+import { Collection, Db, WithId } from "mongodb";
 import { Request, RequestRepository, RequestType } from "../domain/Request.js";
 import { isProd } from "src/utils.js";
 
@@ -13,12 +13,8 @@ interface MongoRequest extends WithId<Document> {
 export class MongoRequestRepository implements RequestRepository {
     private collection: Collection;
 
-    constructor(client: MongoClient) {
-        if (isProd()) {
-            this.collection = client.db("codennect").collection("requests");
-        } else {
-            this.collection = client.db("development").collection("requests");
-        }
+    constructor(db: Db) {
+        this.collection = db.collection("requests");
     }
 
     async GetUserInvites(user_id: string): Promise<Request[]> {

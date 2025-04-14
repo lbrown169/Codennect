@@ -1,4 +1,4 @@
-import { Collection, MongoClient } from "mongodb";
+import { Collection, Db, MongoClient } from "mongodb";
 import {
     VerificationCodeRepository,
     VerificationReponse,
@@ -8,16 +8,8 @@ import { isProd } from "../utils.js";
 export class MongoVerificationRepository implements VerificationCodeRepository {
     private collection: Collection;
 
-    constructor(client: MongoClient) {
-        if (isProd()) {
-            this.collection = client
-                .db("codennect")
-                .collection("verifications");
-        } else {
-            this.collection = client
-                .db("development")
-                .collection("verifications");
-        }
+    constructor(db: Db) {
+        this.collection = db.collection("verifications");
     }
 
     async RegisterVerification(email: string, code: string): Promise<boolean> {
