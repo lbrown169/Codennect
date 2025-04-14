@@ -62,7 +62,7 @@ test("Tests registering a mongo user", async () => {
     let result = await driver.userRepository.Register(
         new UserRegistration(
             "Jane Smith",
-            "jane.smith@example.com",
+            crypto.randomUUID(),
             "AnotherPassword!"
         )
     );
