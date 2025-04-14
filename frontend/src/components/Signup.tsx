@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { isProd } from '../utils';
 
 const app_name = "cop4331.tech";
@@ -14,6 +14,8 @@ function buildPath(route: string) : string {
 
 function Signup()
 {
+    const [theToken, setTheToken] = useState('');
+
     const [message, setMessage] = useState(''); // Success/error msg
     const [signupFullName, setSignupFullName] = useState(''); // Name state
     const [signupEmail, setSignupEmail] = useState(''); // Email state
@@ -64,16 +66,17 @@ function Signup()
     {
         event.preventDefault();
         const checkInputResult = checkInput();
-        if (checkInputResult)
+        if (checkInputResult)   //invalid input check
         {
             setMessage(checkInputResult);
             return;
         }
 
         setIsLoading(true); // Disable form
-        const obj = { name: signupFullName, email: signupEmail, password: signupPassword };
+        const obj = { token: theToken, name: signupFullName, email: signupEmail, password: signupPassword };
         const js = JSON.stringify(obj);
 
+        //ANYTHING BELOW HERE HAS NOT BEEN MODIFIED YET
         try
         {
             const response = await fetch(buildPath('/api/register'),
@@ -99,6 +102,27 @@ function Signup()
             setIsLoading(false); // Enable form
         }
     };
+
+    const urlCheck = () =>
+    {
+        let url = window.location.href;
+        let hasToken = url.includes("token=")
+        if(!hasToken)   //No token detected
+        {
+            alert("NO TOKEN! Redirecting...");
+            window.location.href = '/register';
+            return;
+        }
+        let index = url.indexOf("token");
+        let t = url.substring(index+6); //Get token
+        setTheToken(t);
+        
+    }
+
+    useEffect(() =>
+    {
+        urlCheck();
+    }, [])
 
     return (
         <div id="signupDiv" className="accountBox">

@@ -3,6 +3,7 @@ import './App.css';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
+import VerifyEmailPage from './pages/VerifyEmailPage';
 import { getVersion, isProd } from './utils';
 function App() {
 
@@ -21,9 +22,11 @@ function App() {
                 </Route>
                 <Route path="/login" element={<LoginPage />}>
                 </Route>
-                <Route path="/register" element={<SignupPage />}>
+                <Route path="/register" element={<VerifyEmailPage />}>
                 </Route>
                 <Route path="/dashboard" element={<DashboardPage />}>
+                </Route>
+                <Route path="verify-email" element={<SignupPage />}>
                 </Route>
             </Routes>
         </Router>
