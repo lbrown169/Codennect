@@ -1,31 +1,37 @@
+export enum RequestType {
+    INVITE = "invite",
+    APPLICATION = "application",
+}
+
 export class Request {
     project_id: string;
     user_id: string;
-    roles: string[];
-    message: string;
+    roles?: string[];
+    message?: string;
     is_invite: boolean;
     is_application: boolean;
 
     constructor(
-        project: string,
+        project_id: string,
         user_id: string,
-        roles: string[],
-        message: string,
-        type: string
+        type: string,
+        roles?: string[],
+        message?: string
     ) {
-        this.project_id = project;
+        this.project_id = project_id;
         this.user_id = user_id;
-        this.roles = roles;
-        this.message = message;
 
-        if (type === "invite") {
+        if (type === RequestType.INVITE) {
             this.is_invite = true;
-        } else if (type === "application") {
+        } else if (type === RequestType.APPLICATION) {
             this.is_invite = false;
         } else {
             throw new Error("Request type not recognized");
         }
         this.is_application = !this.is_invite;
+
+        this.roles = roles;
+        this.message = message;
     }
 }
 
