@@ -88,6 +88,17 @@
   width: 45%
 }
 
+.moreInfoButton {
+  color: white;
+  background-color: #598392;
+  position: relative;
+  margin: auto;
+  left: 30%;
+  width: 20%;
+  padding: 3px;
+  border-radius: 16px;
+}
+
 .navBar {
   top: 0px;
   font-size: 22px;
