@@ -1,4 +1,4 @@
-export type fieldDetails = {
+export type FieldDetails = {
     name: string;
     value: string;
     private: boolean;
@@ -11,9 +11,9 @@ export class Project {
     owner: string;
     is_private: boolean;
     description: string;
-    fields: fieldDetails[];
+    fields: FieldDetails[];
     roles: { [role: string]: number };
-    users: string[];
+    users: { [role: string]: string[] };
     required_skills: string[];
 
     constructor(
@@ -23,9 +23,9 @@ export class Project {
         owner: string,
         is_private: boolean,
         description: string,
-        fields: fieldDetails[],
+        fields: FieldDetails[],
         roles: { [role: string]: number },
-        users: string[],
+        users: { [role: string]: string[] },
         required_skills: string[]
     ) {
         this._id = _id;
@@ -48,9 +48,9 @@ export class ProjectCreation {
     owner: string;
     is_private: boolean;
     description: string;
-    fields?: fieldDetails[];
+    fields?: FieldDetails[];
     roles?: { [role: string]: number };
-    users?: string[];
+    users?: { [role: string]: string[] };
     required_skills?: string[];
 
     constructor(
@@ -59,9 +59,9 @@ export class ProjectCreation {
         owner: string,
         is_private: boolean,
         description: string = "",
-        fields: fieldDetails[] = [],
+        fields: FieldDetails[] = [],
         roles: { [role: string]: number } = {},
-        users: string[] = [],
+        users: { [role: string]: string[] } = {},
         required_skills: string[] = []
     ) {
         this.name = name;

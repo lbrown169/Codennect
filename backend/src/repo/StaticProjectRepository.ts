@@ -9,31 +9,40 @@ export class StaticProjectRepository implements ProjectRepository {
 
     constructor() {
         this._internal = [
-            // new StaticProject(
-            //     "0",
-            //     "Project McProjectFace",
-            //     false,
-            //     "",
-            //     "The coolest project ever.",
-            //     [],
-            //     [],
-            //     [],
-            //     [],
-            //     []
-            // ),
-            // new StaticUser(
-            //     "1",
-            //     "Jane Doe",
-            //     "jane.doe@example.com",
-            //     "In Person",
-            //     ["Python", "Flask", "SQL"],
-            //     ["backend", "database"],
-            //     ["games"],
-            //     [],
-            //     [],
-            //     [],
-            //     "VeryS3cureP4ssw0!d"
-            // ),
+            new Project(
+                "1234-5678",
+                "Testing Project",
+                "",
+                "0",
+                true,
+                "A testing project for a testing world",
+                [],
+                {
+                    manager: 1,
+                    frontend: 2,
+                },
+                {
+                    manager: ["0"],
+                },
+                []
+            ),
+            new Project(
+                "1234-5678",
+                "Testing Project",
+                "",
+                "0",
+                false,
+                "A testing project for a testing world",
+                [],
+                {
+                    manager: 1,
+                    frontend: 2,
+                },
+                {
+                    manager: ["0"],
+                },
+                []
+            ),
         ];
     }
 
@@ -61,7 +70,7 @@ export class StaticProjectRepository implements ProjectRepository {
             "",
             [],
             {},
-            [],
+            {},
             []
         );
 
