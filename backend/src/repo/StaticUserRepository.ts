@@ -1,5 +1,4 @@
 import { Account } from "../domain/Account.js";
-import { Invite } from "../domain/Invite.js";
 import { HashPassword } from "../service/auth.js";
 import { User, UserRegistration, UserRepository } from "../domain/User.js";
 import { randomInt } from "crypto";
