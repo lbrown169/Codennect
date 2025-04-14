@@ -276,6 +276,14 @@ app.post("/api/edit-me", async (req: Request, res: Response) => {
     res.status(200).json({ success: true, updatedUser: theUser });
 });
 
+
+
+// Project applications
+app.post("/api/create-application", async (req: Request, res: Response, next: NextFunction) => {
+    // Creates new application to join a project
+    // Passed: userId, projectId, message (all strings)
+});
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static(path.join(__dirname, "../build")));
 
