@@ -221,12 +221,20 @@ app.get("/api/get-project", async (req: Request, res: Response) => {
         return;
     }
 
-    const { id } = req.body;
+    const { id } = req.query;
+
+    if (!id) {
+        res.status(400).json({
+            error: "Field 'id' must be specified",
+        });
+        return;
+    }
+
     const db = driver;
 
     let theProject;
     try {
-        theProject = await db.projectRepository.GetById(id);
+        theProject = await db.projectRepository.GetById(id.toString());
     } catch {
         res.status(400).json({ error: "Project ID error!" });
         return;
@@ -341,17 +349,23 @@ app.get("/api/get-all-projects", async (req: Request, res: Response) => {
         return;
     }
 
-    const { name, required_skills } = req.body;
+    const { name, required_skills } = req.query;
     const db = driver;
 
     try {
         // repo needs to implement some sort of getall
-        let projects = await db.projectRepository.GetByPartialName(name || ""); // get all first
+        let projects = await db.projectRepository.GetByPartialName(
+            name ? name.toString() : ""
+        ); // get all first
 
         // Filter by skill if provided
         if (required_skills) {
-            projects = projects.filter((project) =>
-                project.required_skills.includes(required_skills)
+            let parsed = required_skills.toString().split(",");
+            projects = projects.filter(
+                (project) =>
+                    project.required_skills.filter((skill) =>
+                        parsed.includes(skill)
+                    ).length > 0
             );
         }
 
@@ -424,10 +438,17 @@ app.get("/api/get-user-info", async (req, res) => {
         return;
     }
 
-    const { id } = req.body;
+    const { id } = req.query;
     const db = driver;
 
-    const theUser = await db.userRepository.GetById(id);
+    if (!id) {
+        res.status(400).json({
+            error: "Field 'id' must be specified",
+        });
+        return;
+    }
+
+    const theUser = await db.userRepository.GetById(id.toString());
 
     // more specific error based on email OR password
     if (theUser == null) {
