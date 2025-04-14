@@ -502,8 +502,6 @@ app.post("/api/edit-me", async (req: Request, res: Response) => {
 });
 
 /*
-    Database notes:
-
     RequestRepository:
         async GetUserInvites(user_id: string)               invites I've sent
         async GetUserApplications(user_id: string)          applications I've sent
@@ -524,8 +522,7 @@ app.post("/api/create-request", async (req: Request, res: Response, next: NextFu
         });
         return;
     }
-    let { user_id, project_id, is_invite, roles, message } =
-        req.body;
+    let { user_id, project_id, is_invite, roles, message } = req.body;
     const db = driver;
 
     // Check for the other required parameters
@@ -545,22 +542,118 @@ app.post("/api/create-request", async (req: Request, res: Response, next: NextFu
     const newRequest = await db.requestRepository.CreateRequest(req.body);
     res.status(200).json({
         success: "Request sent!",
-        request: newRequest,
+        request: newRequest
     });
 });
 
-app.post("/api/accept-request", async (req: Request, res: Response, next: NextFunction) => {
-    // Either approve or deny a user's request
-    // Restricted for creator of project OR receiver of the invite ONLY
+app.post("/api/approve-request", async (req: Request, res: Response, next: NextFunction) => {
+    // Approve a user's request
+    // Restricted to the request owner only
     if (!res.locals.user) {
         res.status(401).json({
             error: "Unauthorized. You must be logged in to perform this action.",
         });
         return;
     }
-    // If accept, update project access
-    // Delete request upon finish
-    // USER CAN ALSO DELETE THEIR OWN SENT REQUEST BUT CAN'T APPROVE IT THEMSELVES
+    const { user_id, project_id, is_invite } = req.body;
+    const db = driver;
+
+    // Validate parameters
+    if ([user_id, project_id, is_invite].includes(undefined)) {
+        res.status(400).json({
+            error: "Insufficient parameters to search for request.",
+        });
+        return;
+    }
+
+    // Make sure user exists
+    const theUser = await db.userRepository.GetById(user_id);
+    if(theUser == null) {
+        res.status(400).json({
+            error: "User not found",
+        });
+        return;
+    }
+
+    // Delete request
+    const wasDeleted = await db.requestRepository.DeleteRequest(req.body);
+    if(!wasDeleted) {
+        res.status(400).json({
+            error: "Request not found.",
+        });
+        return;
+    }
+
+    // Insert project_id into user's projects and update it into user repository
+    const success = await db.userRepository.Update(
+        user_id,
+        project_id
+    );
+    if (!success) {
+        res.status(400).json({ error: "Project not found" });
+        return;
+    }
+
+    // Notify user via email
+    const email = res.locals.user?.email!;
+    const projectName = (await db.projectRepository.GetById(project_id))?.name;
+
+    if (transporter) {
+        let message = `
+        Hey there ${email},<br /><br />
+
+        Congratulations! You are now on the team for the project "${projectName}"!
+        `;
+        const info = await transporter.messages.create(
+            process.env.MAILGUN_DOMAIN!,
+            {
+                from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
+                to: [email],
+                subject: "Welcome to your new team!",
+                html: message,
+            }
+        );
+        console.log("Approval email sent.", info);
+    } else {
+        console.info(
+            "Mailgun credentials were not specified."
+        );
+    }
+
+    res.status(200).json({ success: "Approve request process complete!" });
+
+});
+
+app.post("/api/deny-request", async (req: Request, res: Response, next: NextFunction) => {
+    // Approve or deny a user's request
+    // Restricted to the request owner only
+    if (!res.locals.user) {
+        res.status(401).json({
+            error: "Unauthorized. You must be logged in to perform this action.",
+        });
+        return;
+    }
+    const { user_id, project_id, is_invite } = req.body;
+    const db = driver;
+
+    // Validate parameters
+    if ([user_id, project_id, is_invite].includes(undefined)) {
+        res.status(400).json({
+            error: "Insufficient parameters to search for request.",
+        });
+        return;
+    }
+
+    // Delete request
+    const wasDeleted = await db.requestRepository.DeleteRequest(req.body);
+    if(!wasDeleted) {
+        res.status(400).json({
+            error: "Request not found.",
+        });
+        return;
+    }
+
+    res.status(200).json({ success: "Deny request process complete!" });
 });
 
 // Requests: Applications
