@@ -6,20 +6,26 @@ import { VerificationCodeRepository } from "src/domain/Verification.js";
 import { StaticVerificationRepository } from "./StaticVerificationRepository.js";
 import { MongoVerificationRepository } from "./MongoVerificationRepository.js";
 import { isProd } from "../utils.js";
+import { RequestRepository } from "src/domain/Request.js";
+import { StaticRequestRepository } from "./StaticRequestRepository.js";
+import { MongoRequestRepository } from "./MongoRequestRepository.js";
 
 export interface Driver {
     userRepository: UserRepository;
     verificationRepository: VerificationCodeRepository;
+    requestRepository: RequestRepository;
     destroy(): Promise<void>;
 }
 
 class StaticDriver implements Driver {
     userRepository: UserRepository;
     verificationRepository: VerificationCodeRepository;
+    requestRepository: RequestRepository;
 
     constructor() {
         this.userRepository = new StaticUserRepository();
         this.verificationRepository = new StaticVerificationRepository();
+        this.requestRepository = new StaticRequestRepository();
     }
 
     async destroy() {}
@@ -29,6 +35,7 @@ class MongoDriver implements Driver {
     private client: MongoClient;
     userRepository: UserRepository;
     verificationRepository: VerificationCodeRepository;
+    requestRepository: RequestRepository;
 
     constructor() {
         if (!process.env.MONGODB_URI) {
@@ -42,6 +49,7 @@ class MongoDriver implements Driver {
         this.verificationRepository = new MongoVerificationRepository(
             this.client
         );
+        this.requestRepository = new MongoRequestRepository(this.client);
     }
 
     async destroy() {
