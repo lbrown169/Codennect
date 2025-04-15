@@ -62,67 +62,66 @@ function Signup()
         return '';
     };
 
-    const doSignup = async (event: React.FormEvent) => // Handle signup
-    {
+    const doSignup = async (event: React.FormEvent) => {
         event.preventDefault();
+    
         const checkInputResult = checkInput();
-        if (checkInputResult)   //invalid input check
-        {
+        if (checkInputResult) {
             setMessage(checkInputResult);
             return;
         }
-
-        setIsLoading(true); // Disable form
+    
+        setIsLoading(true);
+    
+        // Construct the request body using values from form state
         const obj = { token: theToken, name: signupFullName, email: signupEmail, password: signupPassword };
         const js = JSON.stringify(obj);
-
-        //ANYTHING BELOW HERE HAS NOT BEEN MODIFIED YET
-        try
-        {
-            const response = await fetch(buildPath('/api/register'),
-            { 
+    
+        try {
+            // Sends user signup data to the backend
+            // NOTE: Endpoint changed to '/api/verify-email' instead of '/api/register'
+            const response = await fetch(buildPath('/api/verify-email'), {
                 method: 'POST',
                 body: js,
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' },
             });
-            const res = await response.json(); // Parse response
+            const res = await response.json();
+    
 
-            if (res.error || res.id < 0)
-            {
-                setMessage(res.error || 'Signup failed');
+            if (res.error) {
+                // Show error returned from server
+                setMessage(res.error);
+            } else {
+                // Success case: Notify user and redirect to login
+                setMessage('Account created successfully! Redirecting to login...');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
             }
-        }
-        catch (error: any)
-        {
-            setMessage('Error occurred');
+        } catch (error: any) {
+            setMessage('Failed to create account. Please try again.');
             console.error('Signup error:', error);
-        }
-        finally
-        {
-            setIsLoading(false); // Enable form
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    const urlCheck = () =>
-    {
-        let url = window.location.href;
-        let hasToken = url.includes("token=")
-        if(!hasToken)   //No token detected
-        {
-            alert("NO TOKEN! Redirecting...");
-            window.location.href = '/register';
+    useEffect(() => {
+        // Grabs token from URL params (?token=abc123)
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+    
+        if (!token) {
+            // If no token is found, redirect user back to registration
+            setMessage('No verification token provided. Redirecting...');
+            setTimeout(() => {
+                window.location.href = '/register';
+            }, 2000);
             return;
         }
-        let index = url.indexOf("token");
-        let t = url.substring(index+6); //Get token
-        setTheToken(t);
-        
-    }
-
-    useEffect(() =>
-    {
-        urlCheck();
-    }, [])
+    
+        setTheToken(token);
+    }, []);
 
     return (
         <div id="signupDiv" className="accountBox">
