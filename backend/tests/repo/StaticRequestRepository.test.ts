@@ -12,10 +12,22 @@ beforeEach(() => {
 
 afterEach(async () => {
     await driver.requestRepository.DeleteRequest(
-        new Request(project_id, user_id, RequestType.INVITE)
+        new Request(
+            project_id,
+            user_id,
+            RequestType.INVITE,
+            ["frontend"],
+            "message"
+        )
     );
     await driver.requestRepository.DeleteRequest(
-        new Request(project_id, user_id, RequestType.APPLICATION)
+        new Request(
+            project_id,
+            user_id,
+            RequestType.APPLICATION,
+            ["frontend"],
+            "message"
+        )
     );
     await driver.destroy();
 });

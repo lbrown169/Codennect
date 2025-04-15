@@ -17,6 +17,30 @@ export class MongoRequestRepository implements RequestRepository {
         this.collection = db.collection("requests");
     }
 
+    async GetRequest(
+        user_id: string,
+        project_id: string,
+        is_invite: boolean
+    ): Promise<Request | null> {
+        let result = await this.collection.findOne<MongoRequest>({
+            user_id: user_id,
+            project_id: project_id,
+            type: is_invite ? RequestType.INVITE : RequestType.APPLICATION,
+        });
+
+        if (result) {
+            return new Request(
+                result.project_id,
+                result.user_id,
+                result.type,
+                result.roles,
+                result.message
+            );
+        }
+
+        return null;
+    }
+
     async GetUserInvites(user_id: string): Promise<Request[]> {
         let result = await (
             await this.collection

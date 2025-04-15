@@ -6,8 +6,8 @@ export enum RequestType {
 export class Request {
     project_id: string;
     user_id: string;
-    roles?: string[];
-    message?: string;
+    roles: string[];
+    message: string;
     is_invite: boolean;
     is_application: boolean;
 
@@ -15,8 +15,8 @@ export class Request {
         project_id: string,
         user_id: string,
         type: string,
-        roles?: string[],
-        message?: string
+        roles: string[],
+        message: string
     ) {
         this.project_id = project_id;
         this.user_id = user_id;
@@ -41,6 +41,11 @@ export interface RequestRepository {
     GetProjectInvites(project_id: string): Promise<Request[]>;
     GetProjectApplications(project_id: string): Promise<Request[]>;
 
+    GetRequest(
+        user_id: string,
+        project_id: string,
+        is_invite: boolean
+    ): Promise<Request | null>;
     CreateRequest(req: Request): Promise<boolean>;
     DeleteRequest(req: Request): Promise<boolean>;
 }

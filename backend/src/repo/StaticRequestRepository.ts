@@ -1,7 +1,30 @@
-import { Request, RequestRepository } from "../domain/Request.js";
+import { Request, RequestRepository, RequestType } from "../domain/Request.js";
 
 export class StaticRequestRepository implements RequestRepository {
-    private _internal: Request[] = [];
+    private _internal: Request[] = [
+        new Request(
+            "1234-5678",
+            "1",
+            RequestType.APPLICATION,
+            ["frontend"],
+            "Would love to join frontend!"
+        ),
+    ];
+
+    async GetRequest(
+        user_id: string,
+        project_id: string,
+        is_invite: boolean
+    ): Promise<Request | null> {
+        return (
+            this._internal.find(
+                (req: Request) =>
+                    req.user_id === user_id &&
+                    req.project_id == project_id &&
+                    req.is_invite == is_invite
+            ) || null
+        );
+    }
 
     async GetUserInvites(user_id: string): Promise<Request[]> {
         return this._internal.filter(
