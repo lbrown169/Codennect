@@ -41,6 +41,11 @@ export interface RequestRepository {
     GetProjectInvites(project_id: string): Promise<Request[]>;
     GetProjectApplications(project_id: string): Promise<Request[]>;
 
+    GetRequest(
+        user_id: string,
+        project_id: string,
+        is_invite: boolean
+    ): Promise<Request | null>;
     CreateRequest(req: Request): Promise<boolean>;
     DeleteRequest(req: Request): Promise<boolean>;
 }

@@ -3,6 +3,21 @@ import { Request, RequestRepository } from "../domain/Request.js";
 export class StaticRequestRepository implements RequestRepository {
     private _internal: Request[] = [];
 
+    async GetRequest(
+        user_id: string,
+        project_id: string,
+        is_invite: boolean
+    ): Promise<Request | null> {
+        return (
+            this._internal.find(
+                (req: Request) =>
+                    req.user_id === user_id &&
+                    req.project_id == project_id &&
+                    req.is_invite == is_invite
+            ) || null
+        );
+    }
+
     async GetUserInvites(user_id: string): Promise<Request[]> {
         return this._internal.filter(
             (req: Request) => req.user_id === user_id && req.is_invite
