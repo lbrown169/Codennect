@@ -6,8 +6,8 @@ export enum RequestType {
 export class Request {
     project_id: string;
     user_id: string;
-    roles?: string[];
-    message?: string;
+    roles: string[];
+    message: string;
     is_invite: boolean;
     is_application: boolean;
 
@@ -15,8 +15,8 @@ export class Request {
         project_id: string,
         user_id: string,
         type: string,
-        roles?: string[],
-        message?: string
+        roles: string[],
+        message: string
     ) {
         this.project_id = project_id;
         this.user_id = user_id;

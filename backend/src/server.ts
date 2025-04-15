@@ -15,6 +15,7 @@ import { loadTransporter } from "./service/auth.js";
 import AuthRouter from "./routers/AuthRouter.js";
 import UserRouter from "./routers/UserRouter.js";
 import ProjectRouter from "./routers/ProjectRouter.js";
+import RequestRouter from "./routers/RequestRouter.js";
 
 config();
 
@@ -55,8 +56,7 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
 app.use(AuthRouter);
 app.use(UserRouter);
 app.use(ProjectRouter);
-
-// Project edit
+app.use(RequestRouter);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static(path.join(__dirname, "../build")));

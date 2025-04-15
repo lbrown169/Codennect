@@ -1,4 +1,4 @@
-import { Request as ProjectRequest, RequestType } from "src/domain/Request.js";
+import { Request as ProjectRequest, RequestType } from "../domain/Request.js";
 import express, { Request } from "express";
 import { Driver } from "../repo/Driver.js";
 import { Response } from "../utils.js";
@@ -40,7 +40,7 @@ RequestRouter.get("/api/requests", async (req: Request, res: Response) => {
         res.locals.user._id
     );
 
-    for (let pid in res.locals.user.projects) {
+    for (let pid of res.locals.user.projects) {
         const project = await db.projectRepository.GetById(pid);
         if (!project) continue;
         if (project.owner === res.locals.user._id) {
@@ -182,14 +182,14 @@ RequestRouter.post(
         }
 
         // Remove them from any roles they are currently in
-        for (let role in project.users) {
+        for (let role of Object.keys(project.users)) {
             project.users[role] = project.users[role].filter(
                 (user) => user !== user_id
             );
         }
 
         // Place them into their assigned roles
-        for (let role in request.roles) {
+        for (let role of request.roles) {
             if (!project.users[role]) {
                 project.users[role] = [];
             }
@@ -292,3 +292,5 @@ RequestRouter.post(
         res.status(200).json({ success: "Request denied." });
     }
 );
+
+export default RequestRouter;
