@@ -1,18 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../objects/field_details.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class CreateProjectCall {
+class EditProjectCall {
   static const String baseUrl = 'https://cop4331.tech/api';
 
-  static Future<bool> createProject({
-    required String name,
-    required String description,
-    required bool is_private,
-    required List<String> required_skills,
-    required List<FieldDetails> fields,
-    required Map<String, int> roles,
+  static Future<bool> editProject({
+    required String userId,
+    required Map<String, dynamic> changes,
   }) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -22,21 +17,17 @@ class CreateProjectCall {
         print('No cookie found in SharedPreferences');
         return false;
       }
-  print("Success");
+
       final response = await http.post(
-        Uri.parse('$baseUrl/create-project'),
+        Uri.parse('$baseUrl/edit-project'),
         headers: {'Content-Type': 'application/json', 
           'Cookie': Cookie},
         body: jsonEncode({
-          'name': name,
-          'description': description,
-          'is_private': is_private,
-          'required_skills': required_skills,
-          'fields': fields.map((f) => f.toJson()).toList(),
-          'roles': roles,
+          'name': userId,
+          'changes': changes,
         }),
       );
-print("Response");
+
       if (response.statusCode == 200) {
         return true;
       } else {

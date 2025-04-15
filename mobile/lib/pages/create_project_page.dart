@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/integration/create_project_call.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'my_projects_page.dart';
 import '../objects/field_details.dart';
 import '../objects/project.dart';
@@ -197,6 +198,7 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
   }
 
   void _saveProject() async {
+
       if (_formKey.currentState?.validate() ?? false) {
         List<String> allSkills = [
           ...programSkills,
@@ -212,21 +214,23 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
         'Database': _databaseCount,
         'Mobile': _mobileCount,
       };
-      
+
+      List<FieldDetails> fields = _links.map((link) {
+        final label = link['label'] ?? '';
+        final url = link['url'] ?? '';
+        return FieldDetails(
+          name: label,
+          value: url,
+          isPrivate: false,
+        );
+      }).toList();
+
       final success = await CreateProjectCall.createProject(
         name: _nameController.text.trim(),
         description: _descriptionController.text.trim(),
         is_private: _isPrivate,
         required_skills: allSkills,
-        fields: _links.map((link) {
-          final label = link['label'] ?? '';
-          final url = link['url'] ?? '';
-          return {
-            'name': label,
-            'value': url,
-            'private': false,
-          };
-        }).toList(),
+        fields: fields,
         roles: roles,
       );
 
