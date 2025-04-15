@@ -5,8 +5,11 @@ import jwt from "jsonwebtoken";
 import { UserRegistration } from "../domain/User.js";
 import { buildUrl, Response } from "../utils.js";
 import { Driver } from "../repo/Driver.js";
+import { config } from "dotenv";
 
 const AuthRouter = express.Router();
+
+config();
 
 const JWT_SECRET = process.env.JWT_SECRET_KEY || "your-secret-key"; // Store secret in env variable
 const JWT_EXPIRES_IN = "1h";
