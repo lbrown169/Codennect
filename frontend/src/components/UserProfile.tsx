@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import InfoBox from "./InfoBox";
 import EditInfoBox from "./EditInfoBox";
 function UserProfile()

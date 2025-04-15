@@ -141,7 +141,7 @@ function EditInfoBox()
                     </div>
                     <textarea
                         className = "infoInput"
-                        rows = "1"
+                        
                         id = "newName"
                         placeholder = "Full Name"
                         value = {fullName}
