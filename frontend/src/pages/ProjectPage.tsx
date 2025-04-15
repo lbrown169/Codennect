@@ -1,6 +1,6 @@
 import HeaderBar from '../components/HeaderBar.tsx';
 import {useParams} from "react-router-dom";
-import { Project } from '../components/Project.tsx';
+import { ProjectComp } from '../components/Project.tsx';
 
 const ProjectPage = () =>
 {
@@ -8,9 +8,9 @@ const ProjectPage = () =>
     if (!project_id) return window.location.href = "/dashboard"
 
     return(
-        <div className='flex flex-col'>
+        <div className='flex flex-col w-full h-full'>
         <HeaderBar />
-        <Project pid={project_id} />
+        <ProjectComp pid={project_id} />
         </div>
     );
 };
