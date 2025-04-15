@@ -12,7 +12,26 @@ function buildPath(route: string) : string {
     }
 }
 
-function ProjectSearch(this: any)
+type FieldDetails = {
+    name: string;
+    value: string;
+    private: boolean;
+};
+
+interface Project {
+    _id: string
+    name: string
+    domain: string
+    owner: string
+    is_private: boolean
+    description: string
+    fields: FieldDetails[]
+    roles: { [role: string]: number }
+    users: { [role: string]: string[] }
+    required_skills: string[]
+}
+
+function ProjectSearch()
 {
     var _ud = localStorage.getItem('user_data');
     if(_ud == null) //redirect if user not found
@@ -21,17 +40,18 @@ function ProjectSearch(this: any)
         return;
     }
 
-    //note: later, make the div or li hold id equal to project id
-    const createNewCard = (num: number) =>
+    const createNewCard = (project: Project) =>
     {
-        var theKey: string = num.toString();
+        var theKey: string = project._id;
+        //NOTE: need code that gets member count
+
         return(
             <li key={theKey}>
                 <div className="projSearchCard" id={theKey}>
-                    <p id="projName">Project Name</p>
-                    <p id="memberCount" className="text-right"># of Members</p>
-                    <div id="projDesc" className="projSearchCardDesc w-[50%]">Description here</div>
-                    <button type="button" id="moreInfoButton" className="moreInfoButton" onClick={projMoreInfo}>Test</button>
+                    <p id="projName">{project.name}</p>
+                    <p id="memberCount" className="text-right">2 Members</p>
+                    <div id="projDesc" className="projSearchCardDesc w-[50%]">{project.description}</div>
+                    <button type="button" id="moreInfoButton" className="moreInfoButton" onClick={projMoreInfo}>More Info</button>
                 </div> 
             </li>
         );
@@ -42,11 +62,6 @@ function ProjectSearch(this: any)
     const handleSetSearchInfo = (event: React.ChangeEvent<HTMLInputElement>) =>
     {
         setSearchInfo(event.target.value);
-    }
-
-    createNewCard.onClick = () =>
-    {
-        projMoreInfo;
     }
 
     const doSearch = async (event: React.FormEvent) =>
@@ -81,12 +96,10 @@ function ProjectSearch(this: any)
                 return;
             }
 
-            
-            alert(res.projects);
             let newList: React.ReactElement[] = [];
-            for(let i=0; i<3; ++i)
+            for(let i=0; i<res.length; ++i)
             {
-                let t = createNewCard(i);
+                let t = createNewCard(res[i]);
                 newList = [...newList, t];
             }
             setTheResults(newList);
@@ -104,6 +117,7 @@ function ProjectSearch(this: any)
     {
         alert("WIP");
         //later: redirect to '/projects/{id}'
+        //return '';
     }
 
     return(
