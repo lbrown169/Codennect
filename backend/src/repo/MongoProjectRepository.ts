@@ -82,8 +82,8 @@ export class MongoProjectRepository implements ProjectRepository {
             owner: project.owner,
             isPrivate: project.is_private,
             description: project.description ?? "",
-            fields: [],
-            roles: [],
+            fields: project.fields ?? [],
+            roles: project.roles ?? [],
             users: project.users ?? [],
             required_skills: project.required_skills ?? [],
         });
