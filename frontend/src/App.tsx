@@ -7,6 +7,7 @@ import { getVersion, isProd } from './utils';
 import UserProfilePage from './pages/UserProfilePage';
 import BrowseProjectsPage from './pages/BrowseProjectsPage';
 
+import ProjectPage from './pages/ProjectPage';
 function App() {
 
     if (isProd()) {
@@ -31,6 +32,8 @@ function App() {
                 <Route path="/userprofile" element={<UserProfilePage />}>
                 </Route>
                 <Route path="/browse" element={<BrowseProjectsPage />}>
+                </Route>
+                <Route path="/projects/:project_id" element={<ProjectPage />}>
                 </Route>
             </Routes>
         </Router>

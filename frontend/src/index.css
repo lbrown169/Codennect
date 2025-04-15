@@ -29,7 +29,7 @@ h1 {
   line-height: 1.1;
 }
 
-button {
+#logoutButton {
   border-radius: 8px;
   border: 1px solid transparent;
   font-size: 1em;
@@ -39,12 +39,30 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
+#logoutButton:hover {
   border-color: #646cff;
 }
-button:focus,
-button:focus-visible {
+#logoutButton:focus,
+#logoutButton:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+progress {
+  &::-webkit-progress-bar {
+    background: #AEC3B0;
+    border-radius: 100px;
+  }
+
+  &::-webkit-progress-value {
+    background-color: #5c8593;
+    border-radius: 100px;
+  }
+
+  /* Firefox */
+  &::-moz-progress-bar {
+    background-color: #5c8593;
+    border-radius: 100px;
+  }
 }
 
 @media (prefers-color-scheme: light) {
