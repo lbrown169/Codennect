@@ -2,8 +2,57 @@ import { Request as ProjectRequest, RequestType } from "src/domain/Request.js";
 import express, { Request } from "express";
 import { Driver } from "../repo/Driver.js";
 import { Response } from "../utils.js";
+import { IMailgunClient } from "node_modules/mailgun.js/Types/Interfaces/index.js";
 
 const RequestRouter = express.Router();
+
+interface RequestsResponse {
+    invites: {
+        me: ProjectRequest[];
+        [project_id: string]: ProjectRequest[];
+    };
+    applications: {
+        me: ProjectRequest[];
+        [project_id: string]: ProjectRequest[];
+    };
+}
+
+RequestRouter.get("/api/requests", async (req: Request, res: Response) => {
+    if (!res.locals.user) {
+        res.status(401).json({
+            error: "Unauthorized. You must be logged in to perform this action.",
+        });
+        return;
+    }
+
+    const db: Driver = req.app.locals.driver;
+
+    let response: RequestsResponse = {
+        invites: { me: [] },
+        applications: { me: [] },
+    };
+
+    response.invites.me = await db.requestRepository.GetUserInvites(
+        res.locals.user._id
+    );
+
+    response.applications.me = await db.requestRepository.GetUserApplications(
+        res.locals.user._id
+    );
+
+    for (let pid in res.locals.user.projects) {
+        const project = await db.projectRepository.GetById(pid);
+        if (!project) continue;
+        if (project.owner === res.locals.user._id) {
+            response.invites[project._id] =
+                await db.requestRepository.GetProjectInvites(project._id);
+            response.applications[project._id] =
+                await db.requestRepository.GetProjectApplications(project._id);
+        }
+    }
+
+    res.status(200).json(response);
+});
 
 RequestRouter.post("/api/requests", async (req: Request, res: Response) => {
     // Creates new application to join a project
@@ -156,5 +205,90 @@ RequestRouter.post(
         }
 
         await db.projectRepository.Update(project_id, { users: project.users });
+        await db.requestRepository.DeleteRequest(request);
+
+        if (req.app.locals.transporter) {
+            let t: IMailgunClient = req.app.locals.transporter;
+            let message = `
+                Hey there ${user.name},<br /><br />
+                Congratulations! You are now on the team for the ${project.name} project!
+            `;
+            const info = await t.messages.create(process.env.MAILGUN_DOMAIN!, {
+                from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
+                to: [user.email],
+                subject: `${project.name} Request Update`,
+                html: message,
+            });
+            console.log("Approval email sent.", info);
+        }
+        res.status(200).json({ success: "Request approved." });
+    }
+);
+
+RequestRouter.post(
+    "/api/requests/deny",
+    async (req: Request, res: Response) => {
+        if (!res.locals.user) {
+            res.status(401).json({
+                error: "Unauthorized. You must be logged in to perform this action.",
+            });
+            return;
+        }
+        const { user_id, project_id, is_invite } = req.body;
+        const db: Driver = req.app.locals.driver;
+        const request = await db.requestRepository.GetRequest(
+            user_id,
+            project_id,
+            is_invite
+        );
+
+        if (!request) {
+            res.status(400).json({
+                error: "Bad request. Request not found.",
+            });
+            return;
+        }
+
+        const user = await db.userRepository.GetById(user_id);
+        const project = await db.projectRepository.GetById(project_id);
+
+        if (!user) {
+            res.status(400).json({
+                error: "Bad request. Provided user not found.",
+            });
+            return;
+        }
+
+        if (!project) {
+            res.status(400).json({
+                error: "Bad request. Provided project not found.",
+            });
+            return;
+        }
+
+        if (![user_id, project.owner].includes(res.locals.user._id)) {
+            res.status(403).json({
+                error: "Forbidden. Only the user or project owner can deny a request.",
+            });
+            return;
+        }
+
+        await db.requestRepository.DeleteRequest(request);
+
+        if (req.app.locals.transporter) {
+            let t: IMailgunClient = req.app.locals.transporter;
+            let message = `
+                Hey there ${user.name},<br /><br />
+                We regret to inform you that your request to join ${project.name} has been denied. If you have any questions, please direct them to the project owner.
+            `;
+            const info = await t.messages.create(process.env.MAILGUN_DOMAIN!, {
+                from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
+                to: [user.email],
+                subject: `${project.name} Request Update`,
+                html: message,
+            });
+            console.log("Denial email sent.", info);
+        }
+        res.status(200).json({ success: "Request denied." });
     }
 );
