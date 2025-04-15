@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 function InfoBox()
 {
     var _ud = localStorage.getItem('user_data');
