@@ -4,6 +4,9 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
 import UserProfilePage from './pages/UserProfilePage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import OtherUserProfilePage from './pages/OtherUserProfilePage';
 import { getVersion, isProd } from './utils';
 
 function App() {
@@ -28,6 +31,12 @@ function App() {
                 <Route path="/dashboard" element={<DashboardPage />}>
                 </Route>
                 <Route path="/userprofile" element={<UserProfilePage />}>
+                </Route>
+                <Route path="/forgot-password" element={<ForgotPasswordPage />}>
+                </Route>
+                <Route path="/reset-password" element={<ResetPasswordPage />}>
+                </Route>
+                <Route path="/user/:id" element={<OtherUserProfilePage />}>
                 </Route>
             </Routes>
         </Router>
