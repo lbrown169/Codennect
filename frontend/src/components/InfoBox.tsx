@@ -39,9 +39,9 @@ function InfoBox({ name, comm, skills, roles, interests }: InfoBoxProps) {
 
         try {
             const response = await fetch(buildPath('/api/get-user-info'), {
-                method: 'POST',
-                body: js,
+                method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
             });
             const res = await response.json();
 
