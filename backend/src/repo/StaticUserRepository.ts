@@ -160,4 +160,18 @@ export class StaticUserRepository implements UserRepository {
 
         return true;
     }
+
+    async UpdatePassword(id: string, newPassword: string): Promise<boolean> {
+        // find user, return false if not found
+        const user = this._internal.find((user) => user._id === id);
+
+        if (!user) return false;
+
+        const newHashedPassword = await HashPassword(newPassword);
+
+        // update the found user's password
+        (user as any).password = newHashedPassword;
+
+        return true;
+    }
 }

@@ -144,4 +144,108 @@ AuthRouter.post("/api/logout", async (req: Request, res: Response) => {
     res.status(204).json();
 });
 
+// password reset functionalitites
+AuthRouter.post(
+    "/api/send-password-reset",
+    async (req: Request, res: Response) => {
+        const { email } = req.body;
+        const db: Driver = req.app.locals.driver;
+
+        // Check for email, then see if one ties to a user
+        if (!email) {
+            res.status(400).json({ error: "Email is required" });
+            return;
+        }
+
+        // make sure there's already a registered user with this login
+        const existingUser = await db.userRepository.GetByEmail(email);
+        if (existingUser == null) {
+            // no user found
+            res.json({ message: "No user with this email." });
+            return;
+        }
+
+        // Enter user into verification purgatory to store code
+        await db.verificationRepository.DeleteVerification(email); // Delete if applicable
+        // make a random 6 digit code
+        const verificationCode = Math.floor(100000 + Math.random() * 900000);
+        const stringCode = verificationCode.toString(); // turn to string
+        const userBeingReset =
+            await db.verificationRepository.RegisterVerification(
+                email,
+                stringCode
+            );
+
+        // Email
+        if (req.app.locals.transporter) {
+            let message = `
+        Hey there ${email},<br /><br />
+
+        Here is your password verification code: ${verificationCode}.
+        `;
+            const info = await req.app.locals.transporter.messages.create(
+                process.env.MAILGUN_DOMAIN!,
+                {
+                    from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
+                    to: [email],
+                    subject: "Verify your email",
+                    html: message,
+                }
+            );
+            console.log("Password reset email sent.", info);
+        } else {
+            console.info(
+                "Mailgun credentials were not specified, verification code:"
+            );
+            console.info(verificationCode);
+        }
+        res.json({ message: "Password reset email sent." });
+    }
+);
+
+// actually resets the password itself
+AuthRouter.post("/api/change-password", async (req: Request, res: Response) => {
+    // This is why we need the code in the database
+    const { verificationCode, email, newPassword } = req.body;
+    const db: Driver = req.app.locals.driver;
+
+    // Check that the new password is a valid entry
+    if (!newPassword) {
+        res.status(400).send("Invalid name or password.");
+        return;
+    }
+
+    // Validate token
+    const verifyAttempt = await db.verificationRepository.ValidateVerification(
+        email,
+        verificationCode
+    );
+    if (!verifyAttempt) {
+        res.status(400).send("Invalid or expired password verification code.");
+        return;
+    }
+
+    // change the password
+    const user = await db.userRepository.GetByEmail(email);
+    if (user == null) {
+        res.status(400).send("User with that email not found.");
+        return;
+    }
+
+    // high chance of crashing here ngl
+    const updateSuccess = await db.userRepository.UpdatePassword(
+        user._id,
+        newPassword
+    );
+    if (!updateSuccess) {
+        res.status(400).send("Failed to update password.");
+        return;
+    }
+
+    await db.verificationRepository.DeleteVerification(email);
+
+    // return a successful password change message
+    res.status(201).json({ log: "Password changed successfully!" });
+});
+
 export default AuthRouter;

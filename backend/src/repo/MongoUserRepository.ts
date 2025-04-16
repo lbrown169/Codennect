@@ -144,4 +144,18 @@ export class MongoUserRepository implements UserRepository {
         // true if updated
         return result.modifiedCount > 0;
     }
+
+    async UpdatePassword(id: string, newPassword: string): Promise<boolean> {
+        const objectId = new ObjectId(id);
+
+        const newHashedPassword = await HashPassword(newPassword)
+
+        const result = await this.collection.updateOne(
+          { _id: objectId }, // find by id
+          { $set: { password: newHashedPassword } } // do the update
+        );
+
+        // true if updated
+        return result.modifiedCount > 0;
+      }
 }
