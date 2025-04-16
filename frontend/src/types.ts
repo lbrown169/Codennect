@@ -25,3 +25,12 @@ export interface User {
 export interface ProjectUsers {
     [role: string]: User[];
 }
+
+export interface Request {
+    project_id: string;
+    user_id: string;
+    roles: string[];
+    message: string;
+    is_invite: boolean;
+    is_application: boolean;
+}

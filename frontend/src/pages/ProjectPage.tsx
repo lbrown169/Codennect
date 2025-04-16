@@ -8,7 +8,7 @@ const ProjectPage = () =>
     if (!project_id) return window.location.href = "/dashboard"
 
     return(
-        <div className='flex flex-col w-full h-full'>
+        <div className='flex flex-col w-screen min-h-screen overflow-hidden'>
         <HeaderBar />
         <ProjectComp pid={project_id} />
         </div>

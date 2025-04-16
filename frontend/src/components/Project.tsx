@@ -22,6 +22,8 @@ export function ProjectComp({ pid }: {pid: string}) {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
 
+    const [refresh, setRefresh] = useState("");
+
     useEffect(() => {
         async function fetchData() {
             setLoading(true);
@@ -79,7 +81,7 @@ export function ProjectComp({ pid }: {pid: string}) {
         // setLoading(false);
 
         fetchData();
-    }, [pid])
+    }, [pid, refresh])
 
     useEffect(() => {
         async function fetchData() {
@@ -102,11 +104,10 @@ export function ProjectComp({ pid }: {pid: string}) {
 
             const tempMembers: {[ role: string ]: User[] } = {};
             for (const key in project?.users) {
-                const uuids = Object.keys(project.users[key]);
+                const uuids = project.users[key];
                 tempMembers[key] = [];
 
-                for (const uuid in uuids) {
-                    console.log(uuid)
+                for (const uuid of uuids) {
                     const response = await fetch(buildPath('/api/get-user-info?' + new URLSearchParams({
                         "id": uuid
                     }).toString()),
@@ -137,7 +138,7 @@ export function ProjectComp({ pid }: {pid: string}) {
         // })
 
         fetchData();
-    }, [project])
+    }, [project, refresh])
 
     if (error) {
         return (
@@ -158,9 +159,9 @@ export function ProjectComp({ pid }: {pid: string}) {
     }
 
     return (
-        <div className="flex flex-row grow w-full p-20 gap-10 xl:gap-14">
+        <div className="flex flex-row grow m-20 gap-10 xl:gap-14">
             <ProjectDetails project={project} />
-            <ProjectSidebar project={project} owner={owner} members={members} />
+            <ProjectSidebar project={project} owner={owner} members={members} setRefresh={setRefresh} />
         </div>
     )
 }

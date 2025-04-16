@@ -5,8 +5,8 @@ import { FaAtom } from "react-icons/fa";
 
 export function ProjectDetails({ project }: { project: Project}) {
     return (
-        <div className="flex flex-col flex-2/3 bg-[#EFF6E0] rounded-2xl text-black">
-            <div className="flex bg-white items-center py-3 px-5 gap-2 rounded-t-2xl">
+        <div className="flex flex-col grow bg-[#EFF6E0] rounded-2xl text-black">
+            <div className="flex bg-[#598392] text-white items-center py-3 px-5 gap-2 rounded-t-2xl">
                 <IoCog />
                 <h3 className="font-bold uppercase">Project Details</h3>
             </div>
