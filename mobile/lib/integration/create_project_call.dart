@@ -4,7 +4,7 @@ import '../objects/field_details.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateProjectCall {
-  static const String baseUrl = 'https://cop4331.tech/api';
+  static const String baseUrl = 'http://cop4331.tech/api';
 
   static Future<bool> createProject({
     required String name,
@@ -22,11 +22,10 @@ class CreateProjectCall {
         print('No cookie found in SharedPreferences');
         return false;
       }
-  print("Success");
+      print("Success");
       final response = await http.post(
         Uri.parse('$baseUrl/create-project'),
-        headers: {'Content-Type': 'application/json', 
-          'Cookie': Cookie},
+        headers: {'Content-Type': 'application/json', 'Cookie': Cookie},
         body: jsonEncode({
           'name': name,
           'description': description,
@@ -36,7 +35,7 @@ class CreateProjectCall {
           'roles': roles,
         }),
       );
-print("Response");
+      print("Response");
       if (response.statusCode == 200) {
         return true;
       } else {

@@ -1,35 +1,50 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import 'profile_page.dart';
-import 'package:mobile/integration/get_profile_call.dart';
-import 'package:mobile/integration/edit_profile_call.dart';
 
 class EditProfilePage extends StatefulWidget {
-  const EditProfilePage({super.key});
+  final String name;
+  final String email;
+  final String comm;
+  final bool isPublic;
+  final List<String> links;
+  final List<String> skills;
+  final List<String> roles;
+  final List<String> interests;
+
+  const EditProfilePage({
+    super.key,
+    required this.name,
+    required this.email,
+    required this.comm,
+    required this.links,
+    required this.isPublic,
+    required this.skills,
+    required this.roles,
+    required this.interests,
+  });
 
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  String? userId;
-  String? userName;
-
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController commController = TextEditingController();
-  bool isPublic = true;
-
-  final TextEditingController githubController = TextEditingController();
-  final TextEditingController discordController = TextEditingController();
-
-  List<String> skills = [];
-  List<String> roles = [];
-  List<String> interests = [];
+  final TextEditingController linkController = TextEditingController();
   final TextEditingController skillController = TextEditingController();
   final TextEditingController roleController = TextEditingController();
   final TextEditingController interestController = TextEditingController();
+  bool isPublic = true;
+
+  List<String> links = [];
+  List<String> skills = [];
+  List<String> roles = [];
+  List<String> interests = [];
 
   List<String> skillBank = [
     'Android (Kotlin/Java)',
@@ -72,198 +87,167 @@ class _EditProfilePageState extends State<EditProfilePage> {
     'Business'
   ];
 
-  String profileId = "";
-
   @override
   void initState() {
     super.initState();
-    _loadUserSession();
-    fetchProfileData();
+    nameController.text = widget.name;
+    emailController.text = widget.email;
+    commController.text = widget.comm;
+    isPublic = widget.isPublic;
+    links = List.from(widget.links);
+    skills = List.from(widget.skills);
+    roles = List.from(widget.roles);
+    interests = List.from(widget.interests);
   }
 
-  Future<void> _loadUserSession() async {
+  void addLink(String link) {
+    if (link.trim().isEmpty) return;
+    setState(() {
+      links.add(link.trim());
+      linkController.clear();
+    });
+  }
+
+  void removeItem(String item, List<String> list) {
+    setState(() {
+      list.remove(item);
+    });
+  }
+
+  void addItem(
+      String item, List<String> list, TextEditingController controller) {
+    if (item.trim().isEmpty) return;
+    setState(() {
+      list.add(item.trim());
+      controller.clear();
+    });
+  }
+
+  Future<void> saveProfile() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userId = prefs.getString('userId');
-      userName = prefs.getString('userName');
-    });
-  }
-
-  Future<void> fetchProfileData() async {
-    if (userId != null) {
-      final profileData = await ProfileInfoService.getProfile(
-          userId!); // Replace with user ID or token
-      if (profileData != null) {
-        setState(() {
-          profileId = profileData['id'];
-          nameController.text = profileData['name'] ?? '';
-          emailController.text = profileData['email'] ?? '';
-          commController.text = profileData['preferredComm'] ?? '';
-          githubController.text = profileData['github'] ?? '';
-          discordController.text = profileData['discord'] ?? '';
-          isPublic = profileData['isPublic'] ?? true;
-          skills = List<String>.from(profileData['skills'] ?? []);
-          roles = List<String>.from(profileData['roles'] ?? []);
-          interests = List<String>.from(profileData['interests'] ?? []);
-        });
-      }
-    } else {
-      // Handle case where userId is null (perhaps show a message or return)
-      print("Error: userId is null");
+    final rawCookie = prefs.getString('auth_token');
+    if (rawCookie == null) {
+      print('No cookie found');
+      return;
     }
-  }
 
-  void addCustomItem(String item, List<String> list) {
-    setState(() {
-      if (item.trim().isNotEmpty) list.add(item.trim());
-    });
-  }
-
-  void addItemFromBank(String item, List<String> list) {
-    setState(() {
-      if (!list.contains(item)) list.add(item);
-    });
-  }
-
-  void openBankDialog(BuildContext context, List<String> bank,
-      Function(String) onItemSelected) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Choose an item', style: GoogleFonts.poppins()),
-          content: SizedBox(
-            height: 200,
-            width: double.maxFinite,
-            child: ListView.builder(
-              itemCount: bank.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(bank[index], style: GoogleFonts.poppins()),
-                  onTap: () {
-                    onItemSelected(bank[index]);
-                    Navigator.of(context).pop();
-                  },
-                );
-              },
-            ),
-          ),
-        );
+    final response = await http.post(
+      Uri.parse('http://cop4331.tech/api/edit-me'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': rawCookie,
       },
-    );
-  }
-
-  Widget buildSection(String title, List<String> list, List<String> bank,
-      TextEditingController controller, String inputHint) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 2,
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title,
-                style: GoogleFonts.poppins(
-                    fontSize: 18, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: list
-                  .map((item) => GestureDetector(
-                        onTap: () => setState(() => list.remove(item)),
-                        child: Chip(
-                          label: Text(item, style: GoogleFonts.poppins()),
-                          backgroundColor: const Color(0xFF9DB4C0),
-                          labelStyle: const TextStyle(color: Colors.black),
-                        ),
-                      ))
-                  .toList(),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    openBankDialog(context, bank, (item) {
-                      addItemFromBank(item, list);
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF124559),
-                  ),
-                  child: Text("Add from list",
-                      style: GoogleFonts.poppins(color: Colors.white)),
-                ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text('Enter $title',
-                              style: GoogleFonts.poppins()),
-                          content: TextField(
-                            controller: controller,
-                            decoration: InputDecoration(hintText: inputHint),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                addCustomItem(controller.text, list);
-                                controller.clear();
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('Add', style: GoogleFonts.poppins()),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF124559),
-                  ),
-                  child: Text("Add custom",
-                      style: GoogleFonts.poppins(color: Colors.white)),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> saveProfileChanges() async {
-    final success = await EditProfileService.updateProfile(
-      userId: profileId,
-      changes: {
-        "name": nameController.text.trim(),
-        "email": emailController.text.trim(),
-        "comm": commController.text.trim(),
-        "github": githubController.text.trim(),
-        "discord": discordController.text.trim(),
-        "isPublic": isPublic,
-        "skills": skills,
-        "roles": roles,
-        "interests": interests,
-      },
+      body: jsonEncode({
+        "updates": {
+          "name": nameController.text.trim(),
+          "comm": commController.text.trim(),
+          "isPublic": isPublic,
+          "accounts": links,
+          "skills": skills,
+          "roles": roles,
+          "interests": interests,
+        }
+      }),
     );
 
-    if (success) {
+    if (response.statusCode == 200) {
+      print("Profile updated successfully.");
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const ProfilePage()),
       );
     } else {
+      print("Update failed: ${response.statusCode}");
+      print(response.body);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Failed to save profile changes.")),
+        const SnackBar(content: Text("Failed to save changes")),
       );
     }
+  }
+
+  Widget buildTagSection(String title, List<String> bank, List<String> list,
+      TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title,
+            style:
+                GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600)),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: list
+              .map((item) => Chip(
+                    label: Text(item),
+                    onDeleted: () => removeItem(item, list),
+                  ))
+              .toList(),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: controller,
+                decoration: const InputDecoration(hintText: 'Add custom'),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () => addItem(controller.text, list, controller),
+            )
+          ],
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: bank
+              .map((item) => ActionChip(
+                    label: Text(item),
+                    onPressed: () => addItem(item, list, controller),
+                  ))
+              .toList(),
+        )
+      ],
+    );
+  }
+
+  Widget buildLinkField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Links",
+            style:
+                GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600)),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: links
+              .map((link) => Chip(
+                    label: Text(link),
+                    onDeleted: () => removeItem(link, links),
+                  ))
+              .toList(),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: linkController,
+                decoration: const InputDecoration(hintText: 'Enter link URL'),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () =>
+                  addItem(linkController.text, links, linkController),
+            )
+          ],
+        )
+      ],
+    );
   }
 
   @override
@@ -286,101 +270,44 @@ class _EditProfilePageState extends State<EditProfilePage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.check, color: Colors.white),
-            onPressed: saveProfileChanges,
-          ),
+            onPressed: saveProfile,
+          )
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            _buildTextInput("Name", nameController, isRequired: true),
+            buildTextInput("Name", nameController),
             const SizedBox(height: 12),
-            _buildTextInput("Email", emailController),
+            buildTextInput("Email", emailController, enabled: false),
             const SizedBox(height: 12),
-            _buildTextInput("Preferred Communication", commController),
+            buildTextInput("Preferred Communication", commController),
             const SizedBox(height: 12),
-            CheckboxListTile(
-              title: Text("Public Account"),
-              value: isPublic,
-              onChanged: (value) => setState(() => isPublic = value ?? true),
-              activeColor: const Color(0xFF124559),
-            ),
-            const SizedBox(height: 16),
-            _buildTextInput("GitHub", githubController),
-            const SizedBox(height: 12),
-            _buildTextInput("Discord", discordController),
-            const SizedBox(height: 16),
-            buildSection(
-                "Skills", skills, skillBank, skillController, "Enter a skill"),
-            buildSection(
-                "Roles", roles, roleBank, roleController, "Enter a role"),
-            buildSection("Interests", interests, interestBank,
-                interestController, "Enter an interest"),
+            buildLinkField(),
+            const SizedBox(height: 20),
+            buildTagSection("Skills", skillBank, skills, skillController),
+            const SizedBox(height: 20),
+            buildTagSection("Roles", roleBank, roles, roleController),
+            const SizedBox(height: 20),
+            buildTagSection(
+                "Interests", interestBank, interests, interestController),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTextInput(
-    String label,
-    TextEditingController controller, {
-    bool isRequired = false,
-    bool isNumber = false,
-    int maxLines = 1,
-    void Function(String)? onChanged,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 1,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-        maxLines: maxLines,
-        decoration: InputDecoration(
-          labelText: label,
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.transparent, width: 2.0),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              color: Color.fromARGB(255, 80, 145, 142),
-              width: 2.0,
-            ),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.red, width: 2.0),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.red, width: 2.0),
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        onChanged: onChanged,
-        validator: isRequired
-            ? (val) =>
-                (val == null || val.isEmpty) ? '$label is required' : null
-            : null,
+  Widget buildTextInput(String label, TextEditingController controller,
+      {bool enabled = true}) {
+    return TextFormField(
+      controller: controller,
+      enabled: enabled,
+      decoration: InputDecoration(
+        labelText: label,
+        filled: true,
+        fillColor: enabled ? Colors.white : Colors.grey.shade200,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }

@@ -18,15 +18,11 @@ class LoginCall {
       ),
     );
 
-    // Attempt to grab the Set-Cookie header from the response
     final cookie = response.headers.map['set-cookie']?.first;
-    print('Received cookie: $cookie'); // Debug print to verify cookie
 
-    // store it in local storage using SharedPreferences
     if (cookie != null) {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('auth_token',
-          cookie); // Save the full cookie string under the key 'auth_token'
+      await prefs.setString('auth_token', cookie);
     }
 
     if (response.statusCode == 200) {

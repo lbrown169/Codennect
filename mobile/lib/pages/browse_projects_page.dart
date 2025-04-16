@@ -15,7 +15,52 @@ class _BrowseProjectsPageState extends State<BrowseProjectsPage> {
   List<Project> projects = [];
   List<Project> filteredProjects = [];
   String selectedSkill = 'All';
+  String selectedRole = 'All';
   String searchQuery = '';
+
+  final List<String> allSkills = [
+    "All",
+    "Android (Kotlin/Java)",
+    "Angular",
+    "Arduino",
+    "AWS",
+    "C#",
+    "C++",
+    "Dart",
+    "Docker",
+    "Express.js",
+    "Figma (UI/UX)",
+    "Firebase",
+    "Flutter",
+    "Google Cloud",
+    "GraphQL",
+    "iOS (Swift)",
+    "Java",
+    "JavaScript",
+    "Machine Learning",
+    "MongoDB",
+    "MySQL",
+    "Node.js",
+    "OpenAI API",
+    "PostgreSQL",
+    "Raspberry Pi",
+    "React",
+    "React Native",
+    "REST API",
+    "Swift",
+    "TensorFlow",
+    "TypeScript",
+    "Vue.js"
+  ];
+
+  final List<String> allRoles = [
+    "All",
+    "Frontend",
+    "Backend",
+    "Mobile",
+    "Database",
+    "Manager"
+  ];
 
   @override
   void initState() {
@@ -25,21 +70,31 @@ class _BrowseProjectsPageState extends State<BrowseProjectsPage> {
 
   Future<void> fetchProjects() async {
     final projectData = await GetProjectsListCall.getProjects();
+    final loadedProjects =
+        projectData.map((data) => Project.fromJson(data)).toList();
+
     setState(() {
-      projects = projectData.map((data) => Project.fromJson(data)).toList();
+      projects = loadedProjects;
+      filteredProjects = loadedProjects;
     });
-    filterProjects();
   }
 
   void filterProjects() {
+    final filtered = projects.where((project) {
+      final matchesSkill = selectedSkill == 'All' ||
+          project.requiredSkills.contains(selectedSkill);
+
+      final matchesRole = selectedRole == 'All' ||
+          project.roles.keys.contains(selectedRole.toLowerCase());
+
+      final matchesSearch =
+          project.name.toLowerCase().contains(searchQuery.toLowerCase());
+
+      return matchesSkill && matchesRole && matchesSearch;
+    }).toList();
+
     setState(() {
-      filteredProjects = projects.where((project) {
-        final matchesSkill = selectedSkill == 'All' ||
-            project.requiredSkills.contains(selectedSkill);
-        final matchesSearch =
-            project.title.toLowerCase().contains(searchQuery.toLowerCase());
-        return matchesSkill && matchesSearch;
-      }).toList();
+      filteredProjects = filtered;
     });
   }
 
@@ -56,7 +111,6 @@ class _BrowseProjectsPageState extends State<BrowseProjectsPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Search Bar
             TextField(
               onChanged: (val) {
                 searchQuery = val;
@@ -72,21 +126,55 @@ class _BrowseProjectsPageState extends State<BrowseProjectsPage> {
             ),
             const SizedBox(height: 16),
 
-            // Skill Filter Dropdown
+            // Skill Dropdown
             Row(
               children: [
-                const Text("Filter by Skill: ",
+                const Text("Filter by Skill:",
                     style: TextStyle(fontWeight: FontWeight.w600)),
                 const SizedBox(width: 12),
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     value: selectedSkill,
-                    items: ["All", "Flutter", "Python", "React", "C++"]
-                        .map((skill) =>
-                            DropdownMenuItem(value: skill, child: Text(skill)))
+                    items: allSkills
+                        .map((skill) => DropdownMenuItem(
+                              value: skill,
+                              child: Text(skill),
+                            ))
                         .toList(),
                     onChanged: (value) {
-                      selectedSkill = value!;
+                      setState(() {
+                        selectedSkill = value!;
+                        filterProjects();
+                      });
+                    },
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 4),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Role Filter
+            Row(
+              children: [
+                const Text("Filter by Role:",
+                    style: TextStyle(fontWeight: FontWeight.w600)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: selectedRole,
+                    items: allRoles
+                        .map((role) =>
+                            DropdownMenuItem(value: role, child: Text(role)))
+                        .toList(),
+                    onChanged: (value) {
+                      selectedRole = value!;
                       filterProjects();
                     },
                     decoration: InputDecoration(
@@ -104,51 +192,55 @@ class _BrowseProjectsPageState extends State<BrowseProjectsPage> {
 
             // List of Projects
             Expanded(
-              child: ListView.builder(
-                itemCount: filteredProjects.length,
-                itemBuilder: (context, index) {
-                  final project = filteredProjects[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(16),
-                      title: Text(project.title,
-                          style:
-                              GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-                      subtitle: Text(project.description),
-                      trailing: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    ProjectDetailPage(project: project)),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF124559),
-                        ),
-                        child: const Text("See Details",
-                            style: TextStyle(color: Colors.white)),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ProjectDetailPage(
+              child: filteredProjects.isEmpty
+                  ? const Center(child: Text("No projects found."))
+                  : ListView.builder(
+                      itemCount: filteredProjects.length,
+                      itemBuilder: (context, index) {
+                        final project = filteredProjects[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.all(16),
+                            title: Text(project.name,
+                                style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w600)),
+                            subtitle: Text(project.description),
+                            trailing: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ProjectDetailPage(project: project),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF124559),
+                              ),
+                              child: const Text("See Details",
+                                  style: TextStyle(color: Colors.white)),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProjectDetailPage(
                                     project: project,
                                     showApplyButton: true,
                                     showApplicationsButton: false,
-                                  )),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         );
                       },
                     ),
-                  );
-                },
-              ),
             )
           ],
         ),

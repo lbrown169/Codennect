@@ -1,41 +1,39 @@
-// class User {
-//   final String id;
-//   final String name;
-//   final String email;
-//   final String comm;
-//   final List<String> skills;
-//   final List<String> roles;
-//   final List<String> interests;
-//   final List<String> accounts;
+class User {
+  final String id;
+  final String name;
+  final bool isPrivate;
+  final String comm;
+  final List<String> skills;
+  final List<String> roles;
+  final List<String> interests;
+  final Map<String, String> accounts;
 
-//   User({
-//     required this.id,
-//     required this.name,
-//     required this.email,
-//     required this.comm,
-//     required this.skills,
-//     required this.roles,
-//     required this.interests,
-//     required this.accounts,
-//   });
+  User({
+    required this.id,
+    required this.name,
+    required this.isPrivate,
+    required this.comm,
+    required this.skills,
+    required this.roles,
+    required this.interests,
+    required this.accounts,
+  });
 
-//   factory User.fromJson(Map<String, dynamic> json) {
-//     return User(
-//       name: json['name'],
-//       comm: json['comm'],
-//       skills: List<String>.from(json['skills']),
-//       roles: List<String>.from(json['roles']),
-//       interests: List<String>.from(json['interests']),
-//     );
-//   }
+  factory User.fromJson(Map<String, dynamic> json) {
+    final rawAccounts = json['accounts'];
+    final parsedAccounts = (rawAccounts is Map)
+        ? Map<String, String>.from(rawAccounts)
+        : <String, String>{};
 
-//   Map<String, dynamic> toJson() => {
-//         'id': id,
-//         'title': title,
-//         'description': description,
-//         'creatorName': creatorName,
-//         'requiredSkills': requiredSkills,
-//         'currentMembers': currentMembers,
-//         'memberLimit': memberLimit,
-//       };
-// }
+    return User(
+      id: json['_id'] ?? '',
+      name: json['name'] ?? '',
+      isPrivate: json['isPrivate'] ?? false,
+      comm: json['comm'] ?? '',
+      skills: List<String>.from(json['skills'] ?? []),
+      roles: List<String>.from(json['roles'] ?? []),
+      interests: List<String>.from(json['interests'] ?? []),
+      accounts: parsedAccounts,
+    );
+  }
+}

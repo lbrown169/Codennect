@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'edit_profile_page.dart';
 import 'home_page.dart';
 import 'package:mobile/integration/get_profile_call.dart';
@@ -13,50 +12,55 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String? userId;
-  String? userName;
-
-  Map<String, dynamic>? profileInfo;
-
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController commController = TextEditingController();
   bool isPublic = true;
-  final TextEditingController githubController = TextEditingController();
-  final TextEditingController discordController = TextEditingController();
 
   List<String> skills = [];
   List<String> roles = [];
   List<String> interests = [];
+  List<String> links = [];
 
   @override
   void initState() {
     super.initState();
-    _loadUserSession();
     fetchProfile();
   }
 
-  Future<void> _loadUserSession() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userId = prefs.getString('userId');
-      userName = prefs.getString('userName');
-    });
-  }
-
   Future<void> fetchProfile() async {
-    if (userId != null) {
-      final profileData = await ProfileInfoService.getProfile(userId!);
+    final profileData = await ProfileInfoService.getProfile();
+    if (profileData != null) {
       setState(() {
-        profileInfo = profileData;
-        skills = List<String>.from(profileInfo?['skills'] ?? []);
-        roles = List<String>.from(profileInfo?['roles'] ?? []);
-        interests = List<String>.from(profileInfo?['interests'] ?? []);
+        nameController.text = profileData['name'] ?? '';
+        emailController.text = profileData['email'] ?? '';
+        commController.text = profileData['comm'] ?? '';
+        isPublic = profileData['isPublic'] ?? true;
+        skills = List<String>.from(profileData['skills'] ?? []);
+        roles = List<String>.from(profileData['roles'] ?? []);
+        interests = List<String>.from(profileData['interests'] ?? []);
+        links = List<String>.from(profileData['accounts'] ?? []);
       });
     } else {
-      // Handle case where userId is null (perhaps show a message or return)
-      print("Error: userId is null");
+      print("Error: Profile data is null");
     }
+  }
+
+  Widget buildInfoBlock(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title,
+              style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w500, fontSize: 14)),
+          const SizedBox(height: 4),
+          Text(value.isNotEmpty ? value : "N/A",
+              style: GoogleFonts.poppins(fontSize: 14)),
+        ],
+      ),
+    );
   }
 
   Widget buildSection(String title, List<String> list) {
@@ -84,10 +88,31 @@ class _ProfilePageState extends State<ProfilePage> {
                       ))
                   .toList(),
             ),
-            const SizedBox(height: 12),
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildLinkList(List<String> links) {
+    return Column(
+      children: links
+          .map((link) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        link,
+                        style: GoogleFonts.poppins(
+                            color: const Color(0xFF124559),
+                            decoration: TextDecoration.underline),
+                      ),
+                    ),
+                  ],
+                ),
+              ))
+          .toList(),
     );
   }
 
@@ -117,7 +142,16 @@ class _ProfilePageState extends State<ProfilePage> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const EditProfilePage(),
+                    builder: (context) => EditProfilePage(
+                      name: nameController.text,
+                      email: emailController.text,
+                      comm: commController.text,
+                      links: links,
+                      isPublic: isPublic,
+                      skills: skills,
+                      roles: roles,
+                      interests: interests,
+                    ),
                   ),
                 );
               },
@@ -129,7 +163,6 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            // Info section for user's name, email, preferred method of communication, and public account
             Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
@@ -143,49 +176,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     Text("Info",
                         style: GoogleFonts.poppins(
                             fontSize: 18, fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 15),
-                    Row(
-                      children: [
-                        Text("Name: ", style: GoogleFonts.poppins()),
-                        Text(profileInfo?['name'] ?? " ",
-                            style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w500)),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                    Row(
-                      children: [
-                        Text("Email: ", style: GoogleFonts.poppins()),
-                        Text(profileInfo?['email'] ?? " ",
-                            style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w500)),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                    Row(
-                      children: [
-                        Text("Preferred Method of Communication: ",
-                            style: GoogleFonts.poppins()),
-                        Text(profileInfo?['preferredComm'] ?? " ",
-                            style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w500)),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                    Row(
-                      children: [
-                        Text("Public Account: ", style: GoogleFonts.poppins()),
-                        Text(profileInfo?['isPublic'] == true ? "Yes" : "No",
-                            style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w500)),
-                      ],
-                    ),
+                    const SizedBox(height: 12),
+                    buildInfoBlock("Name", nameController.text),
+                    buildInfoBlock("Email", emailController.text),
+                    buildInfoBlock(
+                        "Preferred Communication", commController.text),
+                    buildInfoBlock("Public Account", isPublic ? "Yes" : "No"),
                   ],
                 ),
               ),
             ),
-
-            // Links section
             Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
@@ -200,33 +200,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: GoogleFonts.poppins(
                             fontSize: 18, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Text("GitHub: ", style: GoogleFonts.poppins()),
-                        TextButton(
-                          onPressed: () {},
-                          child: Text(profileInfo?['github'] ?? "N/A",
-                              style: GoogleFonts.poppins(
-                                  color: const Color(0xFF124559))),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text("Discord: ", style: GoogleFonts.poppins()),
-                        TextButton(
-                          onPressed: () {},
-                          child: Text(profileInfo?['discord'] ?? "N/A",
-                              style: GoogleFonts.poppins(
-                                  color: const Color(0xFF124559))),
-                        ),
-                      ],
-                    ),
+                    buildLinkList(links),
                   ],
                 ),
               ),
             ),
-
             buildSection("Skills", skills),
             buildSection("Roles", roles),
             buildSection("Interests", interests),

@@ -12,20 +12,16 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // text controllers for user input
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  // controls password visibility
   bool isPasswordVisible = false;
 
-  // shows login error if any
   String errorMessage = "";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // background with gradient
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -38,7 +34,6 @@ class _LoginPageState extends State<LoginPage> {
         ),
         child: Stack(
           children: [
-            // Login title at the top
             const Positioned(
               top: 100,
               left: 32,
@@ -53,7 +48,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
 
-            // white login box in the center
             Positioned(
               top: 220,
               left: 32,
@@ -77,7 +71,6 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // username label and input
                     const Text(
                       'Username',
                       style: TextStyle(
@@ -167,10 +160,12 @@ class _LoginPageState extends State<LoginPage> {
 
                             if (result['success']) {
                               await SessionManager.saveSession(
-                                userId: email,
-                                userName: password,
-                                authToken: result['token'], // Pass it here!
+                                userId: result['id'],
+                                userName: result['name'],
+                                authToken: result['token'],
                               );
+                              print("LOGIN Token: ${result['token']}");
+                              print("LOGIN ID: ${result['id']}");
 
                               setState(() {
                                 errorMessage = "";
@@ -255,7 +250,7 @@ class SignUpLink extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => RegisterPage()),
+          MaterialPageRoute(builder: (context) => const RegisterPage()),
         );
       },
       child: const Text(

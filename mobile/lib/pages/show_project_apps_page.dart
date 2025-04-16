@@ -21,8 +21,7 @@ class _ShowApplicationsPageState extends State<ShowApplicationsPage> {
   @override
   void initState() {
     super.initState();
-    _applicationsFuture =
-        GetProjectApplications.getApplications().then((data) {
+    _applicationsFuture = GetProjectApplications.getApplications().then((data) {
       return data
           .map<Map<String, dynamic>>((json) => {
                 'userId': json['userId'],
@@ -42,7 +41,10 @@ class _ShowApplicationsPageState extends State<ShowApplicationsPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ApplicantProfilePage(project: widget.project, applicantId: userId,),
+        builder: (context) => ApplicantProfilePage(
+          project: widget.project,
+          applicantId: userId,
+        ),
       ),
     );
   }
@@ -81,57 +83,57 @@ class _ShowApplicationsPageState extends State<ShowApplicationsPage> {
             itemBuilder: (context, index) {
               final application = applications[index];
               return Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  margin: const EdgeInsets.only(bottom: 12),
-                  elevation: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 2),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                "Name: ${application['userId']}",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                margin: const EdgeInsets.only(bottom: 12),
+                elevation: 3,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 2),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "Name: ${application['userId']}",
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
-                            TextButton(
-                              onPressed: () => _seeDetails(application['userId']),
-                              style: TextButton.styleFrom(
-                                foregroundColor: const Color(0xFF124559),
-                                textStyle: GoogleFonts.poppins(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              child: const Text("See User Details"),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 1),
-                        Text(
-                          "Message:",
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
                           ),
+                          TextButton(
+                            onPressed: () => _seeDetails(application['userId']),
+                            style: TextButton.styleFrom(
+                              foregroundColor: const Color(0xFF124559),
+                              textStyle: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            child: const Text("See Details"),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 1),
+                      Text(
+                        "Message:",
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          application['message'] ?? '',
-                          style: GoogleFonts.poppins(fontSize: 14),
-                        ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        application['message'] ?? '',
+                        style: GoogleFonts.poppins(fontSize: 14),
+                      ),
+                    ],
                   ),
+                ),
               );
             },
           );

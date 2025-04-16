@@ -4,8 +4,8 @@ import 'package:mobile/pages/browse_projects_page.dart';
 import 'package:mobile/pages/browse_users_page.dart';
 import 'package:mobile/pages/profile_page.dart';
 import 'package:mobile/pages/my_projects_page.dart';
-import 'package:mobile/pages/login_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mobile/pages/view_project_invites.dart';
+import '../services/log_out_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -23,16 +23,16 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(color: Color(0xFF598392)),
+              decoration: const BoxDecoration(color: Color(0xFF598392)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 28,
                     backgroundImage:
                         AssetImage('assets/images/Codennect_Logo.png'),
                   ),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   Text(
                     'Welcome!',
                     style: GoogleFonts.poppins(
@@ -44,27 +44,36 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text('My Profile'),
+              leading: const Icon(Icons.person),
+              title: const Text('My Profile'),
               onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (_) => const ProfilePage()));
               },
             ),
             ListTile(
-              leading: Icon(Icons.folder),
-              title: Text('My Projects'),
+              leading: const Icon(Icons.folder),
+              title: const Text('My Projects'),
               onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (_) => const MyProjectsPage()));
               },
             ),
             ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('Log Out'),
+              leading: const Icon(Icons.mail_outline),
+              title: const Text('View Invites'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ViewInvitesPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Log Out'),
               onTap: () async {
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.clear();
+                await LogoutService.logout();
                 Navigator.pushNamedAndRemoveUntil(
                     context, '/login', (route) => false);
               },
@@ -201,28 +210,28 @@ class _HomePageState extends State<HomePage> {
                         context,
                         Icons.person_outline,
                         "My Profile",
-                        Color(0xFFFFFFFF),
+                        const Color(0xFFFFFFFF),
                         navigateTo: const ProfilePage(),
                       ),
                       _buildServiceCard(
                         context,
                         Icons.folder_open,
                         "My Projects",
-                        Color(0xFFFFFFFF),
+                        const Color(0xFFFFFFFF),
                         navigateTo: const MyProjectsPage(),
                       ),
                       _buildServiceCard(
                         context,
                         Icons.people_alt_rounded,
                         "Search People",
-                        Color(0xFFFFFFFF),
+                        const Color(0xFFFFFFFF),
                         navigateTo: const BrowseUsersPage(),
                       ),
                       _buildServiceCard(
                         context,
                         Icons.explore,
                         "Browse Projects",
-                        Color(0xFFFFFFFF),
+                        const Color(0xFFFFFFFF),
                         navigateTo: const BrowseProjectsPage(),
                       ),
                     ],

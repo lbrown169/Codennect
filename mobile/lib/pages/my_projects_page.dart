@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../objects/project.dart';
-import '../integration/get_projects_call.dart';
+import '../integration/get_my_projects_call.dart';
 import 'create_project_page.dart';
 import 'project_details_page.dart';
 
@@ -22,7 +22,7 @@ class _MyProjectsPageState extends State<MyProjectsPage> {
   void initState() {
     super.initState();
     _loadUserSession();
-    _projectsFuture = GetProjectsListCall.getProjects().then((data) {
+    _projectsFuture = GetMyProjectsListCall.getProjects().then((data) {
       return data.map((json) => Project.fromJson(json)).toList();
     });
   }
@@ -48,7 +48,7 @@ class _MyProjectsPageState extends State<MyProjectsPage> {
 
   void _openProjectDetails(Project project) {
     //Checks if the creatorName on the project matches the userName for the session
-    if (userName != null && project.creatorName == userName) {
+    if (userName != null && project.owner == userName) {
       //They match so the the current user is the creator and can see the project's applications
       Navigator.push(
         context,
@@ -133,7 +133,7 @@ class _MyProjectsPageState extends State<MyProjectsPage> {
                           children: [
                             Expanded(
                               child: Text(
-                                project.title,
+                                project.name,
                                 style: GoogleFonts.poppins(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
@@ -147,13 +147,13 @@ class _MyProjectsPageState extends State<MyProjectsPage> {
                                 color: const Color(0xFF124559),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Text(
-                                "${project.currentMembers}/${project.memberLimit} members",
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                ),
-                              ),
+                              // child: Text(
+                              //   "${project.currentMembers}/${project.memberLimit} members",
+                              //   style: GoogleFonts.poppins(
+                              //     color: Colors.white,
+                              //     fontSize: 12,
+                              //   ),
+                              // ),
                             ),
                           ],
                         ),

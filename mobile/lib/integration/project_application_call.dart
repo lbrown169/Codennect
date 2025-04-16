@@ -1,24 +1,33 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiApplicationCall {
-  //CHANGE THIS URL WHEN TESTING
-  static const String baseUrl = 'https://yourapi.com/api';
+  static const String baseUrl = 'http://cop4331.tech/api';
 
   static Future<bool> submitApplication({
     required String projectId,
     required String userId,
-    required String userName,
     required String message,
+    required bool isInvite,
+    required List<String> roles,
   }) async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final cookie = prefs.getString('auth_token');
+
       final response = await http.post(
-        Uri.parse('$baseUrl/applications'),
-        headers: {"Content-Type": "application/json"},
+        Uri.parse('$baseUrl/requests'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          if (cookie != null) 'Cookie': cookie,
+        },
         body: jsonEncode({
-          'projectId': projectId,
-          'userId': userId,
-          'userName': userName,
+          'user_id': userId,
+          'project_id': projectId,
+          'is_invite': isInvite,
+          'roles': roles,
           'message': message,
         }),
       );
@@ -27,6 +36,7 @@ class ApiApplicationCall {
         return true;
       } else {
         print('Failed to submit application: ${response.statusCode}');
+        print('Response body: ${response.body}');
         return false;
       }
     } catch (e) {

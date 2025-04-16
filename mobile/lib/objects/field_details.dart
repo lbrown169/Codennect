@@ -16,12 +16,9 @@ class FieldDetails {
       isPrivate: json['private'],
     );
   }
-    Map<String, dynamic> toJson() => {
-    'name': name,
-    'value': value,
-    'private': isPrivate,
-  };
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'value': value,
+        'private': isPrivate,
+      };
 }
-
-
-

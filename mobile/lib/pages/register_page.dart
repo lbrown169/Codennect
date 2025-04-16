@@ -18,7 +18,6 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // background with gradient
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -127,9 +126,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                 await authService.registerUser(email);
 
                             if (response['success']) {
-                              // Success: You can navigate to the home page or show a success message
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
+                                const SnackBar(
                                   content: Text(
                                     'Check Your Email to Finish Signing Up',
                                   ),
@@ -142,7 +140,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                               );
                             } else {
-                              // Failure: Show the error message from the API response
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                     content:
@@ -189,7 +186,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       "Already have an account? ",
                       style: TextStyle(fontSize: 13),
                     ),
@@ -197,7 +194,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          MaterialPageRoute(
+                              builder: (context) => const LoginPage()),
                         );
                       },
                       child: const Text(

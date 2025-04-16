@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class GetProjectApplications {
-  //CHANGE THIS URL WHEN TESTING
   static const String baseUrl = 'https://yourapi.com/api';
 
   static Future<List<Map<String, dynamic>>> getApplications() async {

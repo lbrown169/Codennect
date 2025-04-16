@@ -1,24 +1,35 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileInfoService {
-  static const baseUrl = 'http://10.0.2.2:5001/api';
+  static Future<Map<String, dynamic>?> getProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    final rawCookie = prefs.getString('auth_token');
+    print('Raw cookie: $rawCookie');
 
-  static Future<Map<String, dynamic>?> getProfile(String userId) async {
+    if (rawCookie == null) return null;
+
+    final dio = Dio();
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/get-me'),
+      final response = await dio.get(
+        'http://cop4331.tech/api/get-me',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Cookie': rawCookie,
+          },
+        ),
       );
 
       if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
-        return body as Map<String, dynamic>;
+        print("Profile fetched");
+        return response.data;
       } else {
-        print('Failed to fetch profile info: \${response.statusCode}');
+        print("Failed: ${response.statusCode}");
         return null;
       }
     } catch (e) {
-      print('Error fetching profile info: \$e');
+      print("Error fetching profile info: $e");
       return null;
     }
   }

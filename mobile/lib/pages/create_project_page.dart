@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/integration/create_project_call.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'my_projects_page.dart';
 import '../objects/field_details.dart';
-import '../objects/project.dart';
 
 class CreateProjectsPage extends StatefulWidget {
   const CreateProjectsPage({super.key});
@@ -35,7 +33,8 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
   final _databaseController = TextEditingController(text: '0');
   final _mobileController = TextEditingController(text: '0');
   final TextEditingController programLangController = TextEditingController();
-  final TextEditingController webDevelopmentController = TextEditingController();
+  final TextEditingController webDevelopmentController =
+      TextEditingController();
   final TextEditingController backendController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
   final TextEditingController otherToolsController = TextEditingController();
@@ -94,7 +93,7 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
     });
   }
 
-    void _addLink() {
+  void _addLink() {
     setState(() {
       _links.add({"label": "", "url": ""});
     });
@@ -198,13 +197,12 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
   }
 
   void _saveProject() async {
-
-      if (_formKey.currentState?.validate() ?? false) {
-        List<String> allSkills = [
-          ...programSkills,
-          ...webDevelopmentSkills,
-          ...backendSkills,
-          ...mobileSkills,
+    if (_formKey.currentState?.validate() ?? false) {
+      List<String> allSkills = [
+        ...programSkills,
+        ...webDevelopmentSkills,
+        ...backendSkills,
+        ...mobileSkills,
         ...otherToolsSkills,
       ];
 
@@ -234,24 +232,24 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
         roles: roles,
       );
 
-        if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Project saved successfully!')),
-          );
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const MyProjectsPage()),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to save project.')),
-          );
-        }
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Project saved successfully!')),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MyProjectsPage()),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please fill in all required fields.')),
+          const SnackBar(content: Text('Failed to save project.')),
         );
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all required fields.')),
+      );
+    }
   }
 
   @override
@@ -299,7 +297,8 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
               ),
               const SizedBox(height: 15),
               // Roles Section
-              Text('Roles', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              Text('Roles',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               SizedBox(height: 5),
 
               _buildRoleCountField('Frontend', _frontendController, (value) {
@@ -320,7 +319,7 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
               Text('Project Links',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               SizedBox(height: 8),
-              for (int i = 0; i < _links.length; i++) 
+              for (int i = 0; i < _links.length; i++)
                 LinkRow(
                   link: _links[i],
                   onLabelChanged: (newLabel) {
@@ -335,19 +334,21 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
                   },
                   onRemove: () => _removeLink(i),
                 ),
-                SizedBox(height: 25),
+              SizedBox(height: 25),
               ElevatedButton(
                 onPressed: _addLink,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF598392),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                child: Text('Add Another Link', style: GoogleFonts.poppins(color: Colors.white)),
+                child: Text('Add Another Link',
+                    style: GoogleFonts.poppins(color: Colors.white)),
               ),
 
               //Skills section
               const SizedBox(height: 25),
-              Text('Skills', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              Text('Skills',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               buildSection("Programming Languages", programSkills,
                   programLangBank, programLangController, "Enter a skill"),
               buildSection(
@@ -388,15 +389,14 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white, // Background color of the container
-        borderRadius: BorderRadius.circular(12), // Rounded corners
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2), // Shadow color with opacity
-            spreadRadius: 1, // How much the shadow spreads
-            blurRadius: 1, // How blurry the shadow is
-            offset:
-                Offset(0, 2), // Position of the shadow (horizontal, vertical)
+            color: Colors.black.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 1,
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -413,33 +413,31 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
           ),
           enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(
-              color: Colors.transparent, // Border color when not focused
-              width: 2.0, // Border width
+              color: Colors.transparent,
+              width: 2.0,
             ),
-            borderRadius: BorderRadius.circular(12), // Same rounded corners
+            borderRadius: BorderRadius.circular(12),
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: const BorderSide(
-              color: Color.fromARGB(
-                  255, 80, 145, 142), // Border color when focused
-              width: 2.0, // Border width
+              color: Color.fromARGB(255, 80, 145, 142),
+              width: 2.0,
             ),
-            borderRadius: BorderRadius.circular(12), // Same rounded corners
+            borderRadius: BorderRadius.circular(12),
           ),
           errorBorder: OutlineInputBorder(
             borderSide: const BorderSide(
-              color: Colors.red, // Border color when there is an error
-              width: 2.0, // Border width
+              color: Colors.red,
+              width: 2.0,
             ),
-            borderRadius: BorderRadius.circular(12), // Same rounded corners
+            borderRadius: BorderRadius.circular(12),
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderSide: const BorderSide(
-              color:
-                  Colors.red, // Border color when focused and there's an error
-              width: 2.0, // Border width
+              color: Colors.red,
+              width: 2.0,
             ),
-            borderRadius: BorderRadius.circular(12), // Same rounded corners
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
         onChanged: onChanged,
@@ -451,23 +449,24 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
     );
   }
 
-  Widget _buildRoleCountField(String role, TextEditingController controller, Function(int) onChanged) {
+  Widget _buildRoleCountField(
+      String role, TextEditingController controller, Function(int) onChanged) {
     return TextFormField(
-    controller: controller,
-    keyboardType: TextInputType.number,
-    decoration: InputDecoration(labelText: '$role Roles'),
-    onChanged: (value) {
-      onChanged(int.tryParse(value) ?? 0);
-    },
-    validator: (value) {
-      if (int.tryParse(value ?? '') == null || int.tryParse(value ?? '')! < 0) {
-        return '$role role count must be a valid number';
-      }
-      return null;
-    },
-  );
-}
-
+      controller: controller,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(labelText: '$role Roles'),
+      onChanged: (value) {
+        onChanged(int.tryParse(value) ?? 0);
+      },
+      validator: (value) {
+        if (int.tryParse(value ?? '') == null ||
+            int.tryParse(value ?? '')! < 0) {
+          return '$role role count must be a valid number';
+        }
+        return null;
+      },
+    );
+  }
 
   void openBankDialog(BuildContext context, List<String> bank,
       Function(String) onItemSelected) {
@@ -497,6 +496,7 @@ class _CreateProjectsPageState extends State<CreateProjectsPage> {
     );
   }
 }
+
 class LinkRow extends StatelessWidget {
   final Map<String, String> link;
   final ValueChanged<String> onLabelChanged;
