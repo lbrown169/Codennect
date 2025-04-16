@@ -107,6 +107,7 @@ export function ProjectComp({ pid }: {pid: string}) {
             <div id="projectDiv" className="accountBox">
                 <h1>Oops!</h1>
                 <p>That project couldn't be found. Maybe it was deleted?</p>
+                <p>{error}</p>
             </div>
         )
     }
