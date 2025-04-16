@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../objects/project.dart';
-import '../integration/get_project_apps_call.dart';
+import '../integration/get_project_apps&invites_call.dart';
+import '../integration/get_user_info_call.dart';
 import 'applicant_profile_page.dart';
 
 class ShowApplicationsPage extends StatefulWidget {
@@ -17,21 +18,39 @@ class _ShowApplicationsPageState extends State<ShowApplicationsPage> {
   late Future<List<Map<String, dynamic>>> _applicationsFuture;
   String? userId;
   String? userName;
+    List<String> applicantNames = [];
+  final TextEditingController nameController = TextEditingController();
+  final List<Map<String, dynamic>> applications = [];
 
   @override
   void initState() {
     super.initState();
-    _applicationsFuture = GetProjectApplications.getApplications().then((data) {
-      return data
-          .map<Map<String, dynamic>>((json) => {
-                'userId': json['userId'],
-                'projectId': json['projectId'],
-                'message': json['message'],
-              })
-          .where((app) => app['projectId'] == widget.project.id)
-          .toList();
-    });
+    _applicationsFuture = fetchApplications();
   }
+
+  Future<List<Map<String, dynamic>>> fetchApplications() async {
+    final result = await GetProjectApplications.getApplications();
+    final invites = result['invites']!;
+    final List<Map<String, dynamic>> allApplications = result['applications'] ?? [];
+
+    // Filter applications to only those for this project
+    final projectApplications = allApplications
+        .where((app) => app['project_id'] == widget.project.id)
+        .toList();
+
+    return projectApplications;
+  }
+
+Future<void> fetchProfile(String applicantId, int index) async {
+  final profileData = await UserInfoService.getUserInfo(applicantId);
+  if (profileData != null) {
+    setState(() {
+      applicantNames[index] = profileData['name'] ?? 'Unknown';
+    });
+  } else {
+    print("Error: Profile data is null");
+  }
+}
 
   void _goBack() {
     Navigator.of(context).pop();
@@ -82,6 +101,16 @@ class _ShowApplicationsPageState extends State<ShowApplicationsPage> {
             itemCount: applications.length,
             itemBuilder: (context, index) {
               final application = applications[index];
+              final userId = application['user_id'] ?? '';
+              final message = application['message'] ?? '';
+              final roles = (application['roles'] as List<dynamic>?)
+                      ?.cast<String>()
+                      .join(', ') ??
+                  '';
+              final name = applicantNames[index];
+              if (name == null) {
+                fetchProfile(userId, index);
+              }
               return Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -99,7 +128,7 @@ class _ShowApplicationsPageState extends State<ShowApplicationsPage> {
                         children: [
                           Expanded(
                             child: Text(
-                              "Name: ${application['userId']}",
+                              "Name: $name",
                               style: GoogleFonts.poppins(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -107,28 +136,49 @@ class _ShowApplicationsPageState extends State<ShowApplicationsPage> {
                             ),
                           ),
                           TextButton(
-                            onPressed: () => _seeDetails(application['userId']),
+                            onPressed: () => _seeDetails(userId),
                             style: TextButton.styleFrom(
                               foregroundColor: const Color(0xFF124559),
                               textStyle: GoogleFonts.poppins(
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            child: const Text("See Details"),
+                            child: const Text("See User Details"),
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 1),
+                        RichText(
+                          text: TextSpan(
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              color: Colors.black, // Make sure to set a color!
+                            ),
+                            children: [
+                              TextSpan(
+                                text: 'Roles:  ',
+                                style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w700),
+                              ),
+                              TextSpan(
+                                text: roles,
+                                style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.normal),
+                              ),
+                            ],
+                          ),
                       ),
                       const SizedBox(height: 1),
                       Text(
                         "Message:",
                         style: GoogleFonts.poppins(
                           fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        application['message'] ?? '',
+                        message,
                         style: GoogleFonts.poppins(fontSize: 14),
                       ),
                     ],

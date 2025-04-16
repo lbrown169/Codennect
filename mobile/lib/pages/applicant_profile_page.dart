@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../objects/project.dart';
 import '../integration/get_user_info_call.dart';
+import '../integration/approve_application_call.dart';
+import '../integration/deny_application_call.dart';
+import 'show_project_apps_page.dart';
 
 class ApplicantProfilePage extends StatefulWidget {
   final Project project;
@@ -15,29 +19,80 @@ class ApplicantProfilePage extends StatefulWidget {
 
 class _ApplicantProfilePageState extends State<ApplicantProfilePage> {
   Map<String, dynamic>? profileInfo;
-
+  String? creatorId;
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController commController = TextEditingController();
+  final TextEditingController IDController = TextEditingController();
   List<String> skills = [];
   List<String> roles = [];
   List<String> interests = [];
+    List<String> links = [];
 
   @override
   void initState() {
     super.initState();
-    fetchInfo();
+    _loadUserSession();
+    fetchProfile();
   }
 
-  Future<void> fetchInfo() async {
-    final profileData = await UserInfoService.getUserInfo(widget.applicantId);
+  Future<void> fetchProfile() async {
+     final profileData = await UserInfoService.getUserInfo(widget.applicantId);
+    if (profileData != null) {
+      setState(() {
+        IDController.text = profileData['_id'] ?? '';
+        nameController.text = profileData['name'] ?? '';
+        links = List<String>.from(profileData['accounts'] ?? []);
+        commController.text = profileData['comm'] ?? '';
+        skills = List<String>.from(profileData['skills'] ?? []);
+        roles = List<String>.from(profileData['roles'] ?? []);
+        interests = List<String>.from(profileData['interests'] ?? []);
+
+      });
+    } else {
+      print("Error: Profile data is null");
+    }
+  }
+
+  Future<void> _loadUserSession() async {
+    final prefs = await SharedPreferences.getInstance();
     setState(() {
-      profileInfo = profileData;
-      skills = List<String>.from(profileInfo?['skills'] ?? []);
-      roles = List<String>.from(profileInfo?['roles'] ?? []);
-      interests = List<String>.from(profileInfo?['interests'] ?? []);
+      creatorId = prefs.getString('userId');
     });
   }
 
   void _goBack() {
     Navigator.of(context).pop();
+  }
+  void _approveApplication() async{ //Sends applicant id
+    final success = await ApproveApplicationService.approveApplication(
+      user_id: IDController.text,
+      project_id: widget.project.id,
+      is_invite: false
+    );
+
+    if (success) {
+        _goBack();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to approve application.")),
+      );
+    }
+  }
+
+  void _denyApplication() async{ //sends user id
+    final success = await DenialApplicationService.denyApplication(
+      user_id: creatorId!,
+      project_id: widget.project.id,
+      is_invite: false
+    );
+
+    if (success) {
+        _goBack();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to deny application.")),
+      );
+    }
   }
 
   Widget buildSection(String title, List<String> list) {
@@ -103,23 +158,14 @@ class _ApplicantProfilePageState extends State<ApplicantProfilePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Info",
+                          Text("User Info",
                               style: GoogleFonts.poppins(
                                   fontSize: 18, fontWeight: FontWeight.w600)),
                           const SizedBox(height: 15),
                           Row(
                             children: [
                               Text("Name: ", style: GoogleFonts.poppins()),
-                              Text(profileInfo?['name'] ?? " ",
-                                  style: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w500)),
-                            ],
-                          ),
-                          const SizedBox(height: 15),
-                          Row(
-                            children: [
-                              Text("Email: ", style: GoogleFonts.poppins()),
-                              Text(profileInfo?['email'] ?? " ",
+                              Text(nameController.text,
                                   style: GoogleFonts.poppins(
                                       fontWeight: FontWeight.w500)),
                             ],
@@ -129,66 +175,18 @@ class _ApplicantProfilePageState extends State<ApplicantProfilePage> {
                             children: [
                               Text("Preferred Method of Communication: ",
                                   style: GoogleFonts.poppins()),
-                              Text(profileInfo?['preferredComm'] ?? " ",
+                              Text(commController.text,
                                   style: GoogleFonts.poppins(
                                       fontWeight: FontWeight.w500)),
                             ],
                           ),
                           const SizedBox(height: 15),
-                          Row(
-                            children: [
-                              Text("Public Account: ",
-                                  style: GoogleFonts.poppins()),
-                              Text(
-                                  profileInfo?['isPublic'] == true
-                                      ? "Yes"
-                                      : "No",
-                                  style: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w500)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Links section
-                  Card(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    elevation: 2,
-                    margin: const EdgeInsets.only(bottom: 16),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
                           Text("Links",
                               style: GoogleFonts.poppins(
                                   fontSize: 18, fontWeight: FontWeight.w600)),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Text("GitHub: ", style: GoogleFonts.poppins()),
-                              TextButton(
-                                onPressed: () {},
-                                child: Text(profileInfo?['github'] ?? "N/A",
-                                    style: GoogleFonts.poppins(
-                                        color: const Color(0xFF124559))),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text("Discord: ", style: GoogleFonts.poppins()),
-                              TextButton(
-                                onPressed: () {},
-                                child: Text(profileInfo?['discord'] ?? "N/A",
-                                    style: GoogleFonts.poppins(
-                                        color: const Color(0xFF124559))),
-                              ),
-                            ],
-                          ),
+                          const SizedBox(height: 1),
+                          buildLinkList(links),
+
                         ],
                       ),
                     ),
@@ -206,7 +204,7 @@ class _ApplicantProfilePageState extends State<ApplicantProfilePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: _goBack,
+                  onPressed: _approveApplication,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 18, 69, 89),
                     padding: const EdgeInsets.symmetric(
@@ -217,7 +215,7 @@ class _ApplicantProfilePageState extends State<ApplicantProfilePage> {
                           color: const Color.fromARGB(255, 255, 255, 255))),
                 ),
                 ElevatedButton(
-                  onPressed: _goBack,
+                  onPressed: _denyApplication,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 89, 18, 18),
                     padding: const EdgeInsets.symmetric(
@@ -233,6 +231,28 @@ class _ApplicantProfilePageState extends State<ApplicantProfilePage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildLinkList(List<String> links) {
+    return Column(
+      children: links
+          .map((link) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        link,
+                        style: GoogleFonts.poppins(
+                            color: const Color(0xFF124559),
+                            decoration: TextDecoration.underline),
+                      ),
+                    ),
+                  ],
+                ),
+              ))
+          .toList(),
     );
   }
 }
