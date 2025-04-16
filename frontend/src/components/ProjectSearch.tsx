@@ -44,12 +44,12 @@ function ProjectSearch()
     {
         var theKey: string = project._id;
         //NOTE: need code that gets member count
-
+        var numMembers = project.roles.backend + project.roles.frontend + project.roles.manager;
         return(
             <li key={theKey}>
                 <div className="projSearchCard" id={theKey}>
                     <p id="projName">{project.name}</p>
-                    <p id="memberCount" className="text-right">2 Members</p>
+                    <p id="memberCount" className="text-right">{numMembers} Members</p>
                     <div id="projDesc" className="projSearchCardDesc w-[50%]">{project.description}</div>
                     <button type="button" id="moreInfoButton" className="moreInfoButton" onClick={() => projMoreInfo(theKey)}>More Info</button>
                 </div> 
