@@ -52,6 +52,15 @@
   overflow-y: scroll;
 }
 
+#filterBar {
+  color: black;
+  background-color: white;
+  padding: 2px;
+  border: 1px solid black;
+  border-radius: 8px;
+  width: 30%;
+}
+
 .infoBox {
   background-color: white;
   position: absolute;
