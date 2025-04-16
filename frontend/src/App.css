@@ -58,7 +58,6 @@
   padding: 2px;
   border: 1px solid black;
   border-radius: 8px;
-  width: 30%;
 }
 
 .infoBox {
@@ -209,17 +208,12 @@
 #searchBar {
   color: black;
   background-color: white;
-  padding: 2px;
-  border: 1px solid black;
   border-radius: 8px;
-  width: 70%;
 }
 
 .searchButton {
   color: white;
   background-color: #598392;
-  margin-left: 10%;
-  width: 20%;
   border-radius: 12px;
 }
 
