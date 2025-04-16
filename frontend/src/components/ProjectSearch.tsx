@@ -51,7 +51,7 @@ function ProjectSearch()
                     <p id="projName">{project.name}</p>
                     <p id="memberCount" className="text-right">2 Members</p>
                     <div id="projDesc" className="projSearchCardDesc w-[50%]">{project.description}</div>
-                    <button type="button" id="moreInfoButton" className="moreInfoButton" onClick={projMoreInfo}>More Info</button>
+                    <button type="button" id="moreInfoButton" className="moreInfoButton" onClick={() => projMoreInfo(theKey)}>More Info</button>
                 </div> 
             </li>
         );
@@ -67,18 +67,6 @@ function ProjectSearch()
     const doSearch = async (event: React.FormEvent) =>
     {
         event.preventDefault();
-        //REFERENCE BELOW
-        /*
-        let newList: React.ReactElement[] = [];
-        for(let i=0; i<3; ++i)
-        {
-            let t = createNewCard(i);
-            newList = [...newList, t];
-        }
-        setTheResults(newList);
-        */
-        //const obj = {name: searchInfo, required_skills: ''};
-        //const js = JSON.stringify(obj);
 
         try
         {
@@ -113,11 +101,11 @@ function ProjectSearch()
 
     }
 
-    function projMoreInfo()
+    function projMoreInfo(theId: string)
     {
         alert("WIP");
-        //later: redirect to '/projects/{id}'
-        //return '';
+        const newUrl = '/projects/' + theId;
+        window.location.href = newUrl;
     }
 
     return(
