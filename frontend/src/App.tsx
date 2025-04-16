@@ -10,6 +10,7 @@ import { getVersion, isProd } from './utils';
 import ProjectPage from './pages/ProjectPage';
 import UserProfilePage from './pages/UserProfilePage';
 import BrowseProjectsPage from './pages/BrowseProjectsPage';
+import VerifyEmailPage from './pages/VerifyEmailPage';
 
 function App() {
 
@@ -26,7 +27,8 @@ function App() {
             <Routes>
                 <Route path="/" element={<LoginPage />} />
                 <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<SignupPage />} />
+                <Route path="/register" element={<VerifyEmailPage />} />
+                <Route path="/verify-email" element={<SignupPage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/userprofile" element={<UserProfilePage />} />
                 <Route path="/browse" element={<BrowseProjectsPage />} />

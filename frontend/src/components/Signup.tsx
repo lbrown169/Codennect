@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { isProd } from '../utils';
+import { useSearchParams } from 'react-router-dom';
 
 const app_name = "cop4331.tech";
 
@@ -14,6 +15,7 @@ function buildPath(route: string) : string {
 
 function Signup()
 {
+    const [searchParams, _] = useSearchParams();
     const [message, setMessage] = useState(''); // Success/error msg
     const [signupFullName, setSignupFullName] = useState(''); // Name state
     const [signupEmail, setSignupEmail] = useState(''); // Email state
@@ -71,22 +73,28 @@ function Signup()
         }
 
         setIsLoading(true); // Disable form
-        const obj = { name: signupFullName, email: signupEmail, password: signupPassword };
+        const obj = { token: searchParams.get("token"), name: signupFullName, email: signupEmail, password: signupPassword };
         const js = JSON.stringify(obj);
 
         try
         {
-            const response = await fetch(buildPath('/api/register'),
+            const response = await fetch(buildPath('/api/verify-email'),
             { 
                 method: 'POST',
                 body: js,
                 headers: { 'Content-Type': 'application/json' }
             });
-            const res = await response.json(); // Parse response
+            const res = await response.json();
 
-            if (res.error || res.id < 0)
-            {
-                setMessage(res.error || 'Signup failed');
+            if (res.error) {
+                // Show error returned from server
+                setMessage(res.error);
+            } else {
+                // Success case: Notify user and redirect to login
+                setMessage('Account created successfully! Redirecting to login...');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
             }
         }
         catch (error: any)
@@ -99,6 +107,20 @@ function Signup()
             setIsLoading(false); // Enable form
         }
     };
+
+    useEffect(() => {
+        // Grabs token from URL params (?token=abc123)
+        const token = searchParams.get('token');
+
+        if (!token) {
+            // If no token is found, redirect user back to registration
+            setMessage('No verification token provided. Redirecting...');
+            setTimeout(() => {
+                window.location.href = '/register';
+            }, 2000);
+            return;
+        }
+    }, [searchParams]);
 
     return (
         <div id="signupDiv" className="accountBox">
