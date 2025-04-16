@@ -8,7 +8,6 @@ import { Driver } from "../repo/Driver.js";
 
 const AuthRouter = express.Router();
 
-const JWT_SECRET = process.env.JWT_SECRET_KEY || "your-secret-key"; // Store secret in env variable
 const JWT_EXPIRES_IN = "1h";
 
 // Route to accept email and send verification
@@ -119,9 +118,13 @@ AuthRouter.post("/api/login", async (req: Request, res: Response) => {
         return;
     }
 
-    const token = jwt.sign({ _id: theUser._id }, JWT_SECRET, {
-        expiresIn: JWT_EXPIRES_IN,
-    });
+    const token = jwt.sign(
+        { _id: theUser._id },
+        process.env.JWT_SECRET_KEY || "your-secret-key",
+        {
+            expiresIn: JWT_EXPIRES_IN,
+        }
+    );
 
     // Cookie res
     res.cookie("token", token, {

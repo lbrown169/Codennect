@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
 import { getVersion, isProd } from './utils';
+import ProjectPage from './pages/ProjectPage';
 function App() {
 
     if (isProd()) {
@@ -24,6 +25,8 @@ function App() {
                 <Route path="/register" element={<SignupPage />}>
                 </Route>
                 <Route path="/dashboard" element={<DashboardPage />}>
+                </Route>
+                <Route path="/projects/:project_id" element={<ProjectPage />}>
                 </Route>
             </Routes>
         </Router>

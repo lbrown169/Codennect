@@ -20,7 +20,6 @@ import RequestRouter from "./routers/RequestRouter.js";
 config();
 
 const app = express();
-const JWT_SECRET = process.env.JWT_SECRET_KEY || "your-secret-key"; // Store secret in env variable
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -43,7 +42,10 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
 
     if (token) {
         try {
-            const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+            const decoded = jwt.verify(
+                token,
+                process.env.JWT_SECRET_KEY || "your-secret-key"
+            ) as JwtPayload;
             res.locals.user = await driver.userRepository.GetById(decoded._id);
         } catch (err) {
             res.clearCookie("token");

@@ -9,6 +9,13 @@ export class StaticRequestRepository implements RequestRepository {
             ["frontend"],
             "Would love to join frontend!"
         ),
+        new Request(
+            "1234-5678",
+            "1",
+            RequestType.INVITE,
+            ["frontend"],
+            "Would love to have you join frontend!"
+        ),
     ];
 
     async GetRequest(
