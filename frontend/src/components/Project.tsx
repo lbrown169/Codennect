@@ -48,38 +48,6 @@ export function ProjectComp({ pid }: {pid: string}) {
             setProject(await response.json())
         }
 
-        // setProject({
-        //     "_id": "1234-5678",
-        //     "name": "Testing Project",
-        //     "domain": "",
-        //     "owner": "0",
-        //     "is_private": true,
-        //     "description": "A testing project for a testing world",
-        //     "fields": [
-        //         {
-        //             "name": "App URL",
-        //             "value": "https://example.com",
-        //             "private": false
-        //         },
-        //         {
-        //             "name": "Github URL",
-        //             "value": "https://github.com/lbrown169/Codennect",
-        //             "private": false
-        //         }
-        //     ],
-        //     "roles": {
-        //         "Manager": 2,
-        //         "Frontend": 2
-        //     },
-        //     "users": {
-        //         "Manager": [
-        //             "0"
-        //         ]
-        //     },
-        //     "required_skills": ["React", "Next.js", "Flutter"]
-        // })
-        // setLoading(false);
-
         fetchData();
     }, [pid, refresh])
 
@@ -130,12 +98,6 @@ export function ProjectComp({ pid }: {pid: string}) {
 
             setMembers(tempMembers)
         }
-
-        // setOwner({"name": "Logan Brown", "user_id": "99"})
-        // setMembers({
-        //     "Backend": [{"name": "John Doe", "user_id": "0"}, {"name": "Jane Doe", "user_id": "1"}, {"name": "Jane Doe", "user_id": "2"}, {"name": "Jane Doe", "user_id": "3"}, {"name": "Jane Doe", "user_id": "4"}],
-        //     "Frontend": [{"name": "Jane Doe", "user_id": "0"}, {"name": "John Doe", "user_id": "1"}],
-        // })
 
         fetchData();
     }, [project, refresh])
