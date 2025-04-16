@@ -123,6 +123,7 @@ function Login()
                 </div>
             </form>
             <p>New user? Sign up <a href="/register">here</a>!</p>
+            <p>Forgot your password? <a href="/forgot-password">Click here</a></p>
         </div>
     );
 }

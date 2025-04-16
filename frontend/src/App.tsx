@@ -3,6 +3,9 @@ import './App.css';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+
 import { getVersion, isProd } from './utils';
 import ProjectPage from './pages/ProjectPage';
 function App() {
@@ -16,20 +19,18 @@ function App() {
     }
 
     return (
-        <Router >
+        <Router>
             <Routes>
-                <Route path="/" element={<LoginPage />}>
-                </Route>
-                <Route path="/login" element={<LoginPage />}>
-                </Route>
-                <Route path="/register" element={<SignupPage />}>
-                </Route>
-                <Route path="/dashboard" element={<DashboardPage />}>
-                </Route>
-                <Route path="/projects/:project_id" element={<ProjectPage />}>
-                </Route>
+                <Route path="/" element={<LoginPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<SignupPage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+                <Route path="/projects/:project_id" element={<ProjectPage />} />
             </Routes>
         </Router>
     );
 }
+
 export default App;
