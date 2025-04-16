@@ -156,7 +156,7 @@ export function ProjectSidebar({ owner, members, project, setRefresh }: {owner: 
             return;
         }
 
-        setRefresh(crypto.randomUUID()) // Force a refresh of the project and members
+        setRefresh(Math.random().toString()) // Force a refresh of the project and members
         setInvites([])
         setApplications([])
         await fetchRequests();
@@ -179,7 +179,7 @@ export function ProjectSidebar({ owner, members, project, setRefresh }: {owner: 
             return;
         }
 
-        setRefresh(crypto.randomUUID()) // Force a refresh of the project and members
+        setRefresh(Math.random().toString()) // Force a refresh of the project and members
         setInvites([])
         setApplications([])
         await fetchRequests();
@@ -219,7 +219,7 @@ export function ProjectSidebar({ owner, members, project, setRefresh }: {owner: 
             return;
         }
 
-        setRefresh(crypto.randomUUID()) // Force a refresh of the project and members
+        setRefresh(Math.random().toString()) // Force a refresh of the project and members
         setInvites([])
         setApplications([])
         await fetchRequests();
