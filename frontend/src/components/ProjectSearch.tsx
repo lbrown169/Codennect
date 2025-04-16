@@ -43,7 +43,6 @@ function ProjectSearch()
     const createNewCard = (project: Project) =>
     {
         var theKey: string = project._id;
-        //NOTE: need code that gets member count
         var numMembers = project.roles.backend + project.roles.frontend + project.roles.manager;
         return(
             <li key={theKey}>
@@ -58,10 +57,16 @@ function ProjectSearch()
     }
     const [theResults, setTheResults] = useState<React.ReactElement[]>([]);
     const [searchInfo, setSearchInfo] = useState('');
+    const [searchFilter, setSearchFilter] = useState('');
 
     const handleSetSearchInfo = (event: React.ChangeEvent<HTMLInputElement>) =>
     {
         setSearchInfo(event.target.value);
+    }
+
+    const handleSetSearchFilter = (event: React.ChangeEvent<HTMLInputElement>) =>
+    {
+        setSearchFilter(event.target.value);
     }
 
     const doSearch = async (event: React.FormEvent) =>
@@ -103,15 +108,16 @@ function ProjectSearch()
 
     function projMoreInfo(theId: string)
     {
-        alert("WIP");
         const newUrl = '/projects/' + theId;
         window.location.href = newUrl;
+        return;
     }
 
     return(
         <div id="searchBox" className="searchBox">
             <form id="searchArea" onSubmit={doSearch}>
                 <input type="text" id="searchBar" placeholder="Search Projects" value={searchInfo} onChange={handleSetSearchInfo} />
+                <input type="text" id="filterBar" placeholder="Filter by skills (separate with commas, no space)" value={searchFilter} onChange={handleSetSearchFilter} />
                 <input type="submit" id="searchButton" className="searchButton" value="Search" />
             </form>
             <span id="searchResults" className="searchResults">
