@@ -10,19 +10,11 @@ function LoggedIn()
     //var userId = userData.id;
     var userName = userData.name;
 
-    const doLogout = (event:any) =>
-    {
-        event.preventDefault();
-        localStorage.removeItem("user_data");
-        window.location.href = '/';
-    };
-
     return(
         <div id="loggedInDiv">
             <div id="displayName">
-                <span id="fullName">Logged In As {userName}</span>
+                <span id="fullName" className="text-black text-lg">Logged In As {userName}</span>
             </div>
-            <button type="button" id="logoutButton" onClick={doLogout}>Log Out</button>
         </div>
     );
 
