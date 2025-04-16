@@ -6,7 +6,18 @@ import DashboardPage from './pages/DashboardPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 
+import { getVersion, isProd } from './utils';
+import ProjectPage from './pages/ProjectPage';
 function App() {
+
+    if (isProd()) {
+        console.info("[PRODUCTION] Codennect Web")
+        console.info("Version: " + getVersion())
+    } else {
+        console.info("[DEVELOPMENT] Codennect Web")
+        console.info("Version: " + getVersion())
+    }
+
     return (
         <Router>
             <Routes>
@@ -16,6 +27,7 @@ function App() {
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
+                <Route path="/projects/:project_id" element={<ProjectPage />} />
             </Routes>
         </Router>
     );
