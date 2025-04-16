@@ -1,109 +1,77 @@
+import { Request, NextFunction } from "express";
+import cookieParser from "cookie-parser";
+import bodyParser from "body-parser";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
+import jwt from "jsonwebtoken";
 import { config } from "dotenv";
-import { loadDatabaseDriver } from "./repo/Driver";
-import { User, UserRegistration, UserRepository } from "./domain/User";
+import express from "express";
+import cors from "cors";
 
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const path = require("path");
+import { getVersion, isProd, Response } from "./utils.js";
+import { loadDatabaseDriver } from "./repo/Driver.js";
+import { loadTransporter } from "./service/auth.js";
 
-const app = express();
-app.use(cors());
-app.use(bodyParser.json());
+import AuthRouter from "./routers/AuthRouter.js";
+import UserRouter from "./routers/UserRouter.js";
+import ProjectRouter from "./routers/ProjectRouter.js";
+import RequestRouter from "./routers/RequestRouter.js";
 
 config();
 
+const app = express();
+
+app.use(cors());
+app.use(bodyParser.json());
+app.use(express.json());
+app.use(cookieParser(process.env.SIGNING_KEY));
+
 let driver = loadDatabaseDriver();
+let transporter = loadTransporter();
 
-app.post("/api/login", async (req, res, next) => {
-  // incoming: email, password
-  // outgoing: id, name, error
+app.locals.driver = driver;
+app.locals.transporter = transporter;
 
-  var error = "";
-  const { email, password } = req.body;
-  const db = driver;
+interface JwtPayload {
+    _id: string;
+}
 
-  const theUser = await db.userRepository.GetByEmailAndPassword(
-    email,
-    password
-  );
+app.use(async (req: Request, res: Response, next: NextFunction) => {
+    res.locals.user = undefined;
+    const token = req.signedCookies.token;
 
-  // more specific error based on email OR password
-  if (theUser == null) {
-    return res.status(400).json({ error: "User not found!" });
-  }
+    if (token) {
+        try {
+            const decoded = jwt.verify(
+                token,
+                process.env.JWT_SECRET_KEY || "your-secret-key"
+            ) as JwtPayload;
+            res.locals.user = await driver.userRepository.GetById(decoded._id);
+        } catch (err) {
+            res.clearCookie("token");
+        }
+    }
 
-  res.status(200).json({ id: theUser._id, name: theUser.name, error: "" });
+    next();
 });
 
-app.post("/api/register", async (req, res, next) => {
-  // incoming: name, email, password
-  // outgoing: id, error
-  // return new credentials?
+app.use(AuthRouter);
+app.use(UserRouter);
+app.use(ProjectRouter);
+app.use(RequestRouter);
 
-  var error = "";
-  const { name, email, password } = req.body;
-  const db = driver;
-
-  // make sure there's not already a user with this login
-  const existingUser = await db.userRepository.GetByEmail(email);
-
-  // if there is one, send an error
-  if (existingUser != null) {
-    return res.status(400).json({ error: "User already exists!" });
-  }
-
-  // create new user instance
-  const newUser = new UserRegistration(name, email, password);
-
-  // insert the new user into the database using UserRepo
-  const registeredUser = await db.userRepository.Register(newUser);
-
-  // return a successful registration message
-  res.status(201).json({ error: "User registered successfully!" });
-}); 
-
-app.post("/api/get-user-info", async (req, res) => {
-  // incoming: user id
-  // outgoing: all the user info
-
-  const { id } = req.body;
-  const db = driver;
-
-  const theUser = await db.userRepository.GetById(id);
-
-  // more specific error based on email OR password
-  if (theUser == null) {
-    return res.status(400).json({ error: "User not found!" });
-  }
-
-  res.status(200).json(theUser);
-});
-
-// app.post("/api/edit-user-info", async (req, res) => {
-//   // incoming: user id
-//   // outgoing: all the user info
-
-//   const { id } = req.body;
-//   const db = driver;
-
-//   const theUser = await db.userRepository.GetById(id);
-
-//   // more specific error based on email OR password
-//   if (theUser == null) {
-//     return res.status(400).json({ error: "User not found!" });
-//   }
-
-//   // the same as getting the user up to this point, then get into editing it
-//     // 
-
-//   res.status(200).json(theUser);
-// });
-
+const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static(path.join(__dirname, "../build")));
 
-app.get("*", (req, res) =>
-  res.sendFile(path.resolve(__dirname, "..", "build", "index.html"))
+app.get("*", (req: Request, res: Response) =>
+    res.sendFile(path.resolve(__dirname, "..", "build", "index.html"))
 );
 
-app.listen(5001);
+if (isProd()) {
+    console.info("[PROD] Codennect web launching...");
+} else {
+    console.info("[DEV] Codennect web launching...");
+}
+console.info("Running on version " + getVersion());
+
+app.listen(5001, () => console.log("Listening on 5001"));

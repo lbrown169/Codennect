@@ -1,9 +1,9 @@
-import { Account } from "./Account";
-import { Invite } from "./Invite";
+import { Account } from "../domain/Account.js";
 
 export class User {
     _id: string;
     name: string;
+    isPrivate: boolean;
     email: string;
     comm: string;
     skills: string[];
@@ -11,22 +11,22 @@ export class User {
     interests: string[];
     accounts: Account[];
     projects: string[];
-    invites: Invite[];
 
     constructor(
         _id: string,
         name: string,
+        isPrivate: boolean,
         email: string,
         comm: string,
         skills: string[],
         roles: string[],
         interests: string[],
         accounts: Account[],
-        projects: string[],
-        invites: Invite[]
+        projects: string[]
     ) {
         this._id = _id;
         this.name = name;
+        this.isPrivate = isPrivate;
         this.email = email;
         this.comm = comm;
         this.skills = skills;
@@ -34,7 +34,11 @@ export class User {
         this.interests = interests;
         this.accounts = accounts;
         this.projects = projects;
-        this.invites = invites;
+    }
+
+    toJson(): Object {
+        const { email, projects, ...trimmed } = this;
+        return trimmed;
     }
 }
 
@@ -51,6 +55,7 @@ export class UserRegistration {
 }
 
 export interface UserRepository {
+    GetAll(): Promise<User[]>;
     GetById(id: string): Promise<User | undefined>;
     GetByEmail(email: string): Promise<User | undefined>;
     GetByEmailAndPassword(
@@ -58,4 +63,6 @@ export interface UserRepository {
         password: string
     ): Promise<User | undefined>;
     Register(user: UserRegistration): Promise<User>;
+    Update(id: string, updates: Partial<User>): Promise<boolean>;
+    UpdatePassword(id: string, newPassword: string): Promise<boolean>
 }
