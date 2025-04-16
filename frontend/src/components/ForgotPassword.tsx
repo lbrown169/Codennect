@@ -39,7 +39,7 @@ function ForgotPassword() {
         const js = JSON.stringify(obj);
 
         try {
-            const response = await fetch(buildPath('/api/forgot-password'), {
+            const response = await fetch(buildPath('/api/send-password-reset'), {
                 method: 'POST',
                 body: js,
                 headers: { 'Content-Type': 'application/json' },
@@ -50,6 +50,7 @@ function ForgotPassword() {
                 setMessage(res.error);
             } else {
                 setMessage('Reset code sent! Please check your email.');
+                window.location.href = "/reset-password"
             }
         } catch (error: any) {
             setMessage('Failed to send reset code. Please try again.');

@@ -70,11 +70,11 @@ function ResetPassword() {
         }
 
         setIsLoading(true);
-        const obj = { email, code, password };
+        const obj = { email, verificationCode: code, newPassword: password };
         const js = JSON.stringify(obj);
 
         try {
-            const response = await fetch(buildPath('/api/reset-password'), {
+            const response = await fetch(buildPath('/api/change-password'), {
                 method: 'POST',
                 body: js,
                 headers: { 'Content-Type': 'application/json' },
