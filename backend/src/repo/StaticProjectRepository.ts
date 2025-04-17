@@ -56,12 +56,12 @@ export class StaticProjectRepository implements ProjectRepository {
 
     async GetByPartialName(name: string): Promise<Project[]> {
         return this._internal.filter(
-            (project) => project.name.includes(name) && !project.is_private
+            (project) => project.name.includes(name) && !project.isPrivate
         )
     }
 
     async GetAll(): Promise<Project[]> {
-        return this._internal.filter((project) => !project.is_private)
+        return this._internal.filter((project) => !project.isPrivate)
     }
 
     async Create(project: ProjectCreation): Promise<Project> {
@@ -70,7 +70,7 @@ export class StaticProjectRepository implements ProjectRepository {
             project.name,
             '',
             project.owner,
-            project.is_private,
+            project.isPrivate,
             '',
             [],
             {},

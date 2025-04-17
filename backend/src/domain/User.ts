@@ -15,7 +15,7 @@ export class User {
     constructor(
         _id: string,
         name: string,
-        isPrivate: boolean,
+        isPrivate: boolean = false, // default to public to make easier?
         email: string,
         comm: string,
         skills: string[],

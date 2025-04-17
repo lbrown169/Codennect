@@ -186,7 +186,7 @@ ProjectRouter.post(
         /*
         name: string
         description: string
-        is_private: boolean
+        isPrivate: boolean
     */
         if (!res.locals.user) {
             res.status(401).json({
@@ -197,7 +197,7 @@ ProjectRouter.post(
         const {
             name,
             description,
-            is_private,
+            isPrivate,
             required_skills,
             fields,
             roles,
@@ -205,7 +205,7 @@ ProjectRouter.post(
         const db: Driver = req.app.locals.driver;
 
         // Check for the required parameters
-        if ([name, description, is_private].includes(undefined)) {
+        if ([name, description, isPrivate].includes(undefined)) {
             res.status(400).json({
                 error: "Project name, description, and visibility is required",
             });
@@ -216,7 +216,7 @@ ProjectRouter.post(
             name,
             "",
             res.locals.user?._id,
-            is_private,
+            isPrivate,
             description,
             fields,
             roles,

@@ -112,6 +112,8 @@ UserRouter.get("/api/get-all-users", async (req: Request, res: Response) => {
     }
     const db: Driver = req.app.locals.driver;
 
+    // add privacy limit here?
+
     try {
         let users = await db.userRepository.GetAll();
         res.status(200).json(users.map((user) => user.toJson()));
