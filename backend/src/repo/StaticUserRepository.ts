@@ -148,7 +148,7 @@ export class StaticUserRepository implements UserRepository {
         const newUser = new StaticUser(
             randomInt(1000000).toString(),
             user.name,
-            true,
+            false,
             user.email,
             "",
             [],
