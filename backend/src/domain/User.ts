@@ -11,6 +11,11 @@ export class User {
     interests: string[];
     accounts: Account[];
     projects: string[];
+    verification: {
+        code: string,
+        newUser: boolean,
+        expires: string
+    };
 
     constructor(
         _id: string,
@@ -22,7 +27,12 @@ export class User {
         roles: string[],
         interests: string[],
         accounts: Account[],
-        projects: string[]
+        projects: string[],
+        verification: {
+            code: string,
+            newUser: boolean,
+            expires: string
+        }
     ) {
         this._id = _id;
         this.name = name;
@@ -34,6 +44,7 @@ export class User {
         this.interests = interests;
         this.accounts = accounts;
         this.projects = projects;
+        this.verification = verification;
     }
 
     toJson(): Object {

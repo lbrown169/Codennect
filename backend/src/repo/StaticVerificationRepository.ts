@@ -1,3 +1,5 @@
+// Mamma mia
+/*
 import { VerificationCodeRepository } from "../domain/Verification.js";
 
 interface Verification {
@@ -39,3 +41,4 @@ export class StaticVerificationRepository
         return false;
     }
 }
+*/

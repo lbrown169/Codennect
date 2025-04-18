@@ -171,10 +171,19 @@ AuthRouter.post(
     // make a random 6 digit code
     const verificationCode = Math.floor(100000 + Math.random() * 900000);
     const stringCode = verificationCode.toString(); // turn to string
+    const expiresIn = Date.now() + 15 * 60 * 1000;
+    const stringExpire = expiresIn.toString(); // turn this to a string too
     const userBeingReset = await db.verificationRepository.RegisterVerification(
       email,
       stringCode
     );
+
+    // New verification parameters TODO make sure this is valid
+    existingUser.verification = {
+      code: stringCode,
+      newUser: false,
+      expires: stringExpire
+    };
 
     // Email
     if (req.app.locals.transporter) {
