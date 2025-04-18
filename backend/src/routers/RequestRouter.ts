@@ -56,7 +56,7 @@ RequestRouter.get("/api/requests", async (req: Request, res: Response) => {
         }
     }
 
-    res.status(200).json(response);
+    res.status(200).json({ error: "", result: response });
 });
 
 RequestRouter.post("/api/requests", async (req: Request, res: Response) => {

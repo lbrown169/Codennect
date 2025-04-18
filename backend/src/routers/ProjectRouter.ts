@@ -29,7 +29,7 @@ ProjectRouter.get(
                 projects.push(p);
             }
         }
-        res.status(200).json(projects);
+        res.status(200).json({error: "", result: projects});
     }
 );
 
@@ -64,16 +64,16 @@ ProjectRouter.get("/api/get-project", async (req: Request, res: Response) => {
     try {
         theProject = await db.projectRepository.GetById(id.toString());
     } catch {
-        res.status(400).json({ error: "Project ID error!" });
+        res.status(400).json({ error: "Project ID error!", });
         return;
     }
 
     if (theProject == null) {
-        res.status(400).json({ error: "Project not found!" });
+        res.status(400).json({ error: "Project not found!", });
         return;
     }
 
-    res.status(200).json(theProject);
+    res.status(200).json({ error: "", result: theProject });
 });
 
 ProjectRouter.post("/api/edit-project", async (req: Request, res: Response) => {
@@ -109,7 +109,7 @@ ProjectRouter.post("/api/edit-project", async (req: Request, res: Response) => {
     const db: Driver = req.app.locals.driver;
 
     if (!id || !updates || typeof updates !== "object") {
-        res.status(400).json({ error: "Invalid request format" });
+        res.status(400).json({ error: "Invalid request format", });
         return;
     }
 
@@ -117,12 +117,12 @@ ProjectRouter.post("/api/edit-project", async (req: Request, res: Response) => {
     try {
         project = await db.projectRepository.GetById(id);
     } catch {
-        res.status(400).json({ error: "Invalid ID format!" });
+        res.status(400).json({ error: "Invalid ID format!", });
         return;
     }
 
     if (!project || !res.locals.user.projects.includes(project._id)) {
-        res.status(404).json({ error: "Project not found" });
+        res.status(404).json({ error: "Project not found", });
         return;
     }
 
@@ -141,13 +141,13 @@ ProjectRouter.post("/api/edit-project", async (req: Request, res: Response) => {
     const success = await db.projectRepository.Update(id, trimmed);
 
     if (!success) {
-        res.status(400).json({ error: "Project not found or no changes made" });
+        res.status(400).json({ error: "Project not found or no changes made", });
         return;
     }
 
     project = await db.projectRepository.GetById(id);
 
-    res.status(200).json({ success: true, updatedProject: project });
+    res.status(200).json({ error: "", success: true, updatedProject: project });
 });
 
 ProjectRouter.get(
@@ -190,9 +190,9 @@ ProjectRouter.get(
                 );
             }
 
-            res.status(200).json(projects);
+            res.status(200).json({ error: "", result: projects });
         } catch (err) {
-            res.status(500).json({ error: "Error retrieving projects." });
+            res.status(500).json({ error: "Error retrieving projects.", });
         }
     }
 );
@@ -257,6 +257,7 @@ ProjectRouter.post(
         });
 
         res.status(200).json({
+            error: "",
             success: "Project created!",
             project: enterProject,
         });
