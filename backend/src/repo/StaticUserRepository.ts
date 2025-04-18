@@ -1,6 +1,6 @@
 import { Account } from "../domain/Account.js";
 import { HashPassword } from "../service/auth.js";
-import { User, UserRegistration, UserRepository } from "../domain/User.js";
+import { User, UserRegistration, UserRepository, VerificationInUser } from "../domain/User.js";
 import { randomInt } from "crypto";
 import bcrypt from "bcrypt";
 
@@ -18,11 +18,7 @@ class StaticUser extends User {
         interests: string[],
         accounts: Account[],
         projects: string[],
-        verification : {
-            code: string,
-            newUser: boolean,
-            expires: string
-        },
+        verification : VerificationInUser | null,
         password: string
     ) {
         super(
@@ -63,7 +59,7 @@ export class StaticUserRepository implements UserRepository {
                 ["games"],
                 [],
                 ["1234-5678", "8765-4321"],
-                {code: "", newUser: false, expires: ""},
+                null,
                 "$2b$10$px4/4rdjDTmlqv9nd0/A8OTOMwUUEx.wIgXua/AtS0IdTnzgGvAUG" //"SuperSecret123!"
             ),
             new StaticUser(
@@ -77,7 +73,7 @@ export class StaticUserRepository implements UserRepository {
                 ["games"],
                 [],
                 ["8765-4321"],
-                {code: "", newUser: false, expires: ""},
+                null,
                 "$2b$10$Qs8T/bvyZ20GaQo2tLCEge1F3XGZkyODeibH2dTJbBmUet/WYnBje" //"VeryS3cureP4ssw0!d"
             ),
         ];
@@ -107,6 +103,16 @@ export class StaticUserRepository implements UserRepository {
     async GetByEmail(email: string): Promise<User | undefined> {
         return this._trim(this._internal.find((user) => user.email === email));
     }
+
+    // async GetByCode(verification: VerificationInUser): Promise<User | undefined> {
+    //     if (verification == null){
+    //         return undefined;
+    //     }
+    //     if (verification.newUser == false){
+    //         return undefined;
+    //     }
+    //     return this._trim(this._internal.find((user) => user.verification === verification));
+    // }
 
     async GetByEmailAndPassword(
         email: string,
@@ -150,7 +156,7 @@ export class StaticUserRepository implements UserRepository {
             [],
             [],
             [],
-            {code: "", newUser: false, expires: ""},
+            user.verification,
             await HashPassword(user.password)
         );
 
@@ -181,6 +187,28 @@ export class StaticUserRepository implements UserRepository {
 
         // update the found user's password
         (user as any).password = newHashedPassword;
+
+        return true;
+    }
+
+    async ValidateVerification(code: string): Promise<boolean> {
+        const user = this._internal.find(
+            (user) => user.verification?.code === code
+        );
+    
+        if (!user) return false;
+    
+        return true;
+    }
+
+    async DeleteVerification(code: string): Promise<boolean> {
+        // find user, return false if not found
+        const user = this._internal.find((user) => user.verification?.code === code);
+
+        if (!user) return false;
+
+        // update the found user
+        (user as any).verification = null;
 
         return true;
     }

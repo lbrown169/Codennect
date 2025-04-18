@@ -2,7 +2,7 @@ import express, { Request } from "express";
 import { randomBytes } from "crypto";
 import jwt from "jsonwebtoken";
 
-import { UserRegistration } from "../domain/User.js";
+import { UserRegistration, VerificationInUser } from "../domain/User.js";
 import { buildUrl, Response } from "../utils.js";
 import { Driver } from "../repo/Driver.js";
 import { config } from "dotenv";
@@ -14,12 +14,18 @@ const JWT_EXPIRES_IN = "1h";
 
 // Route to accept email and send verification
 AuthRouter.post("/api/register", async (req: Request, res: Response) => {
-  const { email } = req.body;
+  const { name, email, password } = req.body;
   const db: Driver = req.app.locals.driver;
 
   // Check for email, then see if one ties to a user
   if (!email) {
     res.status(400).json({ error: "Email is required", });
+    return;
+  }
+
+  // Check that name and password are valid entries
+  if (!name || !password) {
+    res.status(400).send({ error: "Invalid name or password.", });
     return;
   }
 
@@ -31,13 +37,15 @@ AuthRouter.post("/api/register", async (req: Request, res: Response) => {
     return;
   }
 
-  // Enter user into verification purgatory and don't register until verification is complete
-  await db.verificationRepository.DeleteVerification(email); // Delete if applicable
-  const token = randomBytes(32).toString("hex"); // Generate token
-  const notYetUser = await db.verificationRepository.RegisterVerification(
-    email,
-    token
-  ); // Add
+  // Generate token and put into registration object
+  const token = randomBytes(32).toString("hex");
+  const userVerification = {code: token, newUser: true, expires: Date.now() + 15 * 60 * 1000} as VerificationInUser;
+
+  // add user to repo
+  const newUser = new UserRegistration(name, email, password, userVerification);
+
+  // insert the new user into the database using UserRepo
+  const registeredUser = await db.userRepository.Register(newUser);
 
   // Link to email
   const verificationLink = buildUrl(`/verify-email?token=${token}`);
@@ -68,33 +76,18 @@ AuthRouter.post("/api/register", async (req: Request, res: Response) => {
 // Route to verify token
 AuthRouter.post("/api/verify-email", async (req: Request, res: Response) => {
   // This is why we need the token in the database
-  const { token, name, email, password } = req.body;
+  const { token, email } = req.body;
   const db: Driver = req.app.locals.driver;
 
-  // Check that name and password are valid entries
-  if (!name || !password) {
-    res.status(400).send({ error: "Invalid name or password.", });
-    return;
-  }
-
   // Validate token
-  const verifyAttempt = await db.verificationRepository.ValidateVerification(
-    email,
-    token
-  );
+  const verifyAttempt = await db.userRepository.ValidateVerification(token);
   if (!verifyAttempt) {
     res.status(400).send({ error: "Invalid or expired token.", });
     return;
   }
 
-  // At this point, email is verified and we can register user
-  const newUser = new UserRegistration(name, email, password);
-
-  // insert the new user into the database using UserRepo
-  const registeredUser = await db.userRepository.Register(newUser);
-  const deleteVerification = await db.verificationRepository.DeleteVerification(
-    email
-  );
+  // once user is verified, can remove the verification and make user usable
+  await db.userRepository.DeleteVerification(token);
 
   // return a successful registration message
   res.status(201).json({ error: "", result: "User registered successfully!", });
@@ -165,21 +158,15 @@ AuthRouter.post(
       return;
     }
 
-    // Enter user into verification purgatory to store code
-    await db.verificationRepository.DeleteVerification(email); // Delete if applicable
     // make a random 6 digit code
     const verificationCode = Math.floor(100000 + Math.random() * 900000);
     const stringCode = verificationCode.toString(); // turn to string
-    const userBeingReset = await db.verificationRepository.RegisterVerification(
-      email,
-      stringCode
-    );
 
     // New verification parameters TODO make sure this is valid
     existingUser.verification = {
       code: stringCode,
       newUser: false,
-      expires: JWT_EXPIRES_IN
+      expires: Date.now() + 15 * 60 * 1000 // expires in 15 mins
     };
 
     // Email
@@ -222,8 +209,7 @@ AuthRouter.post("/api/change-password", async (req: Request, res: Response) => {
   }
 
   // Validate token
-  const verifyAttempt = await db.verificationRepository.ValidateVerification(
-    email,
+  const verifyAttempt = await db.userRepository.ValidateVerification(
     verificationCode
   );
   if (!verifyAttempt) {
@@ -248,7 +234,7 @@ AuthRouter.post("/api/change-password", async (req: Request, res: Response) => {
     return;
   }
 
-  await db.verificationRepository.DeleteVerification(email);
+  await db.userRepository.DeleteVerification(verificationCode);
 
   // return a successful password change message
   res.status(201).json({ error: "", result: "Password changed successfully!", });

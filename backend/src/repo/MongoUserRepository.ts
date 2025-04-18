@@ -1,4 +1,4 @@
-import { User, UserRegistration, UserRepository } from "../domain/User.js";
+import { User, UserRegistration, UserRepository, VerificationInUser } from "../domain/User.js";
 import { HashPassword } from "../service/auth.js";
 
 import { Collection, Db, ObjectId } from "mongodb";
@@ -77,6 +77,34 @@ export class MongoUserRepository implements UserRepository {
         );
     }
 
+    // async GetByCode(verification: VerificationInUser): Promise<User | undefined> {
+    //     // can't do this get by code function for an already-done user
+    //     if (verification == null){
+    //         return undefined;
+    //     }
+    //     if (verification.newUser == false){
+    //         return undefined;
+    //     }
+    //     let result = await this.collection.findOne({ verification: verification });
+    //     if (!result) {
+    //         return undefined;
+    //     }
+
+    //     return new User(
+    //         result._id.toString(),
+    //         result.name,
+    //         result.isPrivate,
+    //         result.email,
+    //         result.comm,
+    //         result.skills,
+    //         result.roles,
+    //         result.interests,
+    //         result.accounts,
+    //         result.projects,
+    //         result.verification
+    //     );
+    // }
+
     async GetByEmailAndPassword(
         email: string,
         password: string
@@ -126,6 +154,7 @@ export class MongoUserRepository implements UserRepository {
             roles: [],
             interests: [],
             projects: [],
+            verification: user.verification
         });
 
         let returning = await this.GetById(result.insertedId.toString());
@@ -161,5 +190,30 @@ export class MongoUserRepository implements UserRepository {
 
         // true if updated
         return result.modifiedCount > 0;
-      }
+    }
+
+    async ValidateVerification(code: string): Promise<boolean> {
+        let result = (await this.collection.findOne({
+            verification: { $ne: null },
+            "verification.code": code,
+        }));
+
+        if (result === null) {
+            return false;
+        }
+        if (result.expires < Date.now()) {
+            return false;
+        }
+        return true;
+    }
+
+    async DeleteVerification(code: string): Promise<boolean> {
+        let result = (await this.collection.updateOne(
+            { "verification.code": code },
+            { $set: { verification: null } } // do the update
+        ));
+
+        // true if updated
+        return true;
+    }
 }
