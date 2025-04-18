@@ -17,6 +17,11 @@ export function loadTransporter() {
     return mg;
 }
 
+// New home of the secret key
+export function jwtKey() {
+    return process.env.JWT_SECRET_KEY || "your-secret-key";
+}
+
 const saltRounds = 10; // Number of salt rounds (higher = more secure but slower)
 
 export async function HashPassword(password: string): Promise<string> {

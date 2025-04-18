@@ -133,7 +133,8 @@ AuthRouter.post("/api/login", async (req: Request, res: Response) => {
     maxAge: 3600000,
   });
 
-  res.json({ id: theUser._id, name: theUser.name, error: "" });
+  // Return token in json directly (yeah yeah, not a best practice)
+  res.json({error: "", id: theUser._id, name: theUser.name, "Authorization": token});
 });
 
 AuthRouter.post("/api/logout", async (req: Request, res: Response) => {
