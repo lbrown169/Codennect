@@ -144,8 +144,19 @@ export class MongoUserRepository implements UserRepository {
             throw new Error("A user with that email already exists");
         }
 
+                // name: string;
+            // isPrivate: boolean;
+                // email: string;
+                // comm: string;
+                // skills: string[];
+            // roles: string[];
+            // interests: string[];
+            // accounts: Account[];
+            // projects: string[];
+
         const result = await this.collection.insertOne({
             name: user.name,
+            isPrivate: false,
             email: user.email,
             password: await HashPassword(user.password),
             accounts: {},
