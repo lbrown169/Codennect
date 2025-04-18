@@ -126,6 +126,38 @@ RequestRouter.post("/api/requests", async (req: Request, res: Response) => {
             message
         )
     );
+
+    // Send email
+    const user = await db.userRepository.GetById(user_id);
+    if (!user) {
+        res.status(400).json({
+            error: "Bad request. Provided user not found.",
+        });
+        return;
+    }
+    if (req.app.locals.transporter) {
+        let t: IMailgunClient = req.app.locals.transporter;
+        let message;
+        if(is_invite == RequestType.INVITE) {
+            message = `
+            Hey there ${user.name},<br /><br />
+            You have been sent an invite to join the ${project.name} project! Be sure to check it out!
+        `;
+        } else { // application
+            message = `
+            Hey there ${user.name},<br /><br />
+            You have received a new application from a user wishing to join the ${project.name} project!
+        `;
+        }
+        const info = await t.messages.create(process.env.MAILGUN_DOMAIN!, {
+            from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
+            to: [user.email],
+            subject: `${project.name} Request Update`,
+            html: message,
+        });
+        console.log("Approval email sent.", info);
+    }
+
     res.status(200).json({
         error: "",
         success: "Request sent!",
@@ -300,7 +332,8 @@ RequestRouter.post(
             let t: IMailgunClient = req.app.locals.transporter;
             let message = `
                 Hey there ${user.name},<br /><br />
-                We regret to inform you that your request to join ${project.name} has been denied. If you have any questions, please direct them to the project owner.
+                We regret to inform you that your request to join ${project.name} has been denied.
+                If you have any questions, please direct them to the project owner.
             `;
             const info = await t.messages.create(process.env.MAILGUN_DOMAIN!, {
                 from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
