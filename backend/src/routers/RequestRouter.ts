@@ -24,6 +24,11 @@ RequestRouter.get("/api/requests", async (req: Request, res: Response) => {
         });
         return;
     }
+    if (res.locals.user.verification) {
+        res.status(412).json({
+            error: "Active verification detected.",
+        });
+    }
 
     const db: Driver = req.app.locals.driver;
 
@@ -62,6 +67,11 @@ RequestRouter.post("/api/requests", async (req: Request, res: Response) => {
             error: "Unauthorized. You must be logged in to perform this action.",
         });
         return;
+    }
+    if (res.locals.user.verification) {
+        res.status(412).json({
+            error: "Active verification detected.",
+        });
     }
 
     const { user_id, project_id, is_invite, roles, message } = req.body;
@@ -130,6 +140,11 @@ RequestRouter.post(
                 error: "Unauthorized. You must be logged in to perform this action.",
             });
             return;
+        }
+        if (res.locals.user.verification) {
+            res.status(412).json({
+                error: "Active verification detected.",
+            });
         }
         const { user_id, project_id, is_invite } = req.body;
         const db: Driver = req.app.locals.driver;
@@ -233,6 +248,11 @@ RequestRouter.post(
                 error: "Unauthorized. You must be logged in to perform this action.",
             });
             return;
+        }
+        if (res.locals.user.verification) {
+            res.status(412).json({
+                error: "Active verification detected.",
+            });
         }
         const { user_id, project_id, is_invite } = req.body;
         const db: Driver = req.app.locals.driver;

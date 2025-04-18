@@ -14,6 +14,11 @@ ProjectRouter.get(
             });
             return;
         }
+        if (res.locals.user.verification) {
+            res.status(412).json({
+                error: "Active verification detected.",
+            });
+        }
 
         const db: Driver = req.app.locals.driver;
 
@@ -37,6 +42,11 @@ ProjectRouter.get("/api/get-project", async (req: Request, res: Response) => {
             error: "Unauthorized. You must be logged in to perform this action.",
         });
         return;
+    }
+    if (res.locals.user.verification) {
+        res.status(412).json({
+            error: "Active verification detected.",
+        });
     }
 
     const { id } = req.query;
@@ -88,6 +98,11 @@ ProjectRouter.post("/api/edit-project", async (req: Request, res: Response) => {
             error: "Unauthorized. You must be logged in to perform this action.",
         });
         return;
+    }
+    if (res.locals.user.verification) {
+        res.status(412).json({
+            error: "Active verification detected.",
+        });
     }
 
     const { id, updates } = req.body; // TODO Double check with Logan that this works for updates
@@ -149,6 +164,11 @@ ProjectRouter.get(
             });
             return;
         }
+        if (res.locals.user.verification) {
+            res.status(412).json({
+                error: "Active verification detected.",
+            });
+        }
 
         const { name, required_skills } = req.query;
         const db: Driver = req.app.locals.driver;
@@ -193,6 +213,11 @@ ProjectRouter.post(
                 error: "Unauthorized. You must be logged in to perform this action.",
             });
             return;
+        }
+        if (res.locals.user.verification) {
+            res.status(412).json({
+                error: "Active verification detected.",
+            });
         }
         const {
             name,
