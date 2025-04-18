@@ -110,6 +110,13 @@ AuthRouter.post("/api/login", async (req: Request, res: Response) => {
     return;
   }
 
+  // check that user is verified
+  if (res.locals.user && res.locals.user.verification) {
+    res.status(412).json({
+        error: "Active verification detected.",
+    });
+}
+
   const token = jwt.sign(
     { _id: theUser._id },
     process.env.JWT_SECRET_KEY || "your-secret-key",
