@@ -127,6 +127,7 @@ RequestRouter.post("/api/requests", async (req: Request, res: Response) => {
         )
     );
     res.status(200).json({
+        error: "",
         success: "Request sent!",
         request: newRequest,
     });
@@ -236,7 +237,7 @@ RequestRouter.post(
             });
             console.log("Approval email sent.", info);
         }
-        res.status(200).json({ success: "Request approved." });
+        res.status(200).json({ error: "", result: "Request approved." });
     }
 );
 
@@ -309,7 +310,7 @@ RequestRouter.post(
             });
             console.log("Denial email sent.", info);
         }
-        res.status(200).json({ success: "Request denied." });
+        res.status(200).json({ error: "", result: "Request denied." });
     }
 );
 

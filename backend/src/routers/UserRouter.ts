@@ -19,7 +19,7 @@ UserRouter.get("/api/get-me", async (req: Request, res: Response) => {
         });
     }
 
-    res.status(200).json(res.locals.user);
+    res.status(200).json({ error: "", result: res.locals.user });
 });
 
 UserRouter.post("/api/edit-me", async (req: Request, res: Response) => {
@@ -48,7 +48,7 @@ UserRouter.post("/api/edit-me", async (req: Request, res: Response) => {
     const db: Driver = req.app.locals.driver;
 
     if (!updates || typeof updates !== "object") {
-        res.status(400).json({ error: "Invalid request format" });
+        res.status(400).json({ error: "Invalid request format", });
         return;
     }
 
@@ -60,7 +60,7 @@ UserRouter.post("/api/edit-me", async (req: Request, res: Response) => {
     );
 
     if (!success) {
-        res.status(400).json({ error: "User not found or no changes made" });
+        res.status(400).json({ error: "User not found or no changes made", });
         return;
     }
 
@@ -68,13 +68,13 @@ UserRouter.post("/api/edit-me", async (req: Request, res: Response) => {
     try {
         theUser = await db.userRepository.GetById(res.locals.user._id);
     } catch {
-        res.status(400).json({ error: "Invalid ID format!" });
+        res.status(400).json({ error: "Invalid ID format!", });
         return;
     }
 
     res.locals.user = theUser;
 
-    res.status(200).json({ success: true, updatedUser: theUser });
+    res.status(200).json({ error: "", success: true, updatedUser: theUser });
 });
 
 UserRouter.get("/api/get-user-info", async (req: Request, res: Response) => {
@@ -107,11 +107,11 @@ UserRouter.get("/api/get-user-info", async (req: Request, res: Response) => {
 
     // more specific error based on email OR password
     if (theUser == null) {
-        res.status(400).json({ error: "User not found!" });
+        res.status(400).json({ error: "User not found!", });
         return;
     }
 
-    res.status(200).json(theUser.toJson());
+    res.status(200).json({ error: "", result: theUser.toJson()});
 });
 
 UserRouter.get("/api/get-all-users", async (req: Request, res: Response) => {
@@ -136,9 +136,9 @@ UserRouter.get("/api/get-all-users", async (req: Request, res: Response) => {
 
     try {
         let users = await db.userRepository.GetAll();
-        res.status(200).json(users.map((user) => user.toJson()));
+        res.status(200).json({ error: "", result: users.map((user) => user.toJson()) });
     } catch (err) {
-        res.status(500).json({ error: "Error retrieving users." });
+        res.status(500).json({ error: "Error retrieving users.", });
     }
 });
 
