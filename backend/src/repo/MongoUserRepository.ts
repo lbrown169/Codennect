@@ -29,7 +29,8 @@ export class MongoUserRepository implements UserRepository {
                     result.roles,
                     result.interests,
                     result.accounts,
-                    result.projects
+                    result.projects,
+                    result.verification
                 )
         );
     }
@@ -50,7 +51,8 @@ export class MongoUserRepository implements UserRepository {
             result.roles,
             result.interests,
             result.accounts,
-            result.projects
+            result.projects,
+            result.verification
         );
     }
 
@@ -70,7 +72,8 @@ export class MongoUserRepository implements UserRepository {
             result.roles,
             result.interests,
             result.accounts,
-            result.projects
+            result.projects,
+            result.verification
         );
     }
 
@@ -103,7 +106,8 @@ export class MongoUserRepository implements UserRepository {
             result.roles,
             result.interests,
             result.accounts,
-            result.projects
+            result.projects,
+            result.verification
         );
     }
 

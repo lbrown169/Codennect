@@ -18,6 +18,11 @@ class StaticUser extends User {
         interests: string[],
         accounts: Account[],
         projects: string[],
+        verification : {
+            code: string,
+            newUser: boolean,
+            expires: string
+        },
         password: string
     ) {
         super(
@@ -30,7 +35,8 @@ class StaticUser extends User {
             roles,
             interests,
             accounts,
-            projects
+            projects,
+            verification
         );
         this.password = password;
     }
@@ -57,6 +63,7 @@ export class StaticUserRepository implements UserRepository {
                 ["games"],
                 [],
                 ["1234-5678", "8765-4321"],
+                {code: "", newUser: false, expires: ""},
                 "$2b$10$px4/4rdjDTmlqv9nd0/A8OTOMwUUEx.wIgXua/AtS0IdTnzgGvAUG" //"SuperSecret123!"
             ),
             new StaticUser(
@@ -70,6 +77,7 @@ export class StaticUserRepository implements UserRepository {
                 ["games"],
                 [],
                 ["8765-4321"],
+                {code: "", newUser: false, expires: ""},
                 "$2b$10$Qs8T/bvyZ20GaQo2tLCEge1F3XGZkyODeibH2dTJbBmUet/WYnBje" //"VeryS3cureP4ssw0!d"
             ),
         ];
@@ -87,7 +95,8 @@ export class StaticUserRepository implements UserRepository {
             user.roles,
             user.interests,
             user.accounts,
-            user.projects
+            user.projects,
+            user.verification
         );
     }
 
@@ -141,6 +150,7 @@ export class StaticUserRepository implements UserRepository {
             [],
             [],
             [],
+            {code: "", newUser: false, expires: ""},
             await HashPassword(user.password)
         );
 
