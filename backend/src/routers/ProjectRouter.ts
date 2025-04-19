@@ -76,7 +76,7 @@ ProjectRouter.get("/api/get-project", async (req: Request, res: Response) => {
     res.status(200).json({ error: "", result: theProject });
 });
 
-ProjectRouter.post("/api/edit-project", async (req: Request, res: Response) => {
+ProjectRouter.patch("/api/edit-project", async (req: Request, res: Response) => {
     // incoming: project id, updates to project
     // format (within the json):
     // "id": "65a1b2c3d4e5f67890123456",

@@ -204,7 +204,7 @@ AuthRouter.post(
 );
 
 // actually resets the password itself
-AuthRouter.post("/api/change-password", async (req: Request, res: Response) => {
+AuthRouter.patch("/api/change-password", async (req: Request, res: Response) => {
   // This is why we need the code in the database
   const { verificationCode, email, newPassword } = req.body;
   const db: Driver = req.app.locals.driver;

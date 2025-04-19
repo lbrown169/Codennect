@@ -22,7 +22,7 @@ UserRouter.get("/api/get-me", async (req: Request, res: Response) => {
     res.status(200).json({ error: "", result: res.locals.user });
 });
 
-UserRouter.post("/api/edit-me", async (req: Request, res: Response) => {
+UserRouter.patch("/api/edit-me", async (req: Request, res: Response) => {
     // incoming: user id, updates to user
     // format (within the json):
     // "updates": {
