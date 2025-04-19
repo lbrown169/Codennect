@@ -13,7 +13,7 @@ function LoggedIn()
     return(
         <div id="loggedInDiv">
             <div id="displayName">
-                <span id="fullName" className="text-black text-lg">Logged In As {userName}</span>
+                <h1 id="fullName" className="relative m-auto text-black text-center">Welcome, {userName}!</h1>
             </div>
         </div>
     );

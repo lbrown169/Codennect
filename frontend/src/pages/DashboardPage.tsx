@@ -1,12 +1,13 @@
 import LoggedIn from "../components/LoggedIn";
 import HeaderBar from "../components/HeaderBar";
+import MenuProjects from "../components/MenuProjects";
 const DashboardPage = () =>
 {
     return(
         <div>
             <HeaderBar />
             <LoggedIn />
-            <h1 className="text-center">Welcome!</h1>
+            <MenuProjects />
         </div>
     );
 }

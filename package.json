@@ -17,9 +17,14 @@
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.9",
     "concurrently": "^9.1.2",
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "postcss": "^8.5.3",
+    "postcss-preset-mantine": "^1.17.0",
+    "postcss-simple-vars": "^7.0.1"
   },
   "dependencies": {
+    "@mantine/core": "^7.17.4",
+    "@mantine/hooks": "^7.17.4",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.7",
