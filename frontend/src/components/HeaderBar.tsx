@@ -1,10 +1,9 @@
-function HeaderBar()
-{
-    const goHome = (_event: React.MouseEvent) =>
-    {
+import logo from '../assets/logo.png'; 
+
+function HeaderBar() {
+    const goHome = (_event: React.MouseEvent) => {
         var _ud = localStorage.getItem('user_data');
-        if(_ud == null) //redirect if user not found
-        {
+        if (_ud == null) {
             window.location.href = '/';
             return;
         }
@@ -12,32 +11,81 @@ function HeaderBar()
         return;
     };
 
-    const doLogout = (event:any) =>
-    {
+    const doLogout = (event: any) => {
         event.preventDefault();
         localStorage.removeItem("user_data");
         window.location.href = '/';
     };
 
     var _ud = localStorage.getItem('user_data');
-    if(_ud == null) //default header bar
-    {
-        return(
-            <div id="headerBar" className="navBar">
-                <a href="#" onClick={goHome}>Home</a>
-                <a href="/register">Register</a>
+    if (_ud == null) {
+        return (
+            <div id="headerBar" className="navBar flex items-center justify-between px-6 py-4 bg-gray-800 text-white shadow-md">
+                <a href="#" onClick={goHome} className="flex items-center">
+                    <img
+                        src={logo}
+                        alt="Company Logo"
+                        className="h-10 w-auto transition-transform duration-200 hover:scale-105"
+                    />
+                </a>
+                <div className="flex items-center space-x-6">
+                    <a
+                        href="#"
+                        onClick={goHome}
+                        className="text-gray-300 hover:text-white transition-colors duration-200"
+                    >
+                        Home
+                    </a>
+                    <a
+                        href="/register"
+                        className="text-gray-300 hover:text-white transition-colors duration-200"
+                    >
+                        Register
+                    </a>
+                </div>
             </div>
         );
     }
 
-    //logged in header
-    return(
-        <div id="headerBar" className="navBar space-x-4">
-            <a href="#" onClick={goHome}>Home</a>
-            <a href="/userprofile">Profile</a>
-            <a href="/browse">Browse Projects</a>
-            <a href="#" className="float-right inset-y-[-8px]" onClick={doLogout}>Log Out</a>
+    return (
+        <div id="headerBar" className="navBar flex items-center justify-between px-6 py-4 bg-gray-800 text-white shadow-md">
+            <a href="#" onClick={goHome} className="flex items-center">
+                <img
+                    src={logo}
+                    alt="Company Logo"
+                    className="h-10 w-auto transition-transform duration-200 hover:scale-105"
+                />
+            </a>
+            <div className="flex items-center space-x-6">
+                <a
+                    href="#"
+                    onClick={goHome}
+                    className="text-gray-300 hover:text-white transition-colors duration-200"
+                >
+                    Home
+                </a>
+                <a
+                    href="/userprofile"
+                    className="text-gray-300 hover:text-white transition-colors duration-200"
+                >
+                    Profile
+                </a>
+                <a
+                    href="/browse"
+                    className="text-gray-300 hover:text-white transition-colors duration-200"
+                >
+                    Browse Projects
+                </a>
+                <a
+                    href="#"
+                    onClick={doLogout}
+                    className="text-gray-300 hover:text-white transition-colors duration-200"
+                >
+                    Log Out
+                </a>
+            </div>
         </div>
     );
-};
+}
+
 export default HeaderBar;
