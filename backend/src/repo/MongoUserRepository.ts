@@ -1,4 +1,4 @@
-import { User, UserRegistration, UserRepository, VerificationInUser } from "../domain/User.js";
+import { User, UserRegistration, UserRepository, VerificationInUser, PossibleSkills } from "../domain/User.js";
 import { HashPassword } from "../service/auth.js";
 
 import { Collection, Db, ObjectId } from "mongodb";
@@ -77,34 +77,6 @@ export class MongoUserRepository implements UserRepository {
         );
     }
 
-    // async GetByCode(verification: VerificationInUser): Promise<User | undefined> {
-    //     // can't do this get by code function for an already-done user
-    //     if (verification == null){
-    //         return undefined;
-    //     }
-    //     if (verification.newUser == false){
-    //         return undefined;
-    //     }
-    //     let result = await this.collection.findOne({ verification: verification });
-    //     if (!result) {
-    //         return undefined;
-    //     }
-
-    //     return new User(
-    //         result._id.toString(),
-    //         result.name,
-    //         result.isPrivate,
-    //         result.email,
-    //         result.comm,
-    //         result.skills,
-    //         result.roles,
-    //         result.interests,
-    //         result.accounts,
-    //         result.projects,
-    //         result.verification
-    //     );
-    // }
-
     async GetByEmailAndPassword(
         email: string,
         password: string
@@ -169,6 +141,19 @@ export class MongoUserRepository implements UserRepository {
 
     async Update(id: string, updates: Partial<User>): Promise<boolean> {
         const objectId = new ObjectId(id);
+
+        // make sure all the skills are correct
+        if (updates.skills) {
+            const allValid = updates.skills.every(skill =>
+                PossibleSkills.includes(skill)
+            );
+    
+            // crash if not, can be changed
+            if (!allValid) {
+                console.warn("Update failed: invalid skills detected.");
+                return false;
+            }
+        }
 
         const result = await this.collection.updateOne(
             { _id: objectId }, // find by id

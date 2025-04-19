@@ -3,6 +3,7 @@ import {
     ProjectCreation,
     ProjectRepository,
 } from '../domain/Project.js'
+import { PossibleSkills } from "../domain/User.js";
 
 export class StaticProjectRepository implements ProjectRepository {
     private _internal: Project[]
@@ -88,6 +89,17 @@ export class StaticProjectRepository implements ProjectRepository {
         const project = this._internal.find((project) => project._id === id)
 
         if (!project) return false
+
+        if (updates.required_skills) {
+            const allValid = updates.required_skills.every(skill =>
+                PossibleSkills.includes(skill)
+            );
+    
+            if (!allValid) {
+                console.warn("Update failed: invalid skills in input.");
+                return false;
+            }
+        }
 
         // update the found user
         Object.assign(project, updates)

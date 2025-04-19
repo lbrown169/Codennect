@@ -1,6 +1,6 @@
 import { Account } from "../domain/Account.js";
 import { HashPassword } from "../service/auth.js";
-import { User, UserRegistration, UserRepository, VerificationInUser } from "../domain/User.js";
+import { User, UserRegistration, UserRepository, VerificationInUser, PossibleSkills } from "../domain/User.js";
 import { randomInt } from "crypto";
 import bcrypt from "bcrypt";
 
@@ -170,6 +170,17 @@ export class StaticUserRepository implements UserRepository {
         const user = this._internal.find((user) => user._id === id);
 
         if (!user) return false;
+
+        if (updates.skills) {
+            const allValid = updates.skills.every(skill =>
+                PossibleSkills.includes(skill)
+            );
+    
+            if (!allValid) {
+                console.warn("Update failed: invalid skills in input.");
+                return false;
+            }
+        }
 
         // update the found user
         Object.assign(user, updates);

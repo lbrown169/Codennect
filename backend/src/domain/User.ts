@@ -6,6 +6,39 @@ export type VerificationInUser = {
     expires: number;
 };
 
+export const PossibleSkills = [
+    "Android(Kotlin/Java)",
+    "Angular",
+    "Arduino",
+    "AWS",
+    "C#",
+    "C++",
+    "Dart",
+    "Docker",
+    "Express.js",
+    "Figma(UI/UX)",
+    "Firebase",
+    "Flutter",
+    "Google Cloud",
+    "GraphQL",
+    "iOS(Swift)",
+    "Java",
+    "JavaScript",
+    "Machine Learning",
+    "MongoDB",
+    "MySQL", "Node.js",
+    "OpenAI API",
+    "PostgreSQL",
+    "Raspberry Pi",
+    "React",
+    "React Native",
+    "REST API",
+    "Swift",
+    "TensorFlow",
+    "TypeScript",
+    "Vue.js"
+]
+
 export class User {
     _id: string;
     name: string;

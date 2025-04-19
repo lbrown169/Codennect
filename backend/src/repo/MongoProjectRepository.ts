@@ -4,6 +4,7 @@ import {
     ProjectRepository,
 } from "../domain/Project.js";
 import { Collection, Db, ObjectId } from "mongodb";
+import { PossibleSkills } from "../domain/User.js";
 export class MongoProjectRepository implements ProjectRepository {
     private collection: Collection;
 
@@ -99,6 +100,17 @@ export class MongoProjectRepository implements ProjectRepository {
 
     async Update(id: string, updates: Partial<Project>): Promise<boolean> {
         const objectId = new ObjectId(id);
+
+        if (updates.required_skills) {
+            const allValid = updates.required_skills.every(skill =>
+                PossibleSkills.includes(skill)
+            );
+    
+            if (!allValid) {
+                console.warn("Update failed: invalid skills in input.");
+                return false;
+            }
+        }
 
         const result = await this.collection.updateOne(
             { _id: objectId }, // find by id
