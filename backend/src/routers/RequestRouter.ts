@@ -165,113 +165,119 @@ RequestRouter.post("/api/requests", async (req: Request, res: Response) => {
     });
 });
 
-RequestRouter.post(
-    "/api/requests/approve",
-    async (req: Request, res: Response) => {
-        if (!res.locals.user) {
-            res.status(401).json({
-                error: "Unauthorized. You must be logged in to perform this action.",
-            });
-            return;
-        }
-        if (res.locals.user.verification) {
-            res.status(412).json({
-                error: "Active verification detected.",
-            });
-        }
-        const { user_id, project_id, is_invite } = req.body;
-        const db: Driver = req.app.locals.driver;
-        const request = await db.requestRepository.GetRequest(
-            user_id,
-            project_id,
-            is_invite
-        );
-
-        if (!request) {
-            res.status(400).json({
-                error: "Bad request. Request not found.",
-            });
-            return;
-        }
-
-        const user = await db.userRepository.GetById(user_id);
-        const project = await db.projectRepository.GetById(project_id);
-
-        if (!user) {
-            res.status(400).json({
-                error: "Bad request. Provided user not found.",
-            });
-            return;
-        }
-
-        if (!project) {
-            res.status(400).json({
-                error: "Bad request. Provided project not found.",
-            });
-            return;
-        }
-
-        if (is_invite) {
-            // It's an invite, it must be the user who is accepting the invite
-            if (res.locals.user._id !== user_id) {
-                res.status(403).json({
-                    error: "Forbidden. Only the user receiving the invite can approve it.",
-                });
-                return;
-            }
-        } else {
-            // Application, only the project owner can accept it
-            if (res.locals.user._id !== project.owner) {
-                res.status(403).json({
-                    error: "Forbidden. Only the project owner can approve an application.",
-                });
-                return;
-            }
-        }
-
-        // Remove them from any roles they are currently in
-        for (let role of Object.keys(project.users)) {
-            project.users[role] = project.users[role].filter(
-                (user) => user !== user_id
-            );
-        }
-
-        // Place them into their assigned roles
-        for (let role of request.roles) {
-            if (!project.users[role]) {
-                project.users[role] = [];
-            }
-            project.users[role].push(user_id);
-        }
-
-        // Now insert project id into user
-        if (user.projects.indexOf(project_id) === -1) {
-            user.projects.push(project_id);
-            await db.userRepository.Update(user_id, {
-                projects: user.projects,
-            });
-        }
-
-        await db.projectRepository.Update(project_id, { users: project.users });
-        await db.requestRepository.DeleteRequest(request);
-
-        if (req.app.locals.transporter) {
-            let t: IMailgunClient = req.app.locals.transporter;
-            let message = `
-                Hey there ${user.name},<br /><br />
-                Congratulations! You are now on the team for the ${project.name} project!
-            `;
-            const info = await t.messages.create(process.env.MAILGUN_DOMAIN!, {
-                from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
-                to: [user.email],
-                subject: `${project.name} Request Update`,
-                html: message,
-            });
-            console.log("Approval email sent.", info);
-        }
-        res.status(200).json({ error: "", result: "Request approved." });
+RequestRouter.post("/api/requests/approve", async (req: Request, res: Response) => {
+    if (!res.locals.user) {
+        res.status(401).json({
+            error: "Unauthorized. You must be logged in to perform this action.",
+        });
+        return;
     }
-);
+    if (res.locals.user.verification) {
+        res.status(412).json({
+            error: "Active verification detected.",
+        });
+    }
+    const { user_id, project_id, is_invite } = req.body;
+    const db: Driver = req.app.locals.driver;
+    const request = await db.requestRepository.GetRequest(
+        user_id,
+        project_id,
+        is_invite
+    );
+
+    if (!request) {
+        res.status(400).json({
+            error: "Bad request. Request not found.",
+        });
+        return;
+    }
+
+    const user = await db.userRepository.GetById(user_id);
+    const project = await db.projectRepository.GetById(project_id);
+
+    if (!user) {
+        res.status(400).json({
+            error: "Bad request. Provided user not found.",
+        });
+        return;
+    }
+
+    if (!project) {
+        res.status(400).json({
+            error: "Bad request. Provided project not found.",
+        });
+        return;
+    }
+
+    if (is_invite) {
+        // It's an invite, it must be the user who is accepting the invite
+        if (res.locals.user._id !== user_id) {
+            res.status(403).json({
+                error: "Forbidden. Only the user receiving the invite can approve it.",
+            });
+            return;
+        }
+    } else {
+        // Application, only the project owner can accept it
+        if (res.locals.user._id !== project.owner) {
+            res.status(403).json({
+                error: "Forbidden. Only the project owner can approve an application.",
+            });
+            return;
+        }
+    }
+
+    // Remove them from any roles they are currently in
+        // in case they're trying to change roles
+    for (let role of Object.keys(project.users)) {
+        const roleData = project.users[role];
+        if (roleData) {
+            roleData.users = roleData.users.filter((user) => user !== user_id);
+        }
+    }
+    
+    // Place them into their assigned roles
+    for (let role of request.roles) {
+        // make sure the role exists in the project and add it if it doesn't
+            // (could validate against PossibleRoles here too)
+        if (!project.users[role]) {
+            project.users[role] = {
+                max: 1, // default max value
+                users: []
+            };
+        }
+    
+        // add the user to the role
+        project.users[role].users.push(user_id);
+    }
+
+    // Now insert project id into user
+    if (user.projects.indexOf(project_id) === -1) {
+        user.projects.push(project_id);
+        await db.userRepository.Update(user_id, {
+            projects: user.projects,
+        });
+    }
+
+    await db.projectRepository.Update(project_id, { users: project.users });
+    await db.requestRepository.DeleteRequest(request);
+
+    if (req.app.locals.transporter) {
+        let t: IMailgunClient = req.app.locals.transporter;
+        let message = `
+            Hey there ${user.name},<br /><br />
+            Congratulations! You are now on the team for the ${project.name} project!
+        `;
+        const info = await t.messages.create(process.env.MAILGUN_DOMAIN!, {
+            from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
+            to: [user.email],
+            subject: `${project.name} Request Update`,
+            html: message,
+        });
+        console.log("Approval email sent.", info);
+    }
+    res.status(200).json({ error: "", result: "Request approved." });
+});
 
 RequestRouter.post(
     "/api/requests/deny",

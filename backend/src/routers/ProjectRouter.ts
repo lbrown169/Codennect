@@ -244,7 +244,6 @@ ProjectRouter.post(
             isPrivate,
             description,
             fields,
-            roles,
             {},
             required_skills
         );
