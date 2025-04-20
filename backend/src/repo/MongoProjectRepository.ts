@@ -27,7 +27,6 @@ export class MongoProjectRepository implements ProjectRepository {
                     result.isPrivate,
                     result.description,
                     result.fields,
-                    result.roles,
                     result.users,
                     result.required_skills
                 )
@@ -48,7 +47,6 @@ export class MongoProjectRepository implements ProjectRepository {
             result.isPrivate,
             result.description,
             result.fields,
-            result.roles,
             result.users,
             result.required_skills
         );
@@ -69,7 +67,6 @@ export class MongoProjectRepository implements ProjectRepository {
                     result.isPrivate,
                     result.description,
                     result.fields,
-                    result.roles,
                     result.users,
                     result.required_skills
                 )
@@ -84,8 +81,7 @@ export class MongoProjectRepository implements ProjectRepository {
             isPrivate: project.isPrivate,
             description: project.description ?? "",
             fields: project.fields ?? [],
-            roles: project.roles ?? [],
-            users: project.users ?? [],
+            users: project.users ?? {},
             required_skills: project.required_skills ?? [],
         });
 

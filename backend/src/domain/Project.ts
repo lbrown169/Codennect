@@ -1,7 +1,16 @@
+import { PossibleRoles } from "../domain/User.js";
+
 export type FieldDetails = {
     name: string;
     value: string;
     private: boolean;
+};
+
+export type ProjectUsers = {
+    [role: string]: {
+      max: number;
+      users: string[];
+    };
 };
 
 export class Project {
@@ -12,8 +21,7 @@ export class Project {
     isPrivate: boolean;
     description: string;
     fields: FieldDetails[];
-    roles: { [role: string]: number };
-    users: { [role: string]: string[] };
+    users : ProjectUsers;
     required_skills: string[];
 
     constructor(
@@ -24,8 +32,7 @@ export class Project {
         isPrivate: boolean,
         description: string,
         fields: FieldDetails[],
-        roles: { [role: string]: number },
-        users: { [role: string]: string[] },
+        users : ProjectUsers,
         required_skills: string[]
     ) {
         this._id = _id;
@@ -35,7 +42,6 @@ export class Project {
         this.isPrivate = isPrivate;
         this.description = description;
         this.fields = fields;
-        this.roles = roles;
         this.users = users;
         this.required_skills = required_skills;
     }
@@ -49,8 +55,7 @@ export class ProjectCreation {
     isPrivate: boolean;
     description: string;
     fields?: FieldDetails[];
-    roles?: { [role: string]: number };
-    users?: { [role: string]: string[] };
+    users?: ProjectUsers;
     required_skills?: string[];
 
     constructor(
@@ -60,8 +65,7 @@ export class ProjectCreation {
         isPrivate: boolean,
         description: string = "",
         fields: FieldDetails[] = [],
-        roles: { [role: string]: number } = {},
-        users: { [role: string]: string[] } = {},
+        users: ProjectUsers = {},
         required_skills: string[] = []
     ) {
         this.name = name;
@@ -70,7 +74,6 @@ export class ProjectCreation {
         this.isPrivate = isPrivate;
         this.description = description;
         this.fields = fields;
-        this.roles = roles;
         this.users = users;
         this.required_skills = required_skills;
     }

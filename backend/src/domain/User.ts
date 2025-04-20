@@ -39,10 +39,11 @@ export const PossibleSkills = [
     "Vue.js"
 ]
 
-export const PossibleRoles = [
+export const PossibleRoles =  [
+    "Project Manager",
     "Frontend",
-    "API",
     "Backend",
+    "Database",
     "Mobile"
 ]
 

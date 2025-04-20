@@ -137,14 +137,6 @@ AuthRouter.post("/api/login", async (req: Request, res: Response) => {
   res.json({ error: "", id: theUser._id, name: theUser.name, "Authorization": token });
 });
 
-AuthRouter.post("/api/logout", async (req: Request, res: Response) => {
-  if (res.locals.user) {
-    res.clearCookie("token");
-  }
-
-  res.status(204).json({ error: "", });
-});
-
 // password reset functionalitites
 AuthRouter.post(
   "/api/send-password-reset",

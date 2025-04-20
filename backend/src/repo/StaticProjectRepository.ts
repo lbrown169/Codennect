@@ -19,12 +19,8 @@ export class StaticProjectRepository implements ProjectRepository {
                 'A testing project for a testing world',
                 [],
                 {
-                    manager: 1,
-                    frontend: 2,
-                },
-                {
-                    manager: ['0'],
-                    frontend: [],
+                    "Project Manager": {max: 1, users: ["0"]},
+                    Frontend: {max: 1, users: ["0"]}
                 },
                 []
             ),
@@ -37,14 +33,9 @@ export class StaticProjectRepository implements ProjectRepository {
                 'Another Teating Project',
                 [],
                 {
-                    manager: 1,
-                    frontend: 1,
-                    backend: 1,
-                },
-                {
-                    manager: ['1'],
-                    frontend: ['0'],
-                    backend: [],
+                    "Project Manager": {max: 1, users: ["0"]},
+                    Frontend: {max: 2, users: ["1", "2"]},
+                    Backend: {max: 1, users: ["0"]}
                 },
                 []
             ),
@@ -74,7 +65,6 @@ export class StaticProjectRepository implements ProjectRepository {
             project.isPrivate,
             '',
             [],
-            {},
             {},
             []
         )
