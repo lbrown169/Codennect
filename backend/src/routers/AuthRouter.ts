@@ -70,7 +70,7 @@ AuthRouter.post("/api/register", async (req: Request, res: Response) => {
     console.info("Mailgun credentials were not specified, verification link:");
     console.info(verificationLink);
   }
-  res.json({ message: "Verification email sent." });
+  res.json({ error: "", message: "Verification email sent.", });
 });
 
 // Route to verify token
@@ -111,10 +111,11 @@ AuthRouter.post("/api/login", async (req: Request, res: Response) => {
   }
 
   // check that user is verified
-  if (res.locals.user && res.locals.user.verification) {
+  if (theUser.verification) {
     res.status(412).json({
         error: "Active verification detected.",
     });
+    return;
 }
 
   const token = jwt.sign(
@@ -175,6 +176,8 @@ AuthRouter.post(
       newUser: false,
       expires: Date.now() + 15 * 60 * 1000 // expires in 15 mins
     };
+
+    console.info(existingUser.verification.code)
 
     // Email
     if (req.app.locals.transporter) {
