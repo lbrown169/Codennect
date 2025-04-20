@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
-import { SegmentedControl } from '@mantine/core';
+import { SegmentedControl, Button, Collapse } from '@mantine/core';
+import { Link } from 'react-router-dom';
+import { FaArrowRight } from 'react-icons/fa';
 import '@mantine/core/styles/global.css'
 import '@mantine/core/styles/FloatingIndicator.css';
 import '@mantine/core/styles/SegmentedControl.css';
+import '@mantine/core/styles/UnstyledButton.css'
+import '@mantine/core/styles/Button.css'
 import '../App.css';
+import { useDisclosure } from '@mantine/hooks';
 
 //import { isProd } from '../utils';
 
@@ -55,6 +60,7 @@ function MenuProjects()
     const [partProjectsList, setPartProjectsList] = useState<Project[]>([]);
     const [sliderValue, setSliderValue] = useState('ownedProjects');
     const [resultDisplay, setResultDisplay] = useState<Project[]>(ownedProjectsList);   //the actual display of list
+    const [opened, {toggle}] = useDisclosure(true);
 
     const testProj: Project = {
         _id: "1234-5678",
@@ -130,6 +136,14 @@ function MenuProjects()
         return newStr;
     }
 
+    function projMoreInfo(project: Project)
+    {
+        alert('WIP');
+        const newUrl = "/projects/" + project._id;
+        window.location.href = newUrl;
+        return;
+    }
+
     function requiredSkillList(project: Project)
     {
         if(!project.required_skills)    return 'No skills required';
@@ -138,7 +152,12 @@ function MenuProjects()
 
     return(
         <div id="mainMenuBox" className="bg-[#EFF6E0] p-4 w-9/10 m-auto rounded-xl">
-            <div id="sliderBox" className="text-white text-lg mb-4 border-black border-1 rounded-md">
+            <div id="collapseButton">
+                    <Button color="#598392" fullWidth size="lg" onClick={toggle}>Toggle Project List</Button>
+            </div>
+            
+            <Collapse in={opened}>
+            <div id="sliderBox" className="text-white text-lg mb-4 mt-4 border-black border-1 rounded-md">
                 <SegmentedControl
                     
                     color='#124559'
@@ -151,29 +170,35 @@ function MenuProjects()
                     ]} 
                 />
             </div>
-            <div id="resultsBox">
-                {resultDisplay.map((project) => (
-                    <div key={project._id} className="border-white border-4 rounded-xl text-black drop-shadow-md">
-                        <div className="flex bg-white p-2">
-                            <h3 className="font-bold text-lg">Name: {project.name} {getCapacity(project)}</h3>
-                        </div>
-                        <div className="m-2">
-                            <p className="text-gray-500 uppercase">Description</p>
-                            <p className="font-medium">{project.description}</p>
-                        </div>
-                        <div className="m-2 flex grow gap-10 items-start">
-                            <div id="openRoles" className="flex flex-col flex-[1_0_0] justify-center">
-                                <p className="text-gray-500 uppercase">Roles</p>
-                                <p className="text-wrap font-medium">{getAvailableRoles(project)}</p>
+                <div id="resultsBox" className="mt-4">
+                    {resultDisplay.map((project) => (
+                        <div key={project._id} className="border-white border-4 rounded-xl text-black drop-shadow-md">
+                            <div className="flex gap-2 justify-between bg-white p-2">
+                                <h3 className="font-bold text-lg">Name: {project.name} {getCapacity(project)}</h3>
+                                <Link to={`/projects/${project._id}`}>
+                                        <button className="bg-[#598392] text-white px-2 py-2 rounded-[10px] hover:bg-[#90b0bb] hover:cursor-pointer">
+                                            <FaArrowRight />
+                                        </button>
+                                    </Link>
                             </div>
-                            <div id="reqSkills" className="flex flex-col flex-[1_0_0] justify-center">
-                                <p className="text-gray-500 uppercase">Skills</p>
-                                <p className="text-wrap font-medium">{requiredSkillList(project)}</p>
+                            <div className="m-2">
+                                <p className="text-gray-500 uppercase">Description</p>
+                                <p className="font-medium">{project.description}</p>
+                            </div>
+                            <div className="m-2 flex grow gap-10 items-start">
+                                <div id="openRoles" className="flex flex-col flex-[1_0_0] justify-center">
+                                    <p className="text-gray-500 uppercase">Roles</p>
+                                    <p className="text-wrap font-medium">{getAvailableRoles(project)}</p>
+                                </div>
+                                <div id="reqSkills" className="flex flex-col flex-[1_0_0] justify-center">
+                                    <p className="text-gray-500 uppercase">Skills</p>
+                                    <p className="text-wrap font-medium">{requiredSkillList(project)}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            </Collapse>
         </div>
     );
 }
