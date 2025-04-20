@@ -1,4 +1,4 @@
-import { User, UserRegistration, UserRepository, VerificationInUser, PossibleSkills } from "../domain/User.js";
+import { User, UserRegistration, UserRepository, VerificationInUser, PossibleSkills, PossibleRoles } from "../domain/User.js";
 import { HashPassword } from "../service/auth.js";
 
 import { Collection, Db, ObjectId } from "mongodb";
@@ -151,6 +151,19 @@ export class MongoUserRepository implements UserRepository {
             // crash if not, can be changed
             if (!allValid) {
                 console.warn("Update failed: invalid skills detected.");
+                return false;
+            }
+        }
+
+        // make sure all the roles are correct
+        if (updates.roles) {
+            const allValid = updates.roles.every(role =>
+                PossibleRoles.includes(role)
+            );
+    
+            // crash if not, can be changed
+            if (!allValid) {
+                console.warn("Update failed: invalid roles detected.");
                 return false;
             }
         }

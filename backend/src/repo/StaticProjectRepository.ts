@@ -3,7 +3,7 @@ import {
     ProjectCreation,
     ProjectRepository,
 } from '../domain/Project.js'
-import { PossibleSkills } from "../domain/User.js";
+import { PossibleSkills, PossibleRoles } from "../domain/User.js";
 
 export class StaticProjectRepository implements ProjectRepository {
     private _internal: Project[]

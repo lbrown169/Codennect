@@ -39,6 +39,13 @@ export const PossibleSkills = [
     "Vue.js"
 ]
 
+export const PossibleRoles = [
+    "Frontend",
+    "API",
+    "Backend",
+    "Mobile"
+]
+
 export class User {
     _id: string;
     name: string;
@@ -103,7 +110,6 @@ export interface UserRepository {
     GetAll(): Promise<User[]>;
     GetById(id: string): Promise<User | undefined>;
     GetByEmail(email: string): Promise<User | undefined>;
-    //GetByCode(verification: VerificationInUser): Promise<User | undefined>
     GetByEmailAndPassword(
         email: string,
         password: string

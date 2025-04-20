@@ -1,6 +1,6 @@
 import { Account } from "../domain/Account.js";
 import { HashPassword } from "../service/auth.js";
-import { User, UserRegistration, UserRepository, VerificationInUser, PossibleSkills } from "../domain/User.js";
+import { User, UserRegistration, UserRepository, VerificationInUser, PossibleSkills, PossibleRoles } from "../domain/User.js";
 import { randomInt } from "crypto";
 import bcrypt from "bcrypt";
 
@@ -181,6 +181,18 @@ export class StaticUserRepository implements UserRepository {
                 return false;
             }
         }
+
+        if (updates.roles) {
+                    const allValid = updates.roles.every(role =>
+                        PossibleRoles.includes(role)
+                    );
+            
+                    // crash if not, can be changed
+                    if (!allValid) {
+                        console.warn("Update failed: invalid roles detected.");
+                        return false;
+                    }
+                }
 
         // update the found user
         Object.assign(user, updates);

@@ -4,7 +4,7 @@ import {
     ProjectRepository,
 } from "../domain/Project.js";
 import { Collection, Db, ObjectId } from "mongodb";
-import { PossibleSkills } from "../domain/User.js";
+import { PossibleSkills, PossibleRoles } from "../domain/User.js";
 export class MongoProjectRepository implements ProjectRepository {
     private collection: Collection;
 
