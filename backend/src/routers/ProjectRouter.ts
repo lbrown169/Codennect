@@ -29,7 +29,9 @@ ProjectRouter.get("/api/projects", async (req: Request, res: Response) => {
         )).filter(project => !project.isPrivate);
 
         // filter by roles if provided
+        console.log("yo1")
         if (roles) {
+            console.log("yo2")
             const parsedRoles = roles.toString().split(",");
 
             // validate roles
@@ -95,7 +97,39 @@ ProjectRouter.get("/api/projects/:id", async (req: Request, res: Response) => {
         return;
     }
 
-    res.status(200).json({ error: "", result: theProject });
+    // if the project is public, return it
+    if (!theProject.isPrivate) {
+        res.status(200).json({ error: "", result: theProject });
+        return;
+    }
+
+    const userId = res.locals.user._id;
+
+    // check if the user is already a member of the project
+    const isMember = Object.values(theProject.users).some(role =>
+        role.users.includes(userId)
+    );
+    if (isMember) {
+        res.status(200).json({ error: "", result: theProject });
+        return;
+    }
+
+    // check if the user has an application or invite to this project
+    const userApplications = await db.requestRepository.GetUserApplications(userId);
+    const userInvites = await db.requestRepository.GetUserInvites(userId);
+
+    const hasApplied = userApplications.some(app => app.project_id === id);
+    const hasInvite = userInvites.some(invite => invite.project_id === id);
+
+    if (hasApplied || hasInvite) {
+        res.status(200).json({ error: "", result: theProject });
+        return;
+    }
+
+    // if private and no relation, block access
+    res.status(403).json({
+        error: "You do not have permission to view this private project.",
+    });
 });
 
 ProjectRouter.get("/api/projects/me", async (req: Request, res: Response) => {
