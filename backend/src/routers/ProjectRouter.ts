@@ -176,7 +176,8 @@ ProjectRouter.patch("/api/projects/:id", async (req: Request, res: Response) => 
         return;
     }
 
-    const { id, updates } = req.body; // TODO Double check with Logan that this works for updates
+    const { id } = req.params;
+    const { updates } = req.body; // TODO Double check with Logan that this works for updates
     const db: Driver = req.app.locals.driver;
 
     if (!id || !updates || typeof updates !== "object") {
