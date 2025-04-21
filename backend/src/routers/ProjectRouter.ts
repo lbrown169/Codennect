@@ -118,12 +118,9 @@ ProjectRouter.patch("/api/edit-project", async (req: Request, res: Response) => 
         return;
     }
 
-    // Don't allow editing project members from this endpoint
-    const { users, ...trimmed } = updates;
-
     // uses an update user function in the repo itself
     // function takes in id and the updates and handles it internally
-    const success = await db.projectRepository.Update(id, trimmed);
+    const success = await db.projectRepository.Update(id, updates);
 
     if (!success) {
         res.status(400).json({ error: "Project not found or no changes made", });
@@ -200,7 +197,7 @@ ProjectRouter.post(
             isPrivate,
             required_skills,
             fields,
-            roles,
+            users,
         } = req.body;
         const db: Driver = req.app.locals.driver;
 
@@ -219,7 +216,7 @@ ProjectRouter.post(
             isPrivate,
             description,
             fields,
-            {},
+            users,
             required_skills
         );
         const enterProject = await db.projectRepository.Create(newProject);
