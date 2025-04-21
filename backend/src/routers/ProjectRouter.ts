@@ -62,6 +62,26 @@ ProjectRouter.get("/api/projects", async (req: Request, res: Response) => {
     }
 });
 
+ProjectRouter.get("/api/projects/me", async (req: Request, res: Response) => {
+    if (!res.locals.user) {
+        res.status(401).json({
+            error: "Unauthorized. You must be logged in to perform this action.",
+        });
+        return;
+    }
+
+    const db: Driver = req.app.locals.driver;
+
+    let projects: Project[] = [];
+    for (let pid of res.locals.user.projects) {
+        let p = await db.projectRepository.GetById(pid);
+        if (p) {
+            projects.push(p);
+        }
+    }
+    res.status(200).json({error: "", result: projects});
+});
+
 ProjectRouter.get("/api/projects/:id", async (req: Request, res: Response) => {
     // incoming: project id
     // outgoing: all the project info
@@ -73,7 +93,7 @@ ProjectRouter.get("/api/projects/:id", async (req: Request, res: Response) => {
         return;
     }
 
-    const { id } = req.query;
+    const { id } = req.params;
 
     if (!id) {
         res.status(400).json({
@@ -130,26 +150,6 @@ ProjectRouter.get("/api/projects/:id", async (req: Request, res: Response) => {
     res.status(403).json({
         error: "You do not have permission to view this private project.",
     });
-});
-
-ProjectRouter.get("/api/projects/me", async (req: Request, res: Response) => {
-    if (!res.locals.user) {
-        res.status(401).json({
-            error: "Unauthorized. You must be logged in to perform this action.",
-        });
-        return;
-    }
-
-    const db: Driver = req.app.locals.driver;
-
-    let projects: Project[] = [];
-    for (let pid of res.locals.user.projects) {
-        let p = await db.projectRepository.GetById(pid);
-        if (p) {
-            projects.push(p);
-        }
-    }
-    res.status(200).json({error: "", result: projects});
 });
 
 ProjectRouter.patch("/api/projects/:id", async (req: Request, res: Response) => {
@@ -219,7 +219,7 @@ ProjectRouter.patch("/api/projects/:id", async (req: Request, res: Response) => 
     res.status(200).json({ error: "", success: true, updatedProject: project });
 });
 
-ProjectRouter.post("/api/create-project", async (req: Request, res: Response) => {
+ProjectRouter.post("/api/projects", async (req: Request, res: Response) => {
         // Allows user to create project
 
         // Required parameters passed:
