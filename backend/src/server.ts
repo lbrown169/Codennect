@@ -1,4 +1,4 @@
-import { Request, NextFunction } from "express";
+import { Request, Response as ExResponse, NextFunction, RequestHandler } from "express";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import path, { dirname } from "path";
@@ -57,7 +57,22 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
     next();
 });
 
+// Middleware verification check
+const checkVerification: RequestHandler = (
+    req: Request,
+    res: ExResponse,
+    next: NextFunction
+): void => {
+    const user = res.locals.user;
+    if(user?.verification) {
+        res.status(412).json({ error: "Active verification detected." });
+        return;
+    }
+    next();
+};
+
 app.use(AuthRouter);
+app.use(checkVerification);
 app.use(UserRouter);
 app.use(ProjectRouter);
 app.use(RequestRouter);

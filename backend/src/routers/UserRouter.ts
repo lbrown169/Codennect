@@ -13,11 +13,6 @@ UserRouter.get("/api/get-me", async (req: Request, res: Response) => {
         });
         return;
     }
-    if (res.locals.user.verification) {
-        res.status(412).json({
-            error: "Active verification detected.",
-        });
-    }
 
     res.status(200).json({ error: "", result: res.locals.user });
 });
@@ -37,11 +32,6 @@ UserRouter.patch("/api/edit-me", async (req: Request, res: Response) => {
             error: "Unauthorized. You must be logged in to perform this action.",
         });
         return;
-    }
-    if (res.locals.user.verification) {
-        res.status(412).json({
-            error: "Active verification detected.",
-        });
     }
 
     const { updates } = req.body;
@@ -87,11 +77,6 @@ UserRouter.get("/api/get-user-info", async (req: Request, res: Response) => {
         });
         return;
     }
-    if (res.locals.user.verification) {
-        res.status(412).json({
-            error: "Active verification detected.",
-        });
-    }
 
     const { id } = req.query;
     const db: Driver = req.app.locals.driver;
@@ -124,11 +109,6 @@ UserRouter.get("/api/get-all-users", async (req: Request, res: Response) => {
             error: "Unauthorized. You must be logged in to perform this action.",
         });
         return;
-    }
-    if (res.locals.user.verification) {
-        res.status(412).json({
-            error: "Active verification detected.",
-        });
     }
     const db: Driver = req.app.locals.driver;
 
