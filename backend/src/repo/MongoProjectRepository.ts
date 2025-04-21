@@ -81,8 +81,14 @@ export class MongoProjectRepository implements ProjectRepository {
                 Object.entries(project.users).filter(([role]) =>
                   PossibleRoles.includes(role)
                 )
-              );
+            );
         }
+
+        if (project.required_skills) {
+            project.required_skills = project.required_skills.filter(skill =>
+              PossibleSkills.includes(skill)
+            );
+          }
 
         const result = await this.collection.insertOne({
             name: project.name,

@@ -13,7 +13,7 @@ const AuthRouter = express.Router();
 const JWT_EXPIRES_IN = "1h";
 
 // Route to accept email and send verification
-AuthRouter.post("/api/register", async (req: Request, res: Response) => {
+AuthRouter.post("/api/auth/register", async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
   const db: Driver = req.app.locals.driver;
 
@@ -74,7 +74,7 @@ AuthRouter.post("/api/register", async (req: Request, res: Response) => {
 });
 
 // Route to verify token
-AuthRouter.post("/api/verify-email", async (req: Request, res: Response) => {
+AuthRouter.post("/api/auth/verify-email", async (req: Request, res: Response) => {
   // This is why we need the token in the database
   const { token, email } = req.body;
   const db: Driver = req.app.locals.driver;
@@ -93,7 +93,7 @@ AuthRouter.post("/api/verify-email", async (req: Request, res: Response) => {
   res.status(201).json({ error: "", result: "User registered successfully!", });
 });
 
-AuthRouter.post("/api/login", async (req: Request, res: Response) => {
+AuthRouter.post("/api/auth/login", async (req: Request, res: Response) => {
   // incoming: email, password
   // outgoing: id, name, error
   const { email, password } = req.body;
@@ -138,9 +138,7 @@ AuthRouter.post("/api/login", async (req: Request, res: Response) => {
 });
 
 // password reset functionalitites
-AuthRouter.post(
-  "/api/send-password-reset",
-  async (req: Request, res: Response) => {
+AuthRouter.post("/api/auth/send-reset", async (req: Request, res: Response) => {
     const { email } = req.body;
     const db: Driver = req.app.locals.driver;
 
@@ -195,11 +193,10 @@ AuthRouter.post(
       console.info(verificationCode);
     }
     res.json({ error: "", result: "Password reset email sent.", });
-  }
-);
+});
 
 // actually resets the password itself
-AuthRouter.patch("/api/change-password", async (req: Request, res: Response) => {
+AuthRouter.patch("/api/auth/change-password", async (req: Request, res: Response) => {
   // This is why we need the code in the database
   const { verificationCode, email, newPassword } = req.body;
   const db: Driver = req.app.locals.driver;

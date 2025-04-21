@@ -264,9 +264,7 @@ RequestRouter.post("/api/requests/approve", async (req: Request, res: Response) 
     res.status(200).json({ error: "", result: "Request approved." });
 });
 
-RequestRouter.post(
-    "/api/requests/deny",
-    async (req: Request, res: Response) => {
+RequestRouter.post("/api/requests/deny", async (req: Request, res: Response) => {
         if (!res.locals.user) {
             res.status(401).json({
                 error: "Unauthorized. You must be logged in to perform this action.",
