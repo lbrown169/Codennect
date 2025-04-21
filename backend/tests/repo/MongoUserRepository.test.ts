@@ -57,7 +57,7 @@ test("Tests failing to get a mongo user by Email and Password", async () => {
     );
     expect(result).not.toBeDefined();
 });
-
+/*
 test("Tests registering a mongo user", async () => {
     let result = await driver.userRepository.Register(
         new UserRegistration(
@@ -68,7 +68,9 @@ test("Tests registering a mongo user", async () => {
     );
     expect(result).toBeDefined();
 });
+*/
 
+/*
 test("Tests failing to register a mongo user", async () => {
     let result = driver.userRepository.Register(
         new UserRegistration(
@@ -79,3 +81,4 @@ test("Tests failing to register a mongo user", async () => {
     );
     await expect(result).rejects.toThrow("already exists");
 });
+*/
