@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ProjectCard } from "../dashboard/ProjectsPanel";
 import { FaSearch } from "react-icons/fa";
-import { Combobox, useCombobox, CloseButton, Input, InputBase, MultiSelect, TextInput } from "@mantine/core";
+import { Button, Combobox, useCombobox, CloseButton, Input, InputBase, MultiSelect, TextInput } from "@mantine/core";
 
 export function ProjectSearchBar()
 {
@@ -61,15 +61,16 @@ export function ProjectSearchBar()
     ));
 
 
-    async function doSearch()
+    async function doSearch(event: React.FormEvent)
     {
+        event.preventDefault();
         alert("WIP");
     }
 
     
 
     return(
-        <form action={doSearch}>
+        <form onSubmit={doSearch}>
             <TextInput
                 placeholder="Search"
                 radius="md"
@@ -121,6 +122,10 @@ export function ProjectSearchBar()
                 placeholder="Filter by skills"
                 data={skillOptions}
             />
+
+            <Button type="submit" color="#5c8593">
+                Search
+            </Button>
             
         </form>
     );
