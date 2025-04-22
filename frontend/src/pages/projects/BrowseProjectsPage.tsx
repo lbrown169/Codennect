@@ -1,6 +1,7 @@
 // import ProjectSearch from "../components/ProjectSearch";
 
 import { Box, Title } from '@mantine/core';
+import { ProjectSearchBar } from '../../components/browse/ProjectSearchBar';
 
 // const BrowseProjectsPage = () =>
 // {
@@ -16,8 +17,9 @@ export default function BrowseProjectsPage() {
     return (
         <Box mx={{ base: 'md', lg: 'xl' }}>
             <Title py="md" order={1}>
-                Projects
+                Project Search
             </Title>
+            <ProjectSearchBar />
         </Box>
     );
 }
