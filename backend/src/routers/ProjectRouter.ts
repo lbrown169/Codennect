@@ -145,9 +145,8 @@ ProjectRouter.get('/api/projects/:id', async (req: Request, res: Response) => {
     }
 
     // check if the user has an application or invite to this project
-    const userApplications = await db.requestRepository.GetUserApplications(
-        userId
-    );
+    const userApplications =
+        await db.requestRepository.GetUserApplications(userId);
     const userInvites = await db.requestRepository.GetUserInvites(userId);
 
     const hasApplied = userApplications.some((app) => app.project_id === id);

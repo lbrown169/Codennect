@@ -53,9 +53,8 @@ test('Tests creating and getting an invite', async () => {
     returned = await driver.requestRepository.GetProjectInvites(project_id);
     expect(returned).toContain(req);
 
-    returned = await driver.requestRepository.GetProjectApplications(
-        project_id
-    );
+    returned =
+        await driver.requestRepository.GetProjectApplications(project_id);
     expect(returned).not.toContain(req);
 });
 
@@ -101,9 +100,8 @@ test('Tests creating and getting an application', async () => {
     returned = await driver.requestRepository.GetUserInvites(user_id);
     expect(returned).not.toContain(req);
 
-    returned = await driver.requestRepository.GetProjectApplications(
-        project_id
-    );
+    returned =
+        await driver.requestRepository.GetProjectApplications(project_id);
     expect(returned).toContain(req);
 
     returned = await driver.requestRepository.GetProjectInvites(project_id);
