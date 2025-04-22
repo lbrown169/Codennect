@@ -1,10 +1,10 @@
 import { PossibleRoles } from '../domain/User.js';
 
 export type FieldDetails = {
-    name: string;
-    value: string;
-    private: boolean;
-};
+    name: string
+    value: string
+    private: boolean
+}
 
 export type ProjectUsers = {
     [role: string]: {
@@ -35,28 +35,28 @@ export class Project {
         users: ProjectUsers,
         required_skills: string[]
     ) {
-        this._id = _id;
-        this.name = name;
-        this.domain = domain;
-        this.owner = owner;
-        this.isPrivate = isPrivate;
-        this.description = description;
-        this.fields = fields;
-        this.users = users;
-        this.required_skills = required_skills;
+        this._id = _id
+        this.name = name
+        this.domain = domain
+        this.owner = owner
+        this.isPrivate = isPrivate
+        this.description = description
+        this.fields = fields
+        this.users = users
+        this.required_skills = required_skills
     }
 }
 
 // the draft/base for a project
 export class ProjectCreation {
-    name: string;
-    domain?: string;
-    owner: string;
-    isPrivate: boolean;
-    description: string;
-    fields?: FieldDetails[];
-    users?: ProjectUsers;
-    required_skills?: string[];
+    name: string
+    domain?: string
+    owner: string
+    isPrivate: boolean
+    description: string
+    fields?: FieldDetails[]
+    users?: ProjectUsers
+    required_skills?: string[]
 
     constructor(
         name: string,
@@ -68,14 +68,14 @@ export class ProjectCreation {
         users: ProjectUsers = {},
         required_skills: string[] = []
     ) {
-        this.name = name;
-        this.domain = domain;
-        this.owner = owner;
-        this.isPrivate = isPrivate;
-        this.description = description;
-        this.fields = fields;
-        this.users = users;
-        this.required_skills = required_skills;
+        this.name = name
+        this.domain = domain
+        this.owner = owner
+        this.isPrivate = isPrivate
+        this.description = description
+        this.fields = fields
+        this.users = users
+        this.required_skills = required_skills
     }
 }
 

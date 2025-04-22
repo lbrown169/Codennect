@@ -21,8 +21,8 @@ ProjectRouter.get('/api/projects', async (req: Request, res: Response) => {
         return;
     }
 
-    const { name, required_skills, roles } = req.query;
-    const db: Driver = req.app.locals.driver;
+    const { name, required_skills, roles } = req.query
+    const db: Driver = req.app.locals.driver
 
     try {
         // get all non-private projects
@@ -57,7 +57,7 @@ ProjectRouter.get('/api/projects', async (req: Request, res: Response) => {
             // validate skills
             const validSkills = parsedSkills.filter((skill) =>
                 PossibleSkills.includes(skill)
-            );
+            )
 
             projects = projects.filter((project) =>
                 project.required_skills.some((skill) =>
@@ -70,7 +70,7 @@ ProjectRouter.get('/api/projects', async (req: Request, res: Response) => {
     } catch (err) {
         res.status(500).json({ error: 'Error retrieving projects.' });
     }
-});
+})
 
 ProjectRouter.get('/api/projects/me', async (req: Request, res: Response) => {
     if (!res.locals.user) {
@@ -80,13 +80,13 @@ ProjectRouter.get('/api/projects/me', async (req: Request, res: Response) => {
         return;
     }
 
-    const db: Driver = req.app.locals.driver;
+    const db: Driver = req.app.locals.driver
 
-    let projects: Project[] = [];
+    let projects: Project[] = []
     for (let pid of res.locals.user.projects) {
-        let p = await db.projectRepository.GetById(pid);
+        let p = await db.projectRepository.GetById(pid)
         if (p) {
-            projects.push(p);
+            projects.push(p)
         }
     }
     res.status(200).json({ error: '', result: projects });
@@ -103,20 +103,20 @@ ProjectRouter.get('/api/projects/:id', async (req: Request, res: Response) => {
         return;
     }
 
-    const { id } = req.params;
+    const { id } = req.params
 
     if (!id) {
         res.status(400).json({
             error: "Field 'id' must be specified",
-        });
-        return;
+        })
+        return
     }
 
-    const db: Driver = req.app.locals.driver;
+    const db: Driver = req.app.locals.driver
 
-    let theProject;
+    let theProject
     try {
-        theProject = await db.projectRepository.GetById(id.toString());
+        theProject = await db.projectRepository.GetById(id.toString())
     } catch {
         res.status(400).json({ error: 'Project ID error!' });
         return;
@@ -133,12 +133,12 @@ ProjectRouter.get('/api/projects/:id', async (req: Request, res: Response) => {
         return;
     }
 
-    const userId = res.locals.user._id;
+    const userId = res.locals.user._id
 
     // check if the user is already a member of the project
     const isMember = Object.values(theProject.users).some((role) =>
         role.users.includes(userId)
-    );
+    )
     if (isMember) {
         res.status(200).json({ error: '', result: theProject });
         return;
@@ -278,20 +278,20 @@ ProjectRouter.post('/api/projects', async (req: Request, res: Response) => {
         // skills and roles are validated in the create function in mongo
         users,
         required_skills
-    );
-    const enterProject = await db.projectRepository.Create(newProject);
+    )
+    const enterProject = await db.projectRepository.Create(newProject)
 
-    res.locals.user.projects.push(enterProject._id);
+    res.locals.user.projects.push(enterProject._id)
 
     await db.userRepository.Update(res.locals.user._id, {
         projects: res.locals.user.projects,
-    });
+    })
 
     res.status(200).json({
         error: '',
         success: 'Project created!',
         project: enterProject,
-    });
-});
+    })
+})
 
-export default ProjectRouter;
+export default ProjectRouter

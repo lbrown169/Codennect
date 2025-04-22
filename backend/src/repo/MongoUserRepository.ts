@@ -13,7 +13,7 @@ import { isProd } from '../utils.js';
 import bcrypt from 'bcrypt';
 
 export class MongoUserRepository implements UserRepository {
-    private collection: Collection;
+    private collection: Collection
 
     constructor(db: Db) {
         this.collection = db.collection('users');
@@ -22,7 +22,7 @@ export class MongoUserRepository implements UserRepository {
     async GetAll(): Promise<User[]> {
         const results = await this.collection
             .find({ isPrivate: false })
-            .toArray();
+            .toArray()
 
         return results.map(
             (result) =>
@@ -39,13 +39,13 @@ export class MongoUserRepository implements UserRepository {
                     result.projects,
                     result.verification
                 )
-        );
+        )
     }
 
     async GetById(id: string): Promise<User | undefined> {
-        let result = await this.collection.findOne({ _id: new ObjectId(id) });
+        let result = await this.collection.findOne({ _id: new ObjectId(id) })
         if (!result) {
-            return undefined;
+            return undefined
         }
 
         return new User(
@@ -60,13 +60,13 @@ export class MongoUserRepository implements UserRepository {
             result.accounts,
             result.projects,
             result.verification
-        );
+        )
     }
 
     async GetByEmail(email: string): Promise<User | undefined> {
-        let result = await this.collection.findOne({ email: email });
+        let result = await this.collection.findOne({ email: email })
         if (!result) {
-            return undefined;
+            return undefined
         }
 
         return new User(
@@ -81,26 +81,26 @@ export class MongoUserRepository implements UserRepository {
             result.accounts,
             result.projects,
             result.verification
-        );
+        )
     }
 
     async GetByEmailAndPassword(
         email: string,
         password: string
     ): Promise<User | undefined> {
-        let result = await this.collection.findOne({ email: email });
+        let result = await this.collection.findOne({ email: email })
 
         // if couldn't find by email
         if (!result) {
-            return undefined;
+            return undefined
         }
 
         // compare hashed password
-        const isMatch = await bcrypt.compare(password, result.password);
+        const isMatch = await bcrypt.compare(password, result.password)
 
         // if couldn't find by password
         if (!isMatch) {
-            return undefined;
+            return undefined
         }
 
         return new User(
@@ -115,7 +115,7 @@ export class MongoUserRepository implements UserRepository {
             result.accounts,
             result.projects,
             result.verification
-        );
+        )
     }
 
     async Register(user: UserRegistration): Promise<User> {
@@ -137,17 +137,17 @@ export class MongoUserRepository implements UserRepository {
             verification: user.verification,
         });
 
-        let returning = await this.GetById(result.insertedId.toString());
+        let returning = await this.GetById(result.insertedId.toString())
 
         if (!returning) {
             throw new Error('Failed to create user');
         }
 
-        return returning;
+        return returning
     }
 
     async Update(id: string, updates: Partial<User>): Promise<boolean> {
-        const objectId = new ObjectId(id);
+        const objectId = new ObjectId(id)
 
         // make sure all the skills are correct
         if (updates.skills) {
@@ -178,14 +178,14 @@ export class MongoUserRepository implements UserRepository {
         const result = await this.collection.updateOne(
             { _id: objectId }, // find by id
             { $set: updates } // do all the updates
-        );
+        )
 
         // true if updated
-        return result.modifiedCount > 0;
+        return result.modifiedCount > 0
     }
 
     async UpdatePassword(id: string, newPassword: string): Promise<boolean> {
-        const objectId = new ObjectId(id);
+        const objectId = new ObjectId(id)
 
         const newHashedPassword = await HashPassword(newPassword);
 
@@ -195,7 +195,7 @@ export class MongoUserRepository implements UserRepository {
         );
 
         // true if updated
-        return result.modifiedCount > 0;
+        return result.modifiedCount > 0
     }
 
     async ValidateVerification(code: string): Promise<boolean> {
@@ -205,12 +205,12 @@ export class MongoUserRepository implements UserRepository {
         });
 
         if (result === null) {
-            return false;
+            return false
         }
         if (result.expires < Date.now()) {
-            return false;
+            return false
         }
-        return true;
+        return true
     }
 
     async DeleteVerification(code: string): Promise<boolean> {
@@ -220,6 +220,6 @@ export class MongoUserRepository implements UserRepository {
         );
 
         // true if updated
-        return true;
+        return true
     }
 }
