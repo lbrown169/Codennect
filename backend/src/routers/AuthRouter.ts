@@ -167,6 +167,9 @@ AuthRouter.post("/api/auth/send-reset", async (req: Request, res: Response) => {
       expires: Date.now() + 15 * 60 * 1000 // expires in 15 mins
     };
 
+    // Update new verification in user
+    await db.userRepository.Update(existingUser._id, { verification: existingUser.verification} );
+
     console.info(existingUser.verification.code)
 
     // Email
