@@ -1,15 +1,15 @@
-import { Driver, loadDatabaseDriver } from "src/repo/Driver.js";
-import { beforeEach, afterEach, test, expect } from "@jest/globals";
+import { Driver, loadDatabaseDriver } from 'src/repo/Driver.js'
+import { beforeEach, afterEach, test, expect } from '@jest/globals'
 
-var driver: Driver;
+var driver: Driver
 
 beforeEach(() => {
-    driver = loadDatabaseDriver();
-});
+    driver = loadDatabaseDriver()
+})
 
 afterEach(async () => {
-    await driver.destroy();
-});
+    await driver.destroy()
+})
 /*
 test("Creating a static verification code", async () => {
     let result = await driver.verificationRepository.RegisterVerification(

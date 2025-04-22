@@ -1,15 +1,15 @@
-import { config } from "dotenv";
-import { Driver, loadDatabaseDriver } from "src/repo/Driver.js";
-import { beforeEach, afterEach, test, expect } from "@jest/globals";
+import { config } from 'dotenv'
+import { Driver, loadDatabaseDriver } from 'src/repo/Driver.js'
+import { beforeEach, afterEach, test, expect } from '@jest/globals'
 
-var driver: Driver;
+var driver: Driver
 
 beforeEach(() => {
-    process.env.EXPLICIT_USE_MONGO = "true";
-    config();
+    process.env.EXPLICIT_USE_MONGO = 'true'
+    config()
 
-    driver = loadDatabaseDriver();
-});
+    driver = loadDatabaseDriver()
+})
 /*
 afterEach(async () => {
     await driver.verificationRepository.DeleteVerification("test@example.com");
