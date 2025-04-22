@@ -108,9 +108,8 @@ AuthRouter.get(
 
         // Validate token
         console.log(token);
-        const verifyAttempt = await db.userRepository.ValidateVerification(
-            token
-        );
+        const verifyAttempt =
+            await db.userRepository.ValidateVerification(token);
         if (!verifyAttempt) {
             res.redirect('/verify-expired');
             return;
@@ -251,9 +250,8 @@ AuthRouter.patch(
         }
 
         // Validate token
-        const verifyAttempt = await db.userRepository.ValidateVerification(
-            verificationCode
-        );
+        const verifyAttempt =
+            await db.userRepository.ValidateVerification(verificationCode);
         if (!verifyAttempt) {
             res.status(400).send({
                 error: 'Invalid or expired password verification code.',
