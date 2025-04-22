@@ -8,7 +8,7 @@ import { Driver } from '../repo/Driver.js';
 import { config } from 'dotenv';
 import { error } from 'console';
 
-const AuthRouter = express.Router()
+const AuthRouter = express.Router();
 
 const JWT_EXPIRES_IN = '1h';
 
@@ -185,7 +185,7 @@ AuthRouter.post('/api/auth/send-reset', async (req: Request, res: Response) => {
     }
 
     // make sure there's already a registered user with this login
-    const existingUser = await db.userRepository.GetByEmail(email)
+    const existingUser = await db.userRepository.GetByEmail(email);
     if (existingUser == null) {
         // no user found
         res.json({ error: 'No user with this email.' });
@@ -297,4 +297,4 @@ AuthRouter.patch(
     }
 );
 
-export default AuthRouter
+export default AuthRouter;

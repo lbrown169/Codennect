@@ -7,7 +7,7 @@ import {
 import { Collection, Db, ObjectId } from 'mongodb';
 import { PossibleSkills, PossibleRoles } from '../domain/User.js';
 export class MongoProjectRepository implements ProjectRepository {
-    private collection: Collection
+    private collection: Collection;
 
     constructor(db: Db) {
         this.collection = db.collection('projects');
@@ -16,7 +16,7 @@ export class MongoProjectRepository implements ProjectRepository {
     async GetAll(): Promise<Project[]> {
         const results = await this.collection
             .find({ isPrivate: false })
-            .toArray()
+            .toArray();
 
         return results.map(
             (result) =>
@@ -31,13 +31,13 @@ export class MongoProjectRepository implements ProjectRepository {
                     result.users,
                     result.required_skills
                 )
-        )
+        );
     }
 
     async GetById(id: string): Promise<Project | undefined> {
-        let result = await this.collection.findOne({ _id: new ObjectId(id) })
+        let result = await this.collection.findOne({ _id: new ObjectId(id) });
         if (!result) {
-            return undefined
+            return undefined;
         }
 
         return new Project(
@@ -50,13 +50,13 @@ export class MongoProjectRepository implements ProjectRepository {
             result.fields,
             result.users,
             result.required_skills
-        )
+        );
     }
 
     async GetByPartialName(name: string): Promise<Project[]> {
         let results = await this.collection
             .find({ name: { $regex: name }, isPrivate: false })
-            .toArray()
+            .toArray();
 
         return results.map(
             (result) =>
@@ -71,7 +71,7 @@ export class MongoProjectRepository implements ProjectRepository {
                     result.users,
                     result.required_skills
                 )
-        )
+        );
     }
 
     async Create(project: ProjectCreation): Promise<Project> {
@@ -81,7 +81,7 @@ export class MongoProjectRepository implements ProjectRepository {
                 Object.entries(project.users).filter(([role]) =>
                     PossibleRoles.includes(role)
                 )
-            )
+            );
         }
 
         if (project.required_skills) {
@@ -99,15 +99,15 @@ export class MongoProjectRepository implements ProjectRepository {
             fields: project.fields ?? [],
             users: project.users ?? {},
             required_skills: project.required_skills ?? [],
-        })
+        });
 
-        let returning = await this.GetById(result.insertedId.toString())
+        let returning = await this.GetById(result.insertedId.toString());
 
         if (!returning) {
             throw new Error('Failed to create project');
         }
 
-        return returning
+        return returning;
     }
 
     // async Update(id: string, updates: Partial<Project>): Promise<boolean> {
@@ -181,7 +181,7 @@ export class MongoProjectRepository implements ProjectRepository {
             }
 
             // Apply the cleaned-up structure back to updates
-            updates.users = cleanedUsers
+            updates.users = cleanedUsers;
         }
 
         // apply the update normally
@@ -205,8 +205,8 @@ export class MongoProjectRepository implements ProjectRepository {
         for (const role of roles) {
             // validate the roles
             if (!PossibleRoles.includes(role)) {
-                console.warn(`Skipping invalid role: ${role}`)
-                continue
+                console.warn(`Skipping invalid role: ${role}`);
+                continue;
             }
 
             // create role if it doesn't exist
@@ -219,7 +219,7 @@ export class MongoProjectRepository implements ProjectRepository {
 
             // avoid duplicates
             if (!project.users[role].users.includes(user_id)) {
-                project.users[role].users.push(user_id)
+                project.users[role].users.push(user_id);
             }
         }
 

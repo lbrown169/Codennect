@@ -22,9 +22,9 @@ import ProjectRouter from './routers/ProjectRouter.js';
 import RequestRouter from './routers/RequestRouter.js';
 import userInjection from './middleware/userInjection.js';
 
-config()
+config();
 
-const app = express()
+const app = express();
 
 app.use(
     cors({
@@ -36,9 +36,9 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(cookieParser(process.env.SIGNING_KEY || 'example-signing-key'));
 
-let driver = loadDatabaseDriver()
-let transporter = loadTransporter()
-let key = jwtKey()
+let driver = loadDatabaseDriver();
+let transporter = loadTransporter();
+let key = jwtKey();
 
 app.locals.driver = driver;
 app.locals.transporter = transporter;

@@ -3,18 +3,18 @@ import { UserRegistration } from 'src/domain/User.js';
 import { Driver, loadDatabaseDriver } from 'src/repo/Driver.js';
 import { beforeEach, afterEach, test, expect } from '@jest/globals';
 
-var driver: Driver
+var driver: Driver;
 
 beforeEach(async () => {
     process.env.EXPLICIT_USE_MONGO = 'true';
     config();
 
-    driver = loadDatabaseDriver()
-})
+    driver = loadDatabaseDriver();
+});
 
 afterEach(async () => {
-    await driver.destroy()
-})
+    await driver.destroy();
+});
 
 test('Tests getting a mongo user by ID', async () => {
     let result = await driver.userRepository.GetById(

@@ -6,7 +6,7 @@ export function isProd() {
 }
 
 export function getVersion() {
-    return process.env.VERSION
+    return process.env.VERSION;
 }
 
 export function buildUrl(path: string) {
@@ -17,9 +17,9 @@ export function buildUrl(path: string) {
     }
 }
 interface Locals extends Record<string, any> {
-    user?: User
+    user?: User;
 }
 
 export interface Response extends ExpressResponse {
-    locals: Locals
+    locals: Locals;
 }

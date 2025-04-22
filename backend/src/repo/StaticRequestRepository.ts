@@ -16,7 +16,7 @@ export class StaticRequestRepository implements RequestRepository {
             ['Frontend'],
             'Would love to have you join frontend!'
         ),
-    ]
+    ];
 
     async GetRequest(
         user_id: string,
@@ -30,32 +30,32 @@ export class StaticRequestRepository implements RequestRepository {
                     req.project_id == project_id &&
                     req.is_invite == is_invite
             ) || null
-        )
+        );
     }
 
     async GetUserInvites(user_id: string): Promise<Request[]> {
         return this._internal.filter(
             (req: Request) => req.user_id === user_id && req.is_invite
-        )
+        );
     }
 
     async GetUserApplications(user_id: string): Promise<Request[]> {
         return this._internal.filter(
             (req: Request) => req.user_id === user_id && req.is_application
-        )
+        );
     }
 
     async GetProjectInvites(project_id: string): Promise<Request[]> {
         return this._internal.filter(
             (req: Request) => req.project_id === project_id && req.is_invite
-        )
+        );
     }
 
     async GetProjectApplications(project_id: string): Promise<Request[]> {
         return this._internal.filter(
             (req: Request) =>
                 req.project_id === project_id && req.is_application
-        )
+        );
     }
 
     async CreateRequest(req: Request): Promise<boolean> {
@@ -67,23 +67,23 @@ export class StaticRequestRepository implements RequestRepository {
                     found.is_invite === req.is_invite
             )
         ) {
-            return false
+            return false;
         } else {
-            this._internal.push(req)
-            return true
+            this._internal.push(req);
+            return true;
         }
     }
 
     async DeleteRequest(req: Request): Promise<boolean> {
-        let size = this._internal.length
+        let size = this._internal.length;
 
         this._internal = this._internal.filter(
             (found: Request) =>
                 found.user_id !== req.user_id ||
                 found.project_id !== req.project_id ||
                 found.is_invite !== req.is_invite
-        )
+        );
 
-        return size !== this._internal.length
+        return size !== this._internal.length;
     }
 }

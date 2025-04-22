@@ -10,13 +10,13 @@ RequestRouter.use(checkVerification);
 
 interface RequestsResponse {
     invites: {
-        me: ProjectRequest[]
-        [project_id: string]: ProjectRequest[]
-    }
+        me: ProjectRequest[];
+        [project_id: string]: ProjectRequest[];
+    };
     applications: {
-        me: ProjectRequest[]
-        [project_id: string]: ProjectRequest[]
-    }
+        me: ProjectRequest[];
+        [project_id: string]: ProjectRequest[];
+    };
 }
 
 RequestRouter.get('/api/requests', async (req: Request, res: Response) => {
@@ -27,29 +27,29 @@ RequestRouter.get('/api/requests', async (req: Request, res: Response) => {
         return;
     }
 
-    const db: Driver = req.app.locals.driver
+    const db: Driver = req.app.locals.driver;
 
     let response: RequestsResponse = {
         invites: { me: [] },
         applications: { me: [] },
-    }
+    };
 
     response.invites.me = await db.requestRepository.GetUserInvites(
         res.locals.user._id
-    )
+    );
 
     response.applications.me = await db.requestRepository.GetUserApplications(
         res.locals.user._id
-    )
+    );
 
     for (let pid of res.locals.user.projects) {
-        const project = await db.projectRepository.GetById(pid)
-        if (!project) continue
+        const project = await db.projectRepository.GetById(pid);
+        if (!project) continue;
         if (project.owner === res.locals.user._id) {
             response.invites[project._id] =
-                await db.requestRepository.GetProjectInvites(project._id)
+                await db.requestRepository.GetProjectInvites(project._id);
             response.applications[project._id] =
-                await db.requestRepository.GetProjectApplications(project._id)
+                await db.requestRepository.GetProjectApplications(project._id);
         }
     }
 
@@ -66,9 +66,9 @@ RequestRouter.post('/api/requests', async (req: Request, res: Response) => {
         return;
     }
 
-    const { user_id, project_id, is_invite, roles, message } = req.body
-    const db: Driver = req.app.locals.driver
-    const project = await db.projectRepository.GetById(project_id)
+    const { user_id, project_id, is_invite, roles, message } = req.body;
+    const db: Driver = req.app.locals.driver;
+    const project = await db.projectRepository.GetById(project_id);
 
     if (!project) {
         res.status(400).json({
@@ -90,8 +90,8 @@ RequestRouter.post('/api/requests', async (req: Request, res: Response) => {
         if (user_id !== res.locals.user._id) {
             res.status(403).json({
                 error: "Forbidden. You cannot create an application on someone else's behalf.",
-            })
-            return
+            });
+            return;
         }
     }
 
@@ -117,10 +117,10 @@ RequestRouter.post('/api/requests', async (req: Request, res: Response) => {
             roles,
             message
         )
-    )
+    );
 
     // Send email
-    const user = await db.userRepository.GetById(user_id)
+    const user = await db.userRepository.GetById(user_id);
     if (!user) {
         res.status(400).json({
             error: 'Bad request. Provided user not found.',
@@ -155,8 +155,8 @@ RequestRouter.post('/api/requests', async (req: Request, res: Response) => {
         error: '',
         success: 'Request sent!',
         request: newRequest,
-    })
-})
+    });
+});
 
 RequestRouter.post(
     '/api/requests/approve',
@@ -287,13 +287,13 @@ RequestRouter.post(
             });
             return;
         }
-        const { user_id, project_id, is_invite } = req.body
-        const db: Driver = req.app.locals.driver
+        const { user_id, project_id, is_invite } = req.body;
+        const db: Driver = req.app.locals.driver;
         const request = await db.requestRepository.GetRequest(
             user_id,
             project_id,
             is_invite
-        )
+        );
 
         if (!request) {
             res.status(400).json({
@@ -302,8 +302,8 @@ RequestRouter.post(
             return;
         }
 
-        const user = await db.userRepository.GetById(user_id)
-        const project = await db.projectRepository.GetById(project_id)
+        const user = await db.userRepository.GetById(user_id);
+        const project = await db.projectRepository.GetById(project_id);
 
         if (!user) {
             res.status(400).json({
@@ -326,15 +326,15 @@ RequestRouter.post(
             return;
         }
 
-        await db.requestRepository.DeleteRequest(request)
+        await db.requestRepository.DeleteRequest(request);
 
         if (req.app.locals.transporter) {
-            let t: IMailgunClient = req.app.locals.transporter
+            let t: IMailgunClient = req.app.locals.transporter;
             let message = `
                 Hey there ${user.name},<br /><br />
                 We regret to inform you that your request to join ${project.name} has been denied.
                 If you have any questions, please direct them to the project owner.
-            `
+            `;
             const info = await t.messages.create(process.env.MAILGUN_DOMAIN!, {
                 from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
                 to: [user.email],
@@ -345,6 +345,6 @@ RequestRouter.post(
         }
         res.status(200).json({ error: '', result: 'Request denied.' });
     }
-)
+);
 
-export default RequestRouter
+export default RequestRouter;

@@ -146,8 +146,8 @@ export class StaticProjectRepository implements ProjectRepository {
         }
 
         // apply the update
-        Object.assign(project, updates)
-        return true
+        Object.assign(project, updates);
+        return true;
     }
 
     async AddUserToProject(
@@ -162,8 +162,8 @@ export class StaticProjectRepository implements ProjectRepository {
         for (const role of roles) {
             // validate the roles
             if (!PossibleRoles.includes(role)) {
-                console.warn(`Skipping invalid role: ${role}`)
-                continue
+                console.warn(`Skipping invalid role: ${role}`);
+                continue;
             }
 
             // create role if it doesn't exist
@@ -176,7 +176,7 @@ export class StaticProjectRepository implements ProjectRepository {
 
             // avoid duplicates
             if (!project.users[role].users.includes(user_id)) {
-                project.users[role].users.push(user_id)
+                project.users[role].users.push(user_id);
             }
         }
 

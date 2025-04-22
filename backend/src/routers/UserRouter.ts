@@ -19,12 +19,12 @@ UserRouter.get('/api/users', async (req: Request, res: Response) => {
     }
 
     // optional parameters
-    const { name, skills, roles } = req.query
-    const db: Driver = req.app.locals.driver
+    const { name, skills, roles } = req.query;
+    const db: Driver = req.app.locals.driver;
 
     try {
         // get all users
-        let users = await db.userRepository.GetAll()
+        let users = await db.userRepository.GetAll();
 
         // filter by roles if provided
         if (roles) {
@@ -47,7 +47,7 @@ UserRouter.get('/api/users', async (req: Request, res: Response) => {
             // validate skills
             const validSkills = parsedSkills.filter((skill) =>
                 PossibleSkills.includes(skill)
-            )
+            );
 
             users = users.filter((user) =>
                 user.skills.some((skill) => validSkills.includes(skill))
@@ -61,7 +61,7 @@ UserRouter.get('/api/users', async (req: Request, res: Response) => {
     } catch (err) {
         res.status(500).json({ error: 'Error retrieving ysers.' });
     }
-})
+});
 
 UserRouter.get('/api/users/me', async (req: Request, res: Response) => {
     // incoming: user id
@@ -93,11 +93,11 @@ UserRouter.get('/api/users/:id(\\d+)', async (req: Request, res: Response) => {
     if (!id) {
         res.status(400).json({
             error: "Field 'id' must be specified",
-        })
-        return
+        });
+        return;
     }
 
-    const theUser = await db.userRepository.GetById(id.toString())
+    const theUser = await db.userRepository.GetById(id.toString());
 
     if (theUser == null) {
         res.status(400).json({ error: 'User not found!' });
@@ -111,16 +111,16 @@ UserRouter.get('/api/users/:id(\\d+)', async (req: Request, res: Response) => {
     }
 
     // Profile is private — check if the viewer shares a project with them or they applied
-    const viewerProjects = res.locals.user.projects
+    const viewerProjects = res.locals.user.projects;
 
     // check for shared membership first
     for (let pid of viewerProjects) {
-        const project = await db.projectRepository.GetById(pid)
-        if (!project) continue
+        const project = await db.projectRepository.GetById(pid);
+        if (!project) continue;
 
         const isMember = Object.values(project.users).some((role) =>
             role.users.includes(theUser._id)
-        )
+        );
 
         if (isMember) {
             res.status(200).json({ error: '', result: theUser.toJson() });
@@ -134,13 +134,13 @@ UserRouter.get('/api/users/:id(\\d+)', async (req: Request, res: Response) => {
     );
     const hasAppliedToViewerProject = userApplications.some((app) =>
         viewerProjects.includes(app.project_id)
-    )
+    );
 
     // check if theUser has been invited to any of viewer's projects
     const userInvites = await db.requestRepository.GetUserInvites(theUser._id);
     const hasBeenInvitedToViewerProject = userInvites.some((app) =>
         viewerProjects.includes(app.project_id)
-    )
+    );
 
     if (hasAppliedToViewerProject || hasBeenInvitedToViewerProject) {
         res.status(200).json({ error: '', result: theUser.toJson() });
@@ -170,8 +170,8 @@ UserRouter.patch('/api/users/me', async (req: Request, res: Response) => {
         return;
     }
 
-    const { updates } = req.body
-    const db: Driver = req.app.locals.driver
+    const { updates } = req.body;
+    const db: Driver = req.app.locals.driver;
 
     if (!updates || typeof updates !== 'object') {
         res.status(400).json({ error: 'Invalid request format' });
@@ -191,18 +191,15 @@ UserRouter.patch('/api/users/me', async (req: Request, res: Response) => {
         return;
     }
 
-    let theUser
+    let theUser;
     try {
-        theUser = await db.userRepository.GetById(res.locals.user._id)
+        theUser = await db.userRepository.GetById(res.locals.user._id);
     } catch {
         res.status(400).json({ error: 'Invalid ID format!' });
         return;
     }
 
-    res.locals.user = theUser
-
-    res.status(200).json({ error: '', success: true, updatedUser: theUser })
-})
+    res.locals.user = theUser;
 
     res.status(200).json({ error: '', success: true, updatedUser: theUser });
 });
