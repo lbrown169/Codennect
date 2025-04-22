@@ -1,15 +1,15 @@
-import { AppShell, Group, NavLink, ScrollArea } from '@mantine/core'
-import { useContext } from 'react'
-import { FaRegAddressBook, FaRegUser } from 'react-icons/fa'
-import { FaMagnifyingGlass } from 'react-icons/fa6'
-import { IoMdExit } from 'react-icons/io'
-import { LuCrown, LuCirclePlus } from 'react-icons/lu'
-import { MdOutlineSpaceDashboard } from 'react-icons/md'
-import { Link } from 'react-router-dom'
-import { UserContext } from '../hooks/UserContext'
+import { AppShell, Group, NavLink, ScrollArea } from '@mantine/core';
+import { useContext } from 'react';
+import { FaRegAddressBook, FaRegUser } from 'react-icons/fa';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { IoMdExit } from 'react-icons/io';
+import { LuCrown, LuCirclePlus } from 'react-icons/lu';
+import { MdOutlineSpaceDashboard } from 'react-icons/md';
+import { Link } from 'react-router-dom';
+import { UserContext } from '../hooks/UserContext';
 
 export function Navbar() {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(UserContext);
 
     return (
         <AppShell.Navbar p="md">
@@ -102,5 +102,5 @@ export function Navbar() {
                 </AppShell.Section>
             )}
         </AppShell.Navbar>
-    )
+    );
 }

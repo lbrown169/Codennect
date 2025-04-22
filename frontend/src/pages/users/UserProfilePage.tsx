@@ -1,4 +1,4 @@
-import { Title, Box } from '@mantine/core'
+import { Title, Box } from '@mantine/core';
 
 export default function UserProfilePage() {
     return (
@@ -7,5 +7,5 @@ export default function UserProfilePage() {
                 User Profile
             </Title>
         </Box>
-    )
+    );
 }

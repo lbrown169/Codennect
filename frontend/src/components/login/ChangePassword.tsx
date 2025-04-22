@@ -1,13 +1,13 @@
-import { Button, PasswordInput, TextInput, Text, Alert } from '@mantine/core'
-import { useForm } from '@mantine/form'
-import { Link, useSearchParams } from 'react-router-dom'
-import { ChangePassword } from '../../api/UserAPI'
-import { notifications } from '@mantine/notifications'
-import { useState } from 'react'
+import { Button, PasswordInput, TextInput, Text, Alert } from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { Link, useSearchParams } from 'react-router-dom';
+import { ChangePassword } from '../../api/UserAPI';
+import { notifications } from '@mantine/notifications';
+import { useState } from 'react';
 
 export default function ChangePasswordComponent() {
-    const [searchParams, _] = useSearchParams()
-    const [submitted, setSubmitted] = useState(false)
+    const [searchParams, _] = useSearchParams();
+    const [submitted, setSubmitted] = useState(false);
     const changeForm = useForm({
         mode: 'uncontrolled',
         initialValues: {
@@ -21,25 +21,25 @@ export default function ChangePasswordComponent() {
             confirmPassword: (value, values) =>
                 value !== values.password ? 'Passwords do not match' : null,
         },
-    })
+    });
 
     async function onChangeSubmit({
         email,
         password,
     }: {
-        email: string
-        password: string
+        email: string;
+        password: string;
     }) {
         try {
-            await ChangePassword(searchParams.get('token')!, email, password)
-            setSubmitted(true)
+            await ChangePassword(searchParams.get('token')!, email, password);
+            setSubmitted(true);
         } catch (err) {
-            console.log(err)
+            console.log(err);
             notifications.show({
                 title: 'Something went wrong',
                 message: 'We failed to register you, please try again later.',
                 color: 'red',
-            })
+            });
         }
     }
 
@@ -59,7 +59,7 @@ export default function ChangePasswordComponent() {
                     again, or <Link to="/login">here</Link> to log in.
                 </Text>
             </>
-        )
+        );
     }
 
     if (submitted) {
@@ -78,7 +78,7 @@ export default function ChangePasswordComponent() {
                     Click <Link to="/login">here</Link> to log in.
                 </Text>
             </>
-        )
+        );
     }
 
     return (
@@ -122,5 +122,5 @@ export default function ChangePasswordComponent() {
                 <Link to="/login">Log in</Link>
             </Text>
         </>
-    )
+    );
 }

@@ -1,25 +1,25 @@
-import { Response as ExpressResponse } from 'express'
-import { User } from './domain/User.js'
+import { Response as ExpressResponse } from 'express';
+import { User } from './domain/User.js';
 
 export function isProd() {
-    return process.env.NODE_ENV === 'production'
+    return process.env.NODE_ENV === 'production';
 }
 
 export function getVersion() {
-    return process.env.VERSION
+    return process.env.VERSION;
 }
 
 export function buildUrl(path: string) {
     if (isProd()) {
-        return 'http://cop4331.tech' + path
+        return 'http://cop4331.tech' + path;
     } else {
-        return 'http://localhost:5001' + path
+        return 'http://localhost:5001' + path;
     }
 }
 interface Locals extends Record<string, any> {
-    user?: User
+    user?: User;
 }
 
 export interface Response extends ExpressResponse {
-    locals: Locals
+    locals: Locals;
 }

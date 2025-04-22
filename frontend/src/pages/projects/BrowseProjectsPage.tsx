@@ -21,5 +21,5 @@ export default function BrowseProjectsPage() {
             </Title>
             <ProjectSearchBar />
         </Box>
-    )
+    );
 }
