@@ -85,4 +85,5 @@ export interface ProjectRepository {
     GetAll(): Promise<Project[]>;
     Create(project: ProjectCreation): Promise<Project>;
     Update(id: string, updates: Partial<Project>): Promise<boolean>;
+    AddUserToProject(project_id: string, user_id: string, roles: string[]): Promise<boolean>;
 }

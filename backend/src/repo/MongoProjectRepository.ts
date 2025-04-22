@@ -190,4 +190,33 @@ export class MongoProjectRepository implements ProjectRepository {
     
         return result.modifiedCount > 0;
     }
+
+    async AddUserToProject(project_id: string, user_id: string, roles: string[]): Promise<boolean> {
+        const project = await this.GetById(project_id);
+        if (!project) return false;
+    
+        // for each role that we're giving to a user
+        for (const role of roles) {
+            // validate the roles
+            if (!PossibleRoles.includes(role)) {
+                console.warn(`Skipping invalid role: ${role}`);
+                continue;
+            }
+    
+            // create role if it doesn't exist
+            if (!project.users[role]) {
+                project.users[role] = {
+                    max: 1,
+                    users: []
+                };
+            }
+    
+            // avoid duplicates
+            if (!project.users[role].users.includes(user_id)) {
+                project.users[role].users.push(user_id);
+            }
+        }
+    
+        return this.Update(project_id, { users: project.users });
+    }
 }

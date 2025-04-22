@@ -221,20 +221,23 @@ RequestRouter.post("/api/requests/approve", async (req: Request, res: Response) 
         }
     }
     
-    // Place them into their assigned roles
-    for (let role of request.roles) {
-        // make sure the role exists in the project and add it if it doesn't
-            // (could validate against PossibleRoles here too)
-        if (!project.users[role]) {
-            project.users[role] = {
-                max: 1, // default max value
-                users: []
-            };
-        }
+    // // Place them into their assigned roles
+    // for (let role of request.roles) {
+    //     // make sure the role exists in the project and add it if it doesn't
+    //         // (could validate against PossibleRoles here too)
+    //     if (!project.users[role]) {
+    //         project.users[role] = {
+    //             max: 1, // default max value
+    //             users: []
+    //         };
+    //     }
     
-        // add the user to the role
-        project.users[role].users.push(user_id);
-    }
+    //     // add the user to the role
+    //     project.users[role].users.push(user_id);
+    // }
+
+    // add to project repo with dedicated function
+    await db.projectRepository.AddUserToProject(project_id, user_id, request.roles);
 
     // Now insert project id into user
     if (user.projects.indexOf(project_id) === -1) {
@@ -244,7 +247,6 @@ RequestRouter.post("/api/requests/approve", async (req: Request, res: Response) 
         });
     }
 
-    await db.projectRepository.Update(project_id, { users: project.users });
     await db.requestRepository.DeleteRequest(request);
 
     if (req.app.locals.transporter) {
