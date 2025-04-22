@@ -108,6 +108,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
     });
   }
 
+    void addItemFromBank(String item, List<String> list) {
+    setState(() {
+      if (!list.contains(item)) list.add(item);
+    });
+  }
+
   void removeItem(String item, List<String> list) {
     setState(() {
       list.remove(item);
@@ -166,49 +172,68 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Widget buildTagSection(String title, List<String> bank, List<String> list,
-      TextEditingController controller) {
+      TextEditingController controller, String prompt, double boxHeight) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title,
             style:
                 GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600)),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: list
-              .map((item) => Chip(
-                    label: Text(item),
-                    onDeleted: () => removeItem(item, list),
-                  ))
-              .toList(),
-        ),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: controller,
-                decoration: const InputDecoration(hintText: 'Add custom'),
+        Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(
+              color: Color.fromARGB(255, 0, 0, 0).withOpacity(0.3),
+              width: 1,
+            ),
+          ),
+          elevation: 3,
+          margin: const EdgeInsets.only(bottom: 16),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: list
+                      .map((item) => Chip(
+                            label: Text(item, style: GoogleFonts.poppins()),
+                            backgroundColor: const Color(0xFFD9E8EC),
+                            labelStyle: const TextStyle(color: Colors.black),
+                            onDeleted: () => removeItem(item, list),
+                          ))
+                      .toList(),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Center(
+          child: SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                openBankDialog(context, bank, (item) {
+                  addItemFromBank(item, list);
+                }, boxHeight);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF598392),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+              child: Text(
+                "$prompt",
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                ),
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () => addItem(controller.text, list, controller),
-            )
-          ],
+          ),
         ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 6,
-          runSpacing: 6,
-          children: bank
-              .map((item) => ActionChip(
-                    label: Text(item),
-                    onPressed: () => addItem(item, list, controller),
-                  ))
-              .toList(),
-        )
       ],
     );
   }
@@ -220,15 +245,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
         Text("Links",
             style:
                 GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600)),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: links
-              .map((link) => Chip(
-                    label: Text(link),
-                    onDeleted: () => removeItem(link, links),
-                  ))
-              .toList(),
+                const SizedBox(height: 10),
+        Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(
+              color: Color.fromARGB(255, 0, 0, 0).withOpacity(0.3),
+              width: 1,
+            ),
+          ),
+          elevation: 3,
+          margin: const EdgeInsets.only(bottom: 16),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: links
+                      .map((link) => Chip(
+                            label: Text(link, style: GoogleFonts.poppins()),
+                            backgroundColor: const Color(0xFFD9E8EC),
+                            labelStyle: const TextStyle(color: Colors.black),
+                            onDeleted: () => removeItem(link, links),
+                          ))
+                      .toList(),
+                ),
+              ],
+            ),
+          ),
         ),
         const SizedBox(height: 10),
         Row(
@@ -236,7 +284,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
             Expanded(
               child: TextField(
                 controller: linkController,
-                decoration: const InputDecoration(hintText: 'Enter link URL'),
+                decoration: const InputDecoration(
+                  hintText: 'Enter link URL',                 
+                ),
               ),
             ),
             IconButton(
@@ -278,20 +328,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
+            Text("Info",
+            style:
+                GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 10),
             buildTextInput("Name", nameController),
-            const SizedBox(height: 12),
+            const SizedBox(height: 15),
             buildTextInput("Email", emailController, enabled: false),
-            const SizedBox(height: 12),
+            const SizedBox(height: 15),
             buildTextInput("Preferred Communication", commController),
-            const SizedBox(height: 12),
+            const SizedBox(height: 25),
             buildLinkField(),
-            const SizedBox(height: 20),
-            buildTagSection("Skills", skillBank, skills, skillController),
-            const SizedBox(height: 20),
-            buildTagSection("Roles", roleBank, roles, roleController),
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
+            buildTagSection("Skills", skillBank, skills, skillController, "Add Skills", 500),
+            const SizedBox(height: 30),
+            buildTagSection("Roles", roleBank, roles, roleController, "Add Roles",250),
+            const SizedBox(height: 30),
             buildTagSection(
-                "Interests", interestBank, interests, interestController),
+                "Interests", interestBank, interests, interestController, "Add Interests",250),
           ],
         ),
       ),
@@ -307,8 +361,37 @@ class _EditProfilePageState extends State<EditProfilePage> {
         labelText: label,
         filled: true,
         fillColor: enabled ? Colors.white : Colors.grey.shade200,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12),
+        ),
       ),
+    );
+  }
+
+   void openBankDialog(BuildContext context, List<String> bank,
+      Function(String) onItemSelected, double boxHeight) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Choose an item', style: GoogleFonts.poppins()),
+          content: SizedBox(
+            height: boxHeight,
+            width: double.maxFinite,
+            child: ListView.builder(
+              itemCount: bank.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(bank[index], style: GoogleFonts.poppins()),
+                  onTap: () {
+                    onItemSelected(bank[index]);
+                    Navigator.of(context).pop();
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

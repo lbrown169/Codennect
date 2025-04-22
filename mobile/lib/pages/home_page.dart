@@ -223,7 +223,7 @@ class _HomePageState extends State<HomePage> {
                       _buildServiceCard(
                         context,
                         Icons.people_alt_rounded,
-                        "Search People",
+                        "Browse Users",
                         const Color(0xFFFFFFFF),
                         navigateTo: const BrowseUsersPage(),
                       ),

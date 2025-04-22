@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../integration/get_users_call.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../objects/user.dart';
 import 'invite_user_page.dart';
 
@@ -68,7 +69,7 @@ class _BrowseUsersPageState extends State<BrowseUsersPage> {
     } catch (e) {
       print('Error fetching users: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error loading users')),
+        SnackBar(content: Text('Error loading users', style: GoogleFonts.poppins())),
       );
     }
   }
@@ -93,7 +94,8 @@ class _BrowseUsersPageState extends State<BrowseUsersPage> {
       backgroundColor: const Color(0xFFEFF6E0),
       appBar: AppBar(
         backgroundColor: const Color(0xFF598392),
-        title: const Text('Browse Users'),
+        title: Text("Browse Users",
+            style: GoogleFonts.poppins(color: Colors.white)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -106,16 +108,20 @@ class _BrowseUsersPageState extends State<BrowseUsersPage> {
               },
               decoration: InputDecoration(
                 hintText: 'Search by name...',
+                hintStyle: GoogleFonts.poppins(),
                 prefixIcon: const Icon(Icons.search),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.6),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
+              style: GoogleFonts.poppins(),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
-                const Text("Filter by Skill:"),
+                Text("Filter by Skill:", style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
                 const SizedBox(width: 10),
                 Expanded(
                   child: DropdownButtonFormField<String>(
@@ -123,7 +129,8 @@ class _BrowseUsersPageState extends State<BrowseUsersPage> {
                     items: allSkills
                         .map((skill) => DropdownMenuItem(
                               value: skill,
-                              child: Text(skill),
+                              child: Text(skill,
+                                  style: GoogleFonts.poppins(color: Colors.black)),
                             ))
                         .toList(),
                     onChanged: (value) {
@@ -131,12 +138,15 @@ class _BrowseUsersPageState extends State<BrowseUsersPage> {
                       filterUsers();
                     },
                     decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.6),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       contentPadding:
                           const EdgeInsets.symmetric(horizontal: 12),
                     ),
+                    style: GoogleFonts.poppins(),
                   ),
                 )
               ],
@@ -144,7 +154,7 @@ class _BrowseUsersPageState extends State<BrowseUsersPage> {
             const SizedBox(height: 12),
             Row(
               children: [
-                const Text("Filter by Role:"),
+                Text("Filter by Role:", style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
                 const SizedBox(width: 10),
                 Expanded(
                   child: DropdownButtonFormField<String>(
@@ -153,13 +163,13 @@ class _BrowseUsersPageState extends State<BrowseUsersPage> {
                       'All',
                       'Frontend',
                       'Backend',
-                      'Mobile',
-                      'Manager',
-                      'Database'
+                      'Database',
+                      'Mobile'
                     ]
                         .map((role) => DropdownMenuItem(
                               value: role,
-                              child: Text(role),
+                              child: Text(role,
+                                  style: GoogleFonts.poppins(color: Colors.black)),
                             ))
                         .toList(),
                     onChanged: (value) {
@@ -167,12 +177,15 @@ class _BrowseUsersPageState extends State<BrowseUsersPage> {
                       filterUsers();
                     },
                     decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.6),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       contentPadding:
                           const EdgeInsets.symmetric(horizontal: 12),
                     ),
+                    style: GoogleFonts.poppins(),
                   ),
                 )
               ],
@@ -200,7 +213,7 @@ class _BrowseUsersPageState extends State<BrowseUsersPage> {
                             children: [
                               Text(
                                 user.name,
-                                style: const TextStyle(
+                                style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
                                 ),
@@ -213,8 +226,9 @@ class _BrowseUsersPageState extends State<BrowseUsersPage> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16),
                                 ),
-                                child: const Text("See Details",
-                                    style: TextStyle(color: Colors.white)),
+                                child: Text("See Details",
+                                    style: GoogleFonts.poppins(
+                                        color: Colors.white)),
                               ),
                             ],
                           ),
@@ -231,7 +245,8 @@ class _BrowseUsersPageState extends State<BrowseUsersPage> {
                                         borderRadius: BorderRadius.circular(16),
                                       ),
                                       child: Text(skill,
-                                          style: const TextStyle(fontSize: 12)),
+                                          style: GoogleFonts.poppins(
+                                              fontSize: 12)),
                                     ))
                                 .toList(),
                           ),
@@ -273,36 +288,64 @@ class _BrowseUsersPageState extends State<BrowseUsersPage> {
               ),
             ),
             Text(user.name,
-                style:
-                    const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                style: GoogleFonts.poppins(
+                    fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-            Text("Preferred Communication: ${user.comm}"),
+            Text("Preferred Communication: ${user.comm}",
+                style: GoogleFonts.poppins()),
             const SizedBox(height: 10),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children:
-                  user.skills.map((skill) => Chip(label: Text(skill))).toList(),
+              children: user.skills
+                  .map(
+                    (skill) => Chip(
+                      label: Text(skill, style: GoogleFonts.poppins()),
+                      backgroundColor: const Color(0xFFD9E8EC),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  )
+                  .toList(),
             ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children:
-                  user.roles.map((role) => Chip(label: Text(role))).toList(),
+              children: user.roles
+                  .map(
+                    (role) => Chip(
+                      label: Text(role, style: GoogleFonts.poppins()),
+                      backgroundColor: const Color.fromARGB(255, 223, 243, 225),                     
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  )
+                  .toList(),
             ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: user.interests
-                  .map((interest) => Chip(label: Text(interest)))
+                  .map(
+                    (interest) => Chip(
+                      label: Text(interest, style: GoogleFonts.poppins()),
+                      backgroundColor: const Color.fromARGB(255, 235, 246, 224),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
             const SizedBox(height: 20),
-            const Text("Accounts:",
-                style: TextStyle(fontWeight: FontWeight.w600)),
-            ...user.accounts.entries.map((e) => Text("${e.key}: ${e.value}")),
+            Text("Accounts:",
+                style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+            ...user.accounts.entries.map((e) =>
+                Text("${e.key}: ${e.value}", style: GoogleFonts.poppins())),
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
@@ -316,7 +359,11 @@ class _BrowseUsersPageState extends State<BrowseUsersPage> {
                     ),
                   );
                 },
-                child: const Text("Invite User"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF124559),
+                ),
+                child: Text("Invite User",
+                    style: GoogleFonts.poppins(color: Colors.white)),
               ),
             ),
             const SizedBox(height: 16),

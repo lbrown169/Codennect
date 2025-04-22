@@ -54,8 +54,8 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Text(title,
               style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w500, fontSize: 14)),
-          const SizedBox(height: 4),
+                  fontWeight: FontWeight.w600, fontSize: 14, decoration: TextDecoration.underline,)),
+          const SizedBox(height: 6),
           Text(value.isNotEmpty ? value : "N/A",
               style: GoogleFonts.poppins(fontSize: 14)),
         ],
@@ -63,7 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget buildSection(String title, List<String> list) {
+  Widget buildSection(String title, List<String> list, Color boxColor) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 2,
@@ -75,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
           children: [
             Text(title,
                 style: GoogleFonts.poppins(
-                    fontSize: 18, fontWeight: FontWeight.w600)),
+                    fontSize: 18, fontWeight: FontWeight.w700)),
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,
@@ -83,8 +83,8 @@ class _ProfilePageState extends State<ProfilePage> {
               children: list
                   .map((item) => Chip(
                         label: Text(item, style: GoogleFonts.poppins()),
-                        backgroundColor: const Color(0xFF9DB4C0),
-                        labelStyle: const TextStyle(color: Colors.white),
+                        backgroundColor: boxColor,
+                        labelStyle: const TextStyle(color: Colors.black),
                       ))
                   .toList(),
             ),
@@ -175,7 +175,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     Text("Info",
                         style: GoogleFonts.poppins(
-                            fontSize: 18, fontWeight: FontWeight.w600)),
+                            fontSize: 18, fontWeight: FontWeight.w700)),
                     const SizedBox(height: 12),
                     buildInfoBlock("Name", nameController.text),
                     buildInfoBlock("Email", emailController.text),
@@ -198,16 +198,16 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     Text("Links",
                         style: GoogleFonts.poppins(
-                            fontSize: 18, fontWeight: FontWeight.w600)),
+                            fontSize: 18, fontWeight: FontWeight.w700)),
                     const SizedBox(height: 8),
                     buildLinkList(links),
                   ],
                 ),
               ),
             ),
-            buildSection("Skills", skills),
-            buildSection("Roles", roles),
-            buildSection("Interests", interests),
+            buildSection("Skills", skills, Color.fromARGB(255, 189, 211, 222)),
+            buildSection("Roles", roles, Color.fromARGB(255, 189, 211, 222)),
+            buildSection("Interests", interests, Color.fromARGB(255, 189, 211, 222)),
           ],
         ),
       ),

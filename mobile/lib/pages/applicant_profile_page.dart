@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../objects/project.dart';
+import 'package:http/http.dart' as http;
 import '../integration/get_user_info_call.dart';
 import '../integration/approve_application_call.dart';
 import '../integration/deny_application_call.dart';
@@ -10,8 +12,9 @@ import 'show_project_apps_page.dart';
 class ApplicantProfilePage extends StatefulWidget {
   final Project project;
   final String applicantId;
+  final List<dynamic> receivedApplications;
   const ApplicantProfilePage(
-      {super.key, required this.project, required this.applicantId});
+      {super.key, required this.project, required this.applicantId, required this.receivedApplications});
 
   @override
   State<ApplicantProfilePage> createState() => _ApplicantProfilePageState();
@@ -32,26 +35,37 @@ class _ApplicantProfilePageState extends State<ApplicantProfilePage> {
   void initState() {
     super.initState();
     _loadUserSession();
-    fetchProfile();
+    fetchUser(widget.applicantId);
   }
 
-  Future<void> fetchProfile() async {
-     final profileData = await UserInfoService.getUserInfo(widget.applicantId);
-    if (profileData != null) {
-      setState(() {
-        IDController.text = profileData['_id'] ?? '';
-        nameController.text = profileData['name'] ?? '';
-        links = List<String>.from(profileData['accounts'] ?? []);
-        commController.text = profileData['comm'] ?? '';
-        skills = List<String>.from(profileData['skills'] ?? []);
-        roles = List<String>.from(profileData['roles'] ?? []);
-        interests = List<String>.from(profileData['interests'] ?? []);
+Future<void> fetchUser(String userId) async {
+  final prefs = await SharedPreferences.getInstance();
+  final cookie = prefs.getString('auth_token');
 
-      });
-    } else {
-      print("Error: Profile data is null");
-    }
+  final res = await http.get(
+    Uri.parse('http://cop4331.tech/api/get-user-info?id=$userId'),
+    headers: {
+      'Content-Type': 'application/json',
+      if (cookie != null) 'Cookie': cookie,
+    },
+  );
+
+  if (res.statusCode == 200) {
+    final Map<String, dynamic>? profileData = jsonDecode(res.body);
+
+    setState(() {
+      IDController.text = profileData?['_id'] ?? '';
+      nameController.text = profileData?['name'] ?? '';
+      links = List<String>.from(profileData?['accounts'] ?? []);
+      commController.text = profileData?['comm'] ?? '';
+      skills = List<String>.from(profileData?['skills'] ?? []);
+      roles = List<String>.from(profileData?['roles'] ?? []);
+      interests = List<String>.from(profileData?['interests'] ?? []);
+    });
+  } else {
+    print("Failed to fetch user info for ID $userId");
   }
+}
 
   Future<void> _loadUserSession() async {
     final prefs = await SharedPreferences.getInstance();
@@ -63,14 +77,25 @@ class _ApplicantProfilePageState extends State<ApplicantProfilePage> {
   void _goBack() {
     Navigator.of(context).pop();
   }
-  void _approveApplication() async{ //Sends applicant id
-    final success = await ApproveApplicationService.approveApplication(
-      user_id: IDController.text,
-      project_id: widget.project.id,
-      is_invite: false
+
+  void _approveApplication() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cookie = prefs.getString('auth_token');
+
+    final response = await http.post(
+      Uri.parse('http://cop4331.tech/api/requests/approve'),
+      headers: {
+        'Content-Type': 'application/json',
+        if (cookie != null) 'Cookie': cookie,
+      },
+      body: jsonEncode({
+        'user_id': IDController.text,
+        'project_id': widget.project.id,
+        'is_invite': false,
+      }),
     );
 
-    if (success) {
+    if (response.statusCode == 200) {
         _goBack();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -79,15 +104,26 @@ class _ApplicantProfilePageState extends State<ApplicantProfilePage> {
     }
   }
 
-  void _denyApplication() async{ //sends user id
-    final success = await DenialApplicationService.denyApplication(
-      user_id: creatorId!,
-      project_id: widget.project.id,
-      is_invite: false
+  void _denyApplication() async{
+   final prefs = await SharedPreferences.getInstance();
+    final cookie = prefs.getString('auth_token');
+
+    final response = await http.post(
+      Uri.parse('http://cop4331.tech/api/requests/deny'),
+      headers: {
+        'Content-Type': 'application/json',
+        if (cookie != null) 'Cookie': cookie,
+      },
+      body: jsonEncode({
+        'user_id': IDController.text,
+        'project_id': widget.project.id,
+        'is_invite': false,
+      }),
     );
 
-    if (success) {
+    if (response.statusCode == 200) {
         _goBack();
+           
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Failed to deny application.")),
@@ -116,7 +152,7 @@ class _ApplicantProfilePageState extends State<ApplicantProfilePage> {
                   .map((item) => Chip(
                         label: Text(item, style: GoogleFonts.poppins()),
                         backgroundColor: const Color(0xFF9DB4C0),
-                        labelStyle: const TextStyle(color: Colors.white),
+                        labelStyle: const TextStyle(color: Colors.black),
                       ))
                   .toList(),
             ),
@@ -206,7 +242,7 @@ class _ApplicantProfilePageState extends State<ApplicantProfilePage> {
                 ElevatedButton(
                   onPressed: _approveApplication,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 18, 69, 89),
+                    backgroundColor: const Color(0xFF124559),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24, vertical: 12),
                   ),
@@ -214,16 +250,20 @@ class _ApplicantProfilePageState extends State<ApplicantProfilePage> {
                       style: GoogleFonts.poppins(
                           color: const Color.fromARGB(255, 255, 255, 255))),
                 ),
-                ElevatedButton(
+                OutlinedButton(
                   onPressed: _denyApplication,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 89, 18, 18),
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    side: const BorderSide(color: Color(0xFF124559)),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24, vertical: 12),
                   ),
-                  child: Text("Deny",
-                      style: GoogleFonts.poppins(
-                          color: const Color.fromARGB(255, 255, 255, 255))),
+                  child: Text(
+                    "Deny",
+                    style: GoogleFonts.poppins(
+                      color: const Color(0xFF124559),
+                    ),
+                  ),
                 ),
               ],
             ),

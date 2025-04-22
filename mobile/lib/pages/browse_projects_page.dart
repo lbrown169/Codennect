@@ -59,7 +59,6 @@ class _BrowseProjectsPageState extends State<BrowseProjectsPage> {
     "Backend",
     "Mobile",
     "Database",
-    "Manager"
   ];
 
   @override
@@ -116,9 +115,13 @@ class _BrowseProjectsPageState extends State<BrowseProjectsPage> {
                 searchQuery = val;
                 filterProjects();
               },
+              style: GoogleFonts.poppins(),
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
                 hintText: 'Search projects by name...',
+                hintStyle: GoogleFonts.poppins(),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.5),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -129,8 +132,8 @@ class _BrowseProjectsPageState extends State<BrowseProjectsPage> {
             // Skill Dropdown
             Row(
               children: [
-                const Text("Filter by Skill:",
-                    style: TextStyle(fontWeight: FontWeight.w600)),
+                Text("Filter by Skill:",
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
                 const SizedBox(width: 12),
                 Expanded(
                   child: DropdownButtonFormField<String>(
@@ -138,7 +141,9 @@ class _BrowseProjectsPageState extends State<BrowseProjectsPage> {
                     items: allSkills
                         .map((skill) => DropdownMenuItem(
                               value: skill,
-                              child: Text(skill),
+                              child: Text(skill,
+                                  style: GoogleFonts.poppins(
+                                      color: Colors.black)),
                             ))
                         .toList(),
                     onChanged: (value) {
@@ -148,6 +153,8 @@ class _BrowseProjectsPageState extends State<BrowseProjectsPage> {
                       });
                     },
                     decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.5),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 4),
                       border: OutlineInputBorder(
@@ -163,21 +170,26 @@ class _BrowseProjectsPageState extends State<BrowseProjectsPage> {
             // Role Filter
             Row(
               children: [
-                const Text("Filter by Role:",
-                    style: TextStyle(fontWeight: FontWeight.w600)),
+                Text("Filter by Role:",
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
                 const SizedBox(width: 12),
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     value: selectedRole,
                     items: allRoles
-                        .map((role) =>
-                            DropdownMenuItem(value: role, child: Text(role)))
+                        .map((role) => DropdownMenuItem(
+                            value: role,
+                            child: Text(role,
+                                style: GoogleFonts.poppins(
+                                    color: Colors.black))))
                         .toList(),
                     onChanged: (value) {
                       selectedRole = value!;
                       filterProjects();
                     },
                     decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.5),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 4),
                       border: OutlineInputBorder(
@@ -193,7 +205,9 @@ class _BrowseProjectsPageState extends State<BrowseProjectsPage> {
             // List of Projects
             Expanded(
               child: filteredProjects.isEmpty
-                  ? const Center(child: Text("No projects found."))
+                  ? Center(
+                      child: Text("No projects found.",
+                          style: GoogleFonts.poppins()))
                   : ListView.builder(
                       itemCount: filteredProjects.length,
                       itemBuilder: (context, index) {
@@ -208,7 +222,8 @@ class _BrowseProjectsPageState extends State<BrowseProjectsPage> {
                             title: Text(project.name,
                                 style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.w600)),
-                            subtitle: Text(project.description),
+                            subtitle: Text(project.description,
+                                style: GoogleFonts.poppins()),
                             trailing: ElevatedButton(
                               onPressed: () {
                                 Navigator.push(
@@ -222,8 +237,9 @@ class _BrowseProjectsPageState extends State<BrowseProjectsPage> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF124559),
                               ),
-                              child: const Text("See Details",
-                                  style: TextStyle(color: Colors.white)),
+                              child: Text("See Details",
+                                  style: GoogleFonts.poppins(
+                                      color: Colors.white)),
                             ),
                             onTap: () {
                               Navigator.push(

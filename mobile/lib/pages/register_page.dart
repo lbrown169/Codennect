@@ -10,9 +10,13 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController password2Controller = TextEditingController();
 
-  // shows login error if any
+  bool isPasswordVisible = false;
+
   String errorMessage = "";
 
   @override
@@ -69,6 +73,24 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text(
+                      'Name',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        hintText: 'Enter your name',
+                        hintStyle: TextStyle(fontSize: 14),
+                        border: UnderlineInputBorder(),
+                        prefixIcon: Icon(Icons.person, size: 20),
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     const Text(
                       'Email',
@@ -86,6 +108,74 @@ class _RegisterPageState extends State<RegisterPage> {
                         hintStyle: TextStyle(fontSize: 14),
                         border: UnderlineInputBorder(),
                         prefixIcon: Icon(Icons.email_outlined, size: 20),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Password',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    TextField(
+                      controller: passwordController,
+                      obscureText: !isPasswordVisible,
+                      decoration: InputDecoration(
+                        hintText: 'Enter your password',
+                        hintStyle: const TextStyle(fontSize: 14),
+                        border: const UnderlineInputBorder(),
+                        prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            isPasswordVisible
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            // password visible thingy
+                            setState(() {
+                              isPasswordVisible = !isPasswordVisible;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Re-enter Password',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    TextField(
+                      controller: password2Controller,
+                      obscureText: !isPasswordVisible,
+                      decoration: InputDecoration(
+                        hintText: 'Re-enter your password',
+                        hintStyle: const TextStyle(fontSize: 14),
+                        border: const UnderlineInputBorder(),
+                        prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            isPasswordVisible
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            // password visible thingy
+                            setState(() {
+                              isPasswordVisible = !isPasswordVisible;
+                            });
+                          },
+                        ),
                       ),
                     ),
 
@@ -112,46 +202,64 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: GestureDetector(
                         // Calls API fucntion which calls API endpoint
                         onTap: () async {
-                          // Add register logic here
-                          String email = emailController.text.trim();
+  String name = nameController.text.trim();
+  String email = emailController.text.trim();
+  String password = passwordController.text.trim();
+  String password2 = password2Controller.text.trim();
 
-                          if (email.isEmpty) {
-                            // Handle empty fields
-                            return;
-                          }
+  setState(() {
+    errorMessage = "";
+  });
 
-                          try {
-                            final authService = AuthService();
-                            final response =
-                                await authService.registerUser(email);
+      if (email.isEmpty || name.isEmpty || password.isEmpty || password2.isEmpty) {
+    setState(() {
+      errorMessage = "Please fill out all fields.";
+    });
 
-                            if (response['success']) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Check Your Email to Finish Signing Up',
-                                  ),
-                                ),
-                              );
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const LoginPage(),
-                                ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content:
-                                        Text('Error: ${response['error']}')),
-                              );
-                            }
-                          } catch (e) {
-                            setState(() {
-                              errorMessage = "Invalid Email.";
-                            });
-                          }
-                        },
+  final passwordRegex =
+      RegExp(r'^(?=.*[0-9])(?=.*[!@#\$&*~])[A-Za-z\d!@#\$&*~]{8,}$');
+
+  if (!passwordRegex.hasMatch(password)) {
+    setState(() {
+      errorMessage =
+          "Password must be at least 8 characters, include 1 number and 1 special character.";
+    });
+    return;
+  }
+
+  if (password != password2) {
+    setState(() {
+      errorMessage = "Passwords do not match.";
+    });
+    return;
+  }
+    return;
+  }
+
+  try {
+    final authService = AuthService();
+    final response = await authService.registerUser(email);
+
+    if (response['success']) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Check Your Email to Finish Signing Up')),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${response['error']}')),
+      );
+    }
+  } catch (e) {
+    setState(() {
+      errorMessage = "Invalid Email.";
+    });
+  }
+},
+
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 28,

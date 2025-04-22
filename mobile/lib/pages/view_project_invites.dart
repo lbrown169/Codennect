@@ -177,23 +177,35 @@ class _ViewInvitesPageState extends State<ViewInvitesPage> {
                                   true,
                                   true),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green.shade700,
-                                foregroundColor: Colors.white,
+                                backgroundColor: const Color(0xFF124559),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24, vertical: 12),
                               ),
-                              child: const Text("Accept"),
+                              child: Text("Accept",
+                                  style: GoogleFonts.poppins(
+                                      color: const Color.fromARGB(
+                                          255, 255, 255, 255))),
                             ),
                             const SizedBox(width: 12),
-                            ElevatedButton(
+                            OutlinedButton(
                               onPressed: () => respondToInvite(
                                   invite['user_id'],
                                   invite['project_id'],
                                   true,
                                   false),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red.shade700,
-                                foregroundColor: Colors.white,
+                              style: OutlinedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                side:
+                                    const BorderSide(color: Color(0xFF124559)),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24, vertical: 12),
                               ),
-                              child: const Text("Deny"),
+                              child: Text(
+                                "Deny",
+                                style: GoogleFonts.poppins(
+                                  color: const Color(0xFF124559),
+                                ),
+                              ),
                             ),
                             const SizedBox(width: 8),
                             TextButton(
