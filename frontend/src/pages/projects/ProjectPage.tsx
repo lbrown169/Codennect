@@ -1,9 +1,9 @@
-import { useParams } from 'react-router-dom';
-import { Box, Title } from '@mantine/core';
+import { useParams } from 'react-router-dom'
+import { Box, Title } from '@mantine/core'
 
 const ProjectPage = () => {
-    const { project_id } = useParams();
-    if (!project_id) return (window.location.href = '/dashboard');
+    const { project_id } = useParams()
+    if (!project_id) return (window.location.href = '/dashboard')
 
     return (
         <Box mx={{ base: 'md', lg: 'xl' }}>
@@ -11,6 +11,6 @@ const ProjectPage = () => {
                 Project
             </Title>
         </Box>
-    );
-};
-export default ProjectPage;
+    )
+}
+export default ProjectPage

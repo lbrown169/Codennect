@@ -1,5 +1,5 @@
-import { Alert, Text } from '@mantine/core';
-import { Link } from 'react-router-dom';
+import { Alert, Text } from '@mantine/core'
+import { Link } from 'react-router-dom'
 
 export default function VerifiedComponent() {
     return (
@@ -12,5 +12,5 @@ export default function VerifiedComponent() {
                 Click <Link to="/login">here</Link> if you would like to login.
             </Text>
         </>
-    );
+    )
 }

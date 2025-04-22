@@ -1,4 +1,4 @@
-import { Title, Box } from '@mantine/core';
+import { Title, Box } from '@mantine/core'
 
 export default function CreateProjectPage() {
     return (
@@ -7,5 +7,5 @@ export default function CreateProjectPage() {
                 Create Project
             </Title>
         </Box>
-    );
+    )
 }

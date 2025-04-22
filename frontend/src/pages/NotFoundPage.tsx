@@ -1,4 +1,4 @@
-import { Title, Box, Text } from '@mantine/core';
+import { Title, Box, Text } from '@mantine/core'
 
 export default function NotFoundPage() {
     return (
@@ -11,5 +11,5 @@ export default function NotFoundPage() {
                 the left to get back on track.
             </Text>
         </Box>
-    );
+    )
 }

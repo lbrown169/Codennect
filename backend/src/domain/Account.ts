@@ -1,10 +1,10 @@
-import { ProviderName } from '../integration/Provider.js';
+import { ProviderName } from '../integration/Provider.js'
 
 export type Account = {
-    [provider in ProviderName]: AccountDetails;
-};
+    [provider in ProviderName]: AccountDetails
+}
 
 type AccountDetails = {
-    name: string;
-    id: string;
-};
+    name: string
+    id: string
+}

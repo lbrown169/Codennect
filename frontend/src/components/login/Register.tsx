@@ -1,8 +1,8 @@
-import { Button, PasswordInput, TextInput, Text } from '@mantine/core';
-import { useForm } from '@mantine/form';
-import { Link, useNavigate } from 'react-router-dom';
-import { Register } from '../../api/UserAPI';
-import { notifications } from '@mantine/notifications';
+import { Button, PasswordInput, TextInput, Text } from '@mantine/core'
+import { useForm } from '@mantine/form'
+import { Link, useNavigate } from 'react-router-dom'
+import { Register } from '../../api/UserAPI'
+import { notifications } from '@mantine/notifications'
 
 export default function RegisterComponent() {
     const registerForm = useForm({
@@ -19,28 +19,28 @@ export default function RegisterComponent() {
             confirmPassword: (value, values) =>
                 value !== values.password ? 'Passwords do not match' : null,
         },
-    });
-    const navigate = useNavigate();
+    })
+    const navigate = useNavigate()
 
     async function onRegisterSubmit({
         email,
         name,
         password,
     }: {
-        email: string;
-        name: string;
-        password: string;
+        email: string
+        name: string
+        password: string
     }) {
         try {
-            await Register(email, name, password);
-            navigate('/verify');
+            await Register(email, name, password)
+            navigate('/verify')
         } catch (err) {
-            console.log(err);
+            console.log(err)
             notifications.show({
                 title: 'Something went wrong',
                 message: 'We failed to register you, please try again later.',
                 color: 'red',
-            });
+            })
         }
     }
 
@@ -90,5 +90,5 @@ export default function RegisterComponent() {
                 Have an account already? <Link to="/login">Log in</Link>
             </Text>
         </>
-    );
+    )
 }

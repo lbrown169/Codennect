@@ -1,11 +1,11 @@
-import { useForm } from '@mantine/form';
-import { Button, TextInput, Text, Alert } from '@mantine/core';
-import { Link } from 'react-router-dom';
-import { SendReset } from '../../api/UserAPI';
-import { useState } from 'react';
+import { useForm } from '@mantine/form'
+import { Button, TextInput, Text, Alert } from '@mantine/core'
+import { Link } from 'react-router-dom'
+import { SendReset } from '../../api/UserAPI'
+import { useState } from 'react'
 
 export default function ForgotComponent() {
-    const [submitted, setSubmitted] = useState(false);
+    const [submitted, setSubmitted] = useState(false)
     const forgotForm = useForm({
         mode: 'uncontrolled',
         initialValues: {
@@ -15,11 +15,11 @@ export default function ForgotComponent() {
             email: (value) =>
                 /^\S+@\S+$/.test(value) ? null : 'Invalid email',
         },
-    });
+    })
 
     async function onForgotSubmit({ email }: { email: string }) {
-        await SendReset(email);
-        setSubmitted(true);
+        await SendReset(email)
+        setSubmitted(true)
     }
 
     if (submitted) {
@@ -39,7 +39,7 @@ export default function ForgotComponent() {
                     <Link to="/login">Log in</Link>
                 </Text>
             </>
-        );
+        )
     }
 
     return (
@@ -70,5 +70,5 @@ export default function ForgotComponent() {
                 <Link to="/login">Log in</Link>
             </Text>
         </>
-    );
+    )
 }

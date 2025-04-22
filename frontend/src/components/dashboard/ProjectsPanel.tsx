@@ -1,6 +1,6 @@
-import { useContext } from 'react';
-import { Project } from '../../types/Project';
-import { UserContext } from '../../hooks/UserContext';
+import { useContext } from 'react'
+import { Project } from '../../types/Project'
+import { UserContext } from '../../hooks/UserContext'
 import {
     Alert,
     Badge,
@@ -14,22 +14,22 @@ import {
     Stack,
     Tabs,
     Text,
-} from '@mantine/core';
-import { Link } from 'react-router-dom';
-import { IoMdInformationCircleOutline } from 'react-icons/io';
-import { LuCrown } from 'react-icons/lu';
+} from '@mantine/core'
+import { Link } from 'react-router-dom'
+import { IoMdInformationCircleOutline } from 'react-icons/io'
+import { LuCrown } from 'react-icons/lu'
 
 export function ProjectCard({ project }: { project: Project }) {
-    const { user } = useContext(UserContext);
-    let filled = 0;
-    let total = 0;
+    const { user } = useContext(UserContext)
+    let filled = 0
+    let total = 0
 
     for (const roleDetails of Object.values(project.users)) {
-        total += roleDetails.max;
-        filled += roleDetails.users.length;
+        total += roleDetails.max
+        filled += roleDetails.users.length
     }
 
-    const isOwner = project.owner === user!._id;
+    const isOwner = project.owner === user!._id
 
     return (
         <Card
@@ -81,19 +81,19 @@ export function ProjectCard({ project }: { project: Project }) {
                 ))}
             </Group>
         </Card>
-    );
+    )
 }
 
 export function OwnedProjectsPanel() {
-    const { user } = useContext(UserContext);
+    const { user } = useContext(UserContext)
 
     if (!user) {
-        return <Skeleton />;
+        return <Skeleton />
     }
 
     const projects = user.projects.filter(
         (project) => project.owner === user._id
-    );
+    )
 
     return (
         <Tabs.Panel value="owned" px="sm" py="lg">
@@ -123,21 +123,21 @@ export function OwnedProjectsPanel() {
                 )}
             </ScrollArea>
         </Tabs.Panel>
-    );
+    )
 }
 
 export function MemberedProjectsPanel() {
-    const { user } = useContext(UserContext);
+    const { user } = useContext(UserContext)
 
     if (!user) {
-        return <Skeleton />;
+        return <Skeleton />
     }
 
     const projects = user.projects.filter((project) =>
         Object.values(project.users)
             .map((role) => role.users.includes(user._id))
             .includes(true)
-    );
+    )
 
     return (
         <Tabs.Panel value="membered" px="sm" py="lg">
@@ -167,5 +167,5 @@ export function MemberedProjectsPanel() {
                 )}
             </ScrollArea>
         </Tabs.Panel>
-    );
+    )
 }

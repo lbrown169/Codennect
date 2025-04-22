@@ -1,14 +1,14 @@
-import { useContext, useEffect } from 'react';
-import { UserContext } from '../hooks/UserContext';
-import { useNavigate } from 'react-router-dom';
-import { Box, Card, Container, Title, Image } from '@mantine/core';
-import LoginComponent from '../components/login/Login';
-import RegisterComponent from '../components/login/Register';
-import VerifyComponent from '../components/login/Verify';
-import ForgotComponent from '../components/login/Forgot';
-import ChangePasswordComponent from '../components/login/ChangePassword';
-import VerifiedComponent from '../components/login/Verified';
-import FailedVerifyComponent from '../components/login/FailedVerify';
+import { useContext, useEffect } from 'react'
+import { UserContext } from '../hooks/UserContext'
+import { useNavigate } from 'react-router-dom'
+import { Box, Card, Container, Title, Image } from '@mantine/core'
+import LoginComponent from '../components/login/Login'
+import RegisterComponent from '../components/login/Register'
+import VerifyComponent from '../components/login/Verify'
+import ForgotComponent from '../components/login/Forgot'
+import ChangePasswordComponent from '../components/login/ChangePassword'
+import VerifiedComponent from '../components/login/Verified'
+import FailedVerifyComponent from '../components/login/FailedVerify'
 
 export default function LoginPage({
     mode,
@@ -20,17 +20,17 @@ export default function LoginPage({
         | 'verified'
         | 'failed-verify'
         | 'forgot'
-        | 'change';
+        | 'change'
 }) {
-    const { user, loaded, verified } = useContext(UserContext);
+    const { user, loaded, verified } = useContext(UserContext)
 
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (loaded && user && verified) {
-            navigate('/');
+            navigate('/')
         }
-    }, [loaded, user, verified]);
+    }, [loaded, user, verified])
 
     return (
         <Box className="h-full w-full flex flex-col pt-45 bg-stone-100 bg-[url('/background.png')] bg-cover">
@@ -70,5 +70,5 @@ export default function LoginPage({
                 </Card>
             </Container>
         </Box>
-    );
+    )
 }

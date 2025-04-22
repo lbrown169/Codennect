@@ -1,60 +1,60 @@
-import { Request as ProjectRequest, RequestType } from '../domain/Request.js';
-import express, { Request } from 'express';
-import { Driver } from '../repo/Driver.js';
-import { Response } from '../utils.js';
-import { IMailgunClient } from 'node_modules/mailgun.js/Types/Interfaces/index.js';
-import checkVerification from '../middleware/checkVerification.js';
+import { Request as ProjectRequest, RequestType } from '../domain/Request.js'
+import express, { Request } from 'express'
+import { Driver } from '../repo/Driver.js'
+import { Response } from '../utils.js'
+import { IMailgunClient } from 'node_modules/mailgun.js/Types/Interfaces/index.js'
+import checkVerification from '../middleware/checkVerification.js'
 
-const RequestRouter = express.Router();
-RequestRouter.use(checkVerification);
+const RequestRouter = express.Router()
+RequestRouter.use(checkVerification)
 
 interface RequestsResponse {
     invites: {
-        me: ProjectRequest[];
-        [project_id: string]: ProjectRequest[];
-    };
+        me: ProjectRequest[]
+        [project_id: string]: ProjectRequest[]
+    }
     applications: {
-        me: ProjectRequest[];
-        [project_id: string]: ProjectRequest[];
-    };
+        me: ProjectRequest[]
+        [project_id: string]: ProjectRequest[]
+    }
 }
 
 RequestRouter.get('/api/requests', async (req: Request, res: Response) => {
     if (!res.locals.user) {
         res.status(401).json({
             error: 'Unauthorized. You must be logged in to perform this action.',
-        });
-        return;
+        })
+        return
     }
 
-    const db: Driver = req.app.locals.driver;
+    const db: Driver = req.app.locals.driver
 
     let response: RequestsResponse = {
         invites: { me: [] },
         applications: { me: [] },
-    };
+    }
 
     response.invites.me = await db.requestRepository.GetUserInvites(
         res.locals.user._id
-    );
+    )
 
     response.applications.me = await db.requestRepository.GetUserApplications(
         res.locals.user._id
-    );
+    )
 
     for (let pid of res.locals.user.projects) {
-        const project = await db.projectRepository.GetById(pid);
-        if (!project) continue;
+        const project = await db.projectRepository.GetById(pid)
+        if (!project) continue
         if (project.owner === res.locals.user._id) {
             response.invites[project._id] =
-                await db.requestRepository.GetProjectInvites(project._id);
+                await db.requestRepository.GetProjectInvites(project._id)
             response.applications[project._id] =
-                await db.requestRepository.GetProjectApplications(project._id);
+                await db.requestRepository.GetProjectApplications(project._id)
         }
     }
 
-    res.status(200).json({ error: '', result: response });
-});
+    res.status(200).json({ error: '', result: response })
+})
 
 RequestRouter.post('/api/requests', async (req: Request, res: Response) => {
     // Creates new application to join a project
@@ -62,19 +62,19 @@ RequestRouter.post('/api/requests', async (req: Request, res: Response) => {
     if (!res.locals.user) {
         res.status(401).json({
             error: 'Unauthorized. You must be logged in to perform this action.',
-        });
-        return;
+        })
+        return
     }
 
-    const { user_id, project_id, is_invite, roles, message } = req.body;
-    const db: Driver = req.app.locals.driver;
-    const project = await db.projectRepository.GetById(project_id);
+    const { user_id, project_id, is_invite, roles, message } = req.body
+    const db: Driver = req.app.locals.driver
+    const project = await db.projectRepository.GetById(project_id)
 
     if (!project) {
         res.status(400).json({
             error: 'Bad request. Provided project does not exist.',
-        });
-        return;
+        })
+        return
     }
 
     if (is_invite) {
@@ -82,31 +82,31 @@ RequestRouter.post('/api/requests', async (req: Request, res: Response) => {
         if (project.owner !== res.locals.user._id) {
             res.status(403).json({
                 error: 'Forbidden. Only project owners can create invites.',
-            });
-            return;
+            })
+            return
         }
     } else {
         // It's an application, ensure user_id is logged in ID
         if (user_id !== res.locals.user._id) {
             res.status(403).json({
                 error: "Forbidden. You cannot create an application on someone else's behalf.",
-            });
-            return;
+            })
+            return
         }
     }
 
     if ([user_id, project_id, is_invite, roles].includes(undefined)) {
         res.status(400).json({
             error: 'Bad request. user_id, project_id, is_invite, and roles are required.',
-        });
-        return;
+        })
+        return
     }
 
     if (!Array.isArray(roles) || roles.length == 0) {
         res.status(400).json({
             error: 'Bad request. Roles must be an array greater than size 0.',
-        });
-        return;
+        })
+        return
     }
 
     const newRequest = await db.requestRepository.CreateRequest(
@@ -117,49 +117,46 @@ RequestRouter.post('/api/requests', async (req: Request, res: Response) => {
             roles,
             message
         )
-    );
+    )
 
     // Send email
-    const user = await db.userRepository.GetById(user_id);
+    const user = await db.userRepository.GetById(user_id)
     if (!user) {
         res.status(400).json({
             error: 'Bad request. Provided user not found.',
-        });
-        return;
+        })
+        return
     }
     if (req.app.locals.transporter) {
-        let t: IMailgunClient = req.app.locals.transporter;
-        let message;
-        let recipient;
+        let t: IMailgunClient = req.app.locals.transporter
+        let message
         if (is_invite == RequestType.INVITE) {
             message = `
             Hey there ${user.name},<br /><br />
-            You have been sent an invite to join the ${project.name} project! Be sure to check it out!`;
-            recipient = user.email;
+            You have been sent an invite to join the ${project.name} project! Be sure to check it out!
+        `
         } else {
             // application
             message = `
             Hey there ${user.name},<br /><br />
-            You have received a new application from a user wishing to join the ${project.name} project!`;
-            recipient = (await db.userRepository.GetById(project.owner))?.email;
+            You have received a new application from a user wishing to join the ${project.name} project!
+        `
         }
-        if (recipient) {
-            const info = await t.messages.create(process.env.MAILGUN_DOMAIN!, {
-                from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
-                to: [recipient],
-                subject: `${project.name} Request Update`,
-                html: message,
-            });
-            console.log('Approval email sent.', info);
-        }
+        const info = await t.messages.create(process.env.MAILGUN_DOMAIN!, {
+            from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
+            to: [user.email],
+            subject: `${project.name} Request Update`,
+            html: message,
+        })
+        console.log('Approval email sent.', info)
     }
 
     res.status(200).json({
         error: '',
         success: 'Request sent!',
         request: newRequest,
-    });
-});
+    })
+})
 
 RequestRouter.post(
     '/api/requests/approve',
@@ -167,39 +164,39 @@ RequestRouter.post(
         if (!res.locals.user) {
             res.status(401).json({
                 error: 'Unauthorized. You must be logged in to perform this action.',
-            });
-            return;
+            })
+            return
         }
-        const { user_id, project_id, is_invite } = req.body;
-        const db: Driver = req.app.locals.driver;
+        const { user_id, project_id, is_invite } = req.body
+        const db: Driver = req.app.locals.driver
         const request = await db.requestRepository.GetRequest(
             user_id,
             project_id,
             is_invite
-        );
+        )
 
         if (!request) {
             res.status(400).json({
                 error: 'Bad request. Request not found.',
-            });
-            return;
+            })
+            return
         }
 
-        const user = await db.userRepository.GetById(user_id);
-        const project = await db.projectRepository.GetById(project_id);
+        const user = await db.userRepository.GetById(user_id)
+        const project = await db.projectRepository.GetById(project_id)
 
         if (!user) {
             res.status(400).json({
                 error: 'Bad request. Provided user not found.',
-            });
-            return;
+            })
+            return
         }
 
         if (!project) {
             res.status(400).json({
                 error: 'Bad request. Provided project not found.',
-            });
-            return;
+            })
+            return
         }
 
         if (is_invite) {
@@ -207,27 +204,27 @@ RequestRouter.post(
             if (res.locals.user._id !== user_id) {
                 res.status(403).json({
                     error: 'Forbidden. Only the user receiving the invite can approve it.',
-                });
-                return;
+                })
+                return
             }
         } else {
             // Application, only the project owner can accept it
             if (res.locals.user._id !== project.owner) {
                 res.status(403).json({
                     error: 'Forbidden. Only the project owner can approve an application.',
-                });
-                return;
+                })
+                return
             }
         }
 
         // Remove them from any roles they are currently in
         // in case they're trying to change roles
         for (let role of Object.keys(project.users)) {
-            const roleData = project.users[role];
+            const roleData = project.users[role]
             if (roleData) {
                 roleData.users = roleData.users.filter(
                     (user) => user !== user_id
-                );
+                )
             }
         }
 
@@ -251,35 +248,35 @@ RequestRouter.post(
             project_id,
             user_id,
             request.roles
-        );
+        )
 
         // Now insert project id into user
         if (user.projects.indexOf(project_id) === -1) {
-            user.projects.push(project_id);
+            user.projects.push(project_id)
             await db.userRepository.Update(user_id, {
                 projects: user.projects,
-            });
+            })
         }
 
-        await db.requestRepository.DeleteRequest(request);
+        await db.requestRepository.DeleteRequest(request)
 
         if (req.app.locals.transporter) {
-            let t: IMailgunClient = req.app.locals.transporter;
+            let t: IMailgunClient = req.app.locals.transporter
             let message = `
             Hey there ${user.name},<br /><br />
             Congratulations! You are now on the team for the ${project.name} project!
-        `;
+        `
             const info = await t.messages.create(process.env.MAILGUN_DOMAIN!, {
                 from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
                 to: [user.email],
                 subject: `${project.name} Request Update`,
                 html: message,
-            });
-            console.log('Approval email sent.', info);
+            })
+            console.log('Approval email sent.', info)
         }
-        res.status(200).json({ error: '', result: 'Request approved.' });
+        res.status(200).json({ error: '', result: 'Request approved.' })
     }
-);
+)
 
 RequestRouter.post(
     '/api/requests/deny',
@@ -287,67 +284,67 @@ RequestRouter.post(
         if (!res.locals.user) {
             res.status(401).json({
                 error: 'Unauthorized. You must be logged in to perform this action.',
-            });
-            return;
+            })
+            return
         }
-        const { user_id, project_id, is_invite } = req.body;
-        const db: Driver = req.app.locals.driver;
+        const { user_id, project_id, is_invite } = req.body
+        const db: Driver = req.app.locals.driver
         const request = await db.requestRepository.GetRequest(
             user_id,
             project_id,
             is_invite
-        );
+        )
 
         if (!request) {
             res.status(400).json({
                 error: 'Bad request. Request not found.',
-            });
-            return;
+            })
+            return
         }
 
-        const user = await db.userRepository.GetById(user_id);
-        const project = await db.projectRepository.GetById(project_id);
+        const user = await db.userRepository.GetById(user_id)
+        const project = await db.projectRepository.GetById(project_id)
 
         if (!user) {
             res.status(400).json({
                 error: 'Bad request. Provided user not found.',
-            });
-            return;
+            })
+            return
         }
 
         if (!project) {
             res.status(400).json({
                 error: 'Bad request. Provided project not found.',
-            });
-            return;
+            })
+            return
         }
 
         if (![user_id, project.owner].includes(res.locals.user._id)) {
             res.status(403).json({
                 error: 'Forbidden. Only the user or project owner can deny a request.',
-            });
-            return;
+            })
+            return
         }
 
-        await db.requestRepository.DeleteRequest(request);
+        await db.requestRepository.DeleteRequest(request)
 
         if (req.app.locals.transporter) {
-            let t: IMailgunClient = req.app.locals.transporter;
+            let t: IMailgunClient = req.app.locals.transporter
             let message = `
                 Hey there ${user.name},<br /><br />
                 We regret to inform you that your request to join ${project.name} has been denied.
                 If you have any questions, please direct them to the project owner.
-            `;
+            `
             const info = await t.messages.create(process.env.MAILGUN_DOMAIN!, {
                 from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
                 to: [user.email],
                 subject: `${project.name} Request Update`,
                 html: message,
-            });
-            console.log('Denial email sent.', info);
+            })
+            console.log('Denial email sent.', info)
         }
-        res.status(200).json({ error: '', result: 'Request denied.' });
+        res.status(200).json({ error: '', result: 'Request denied.' })
     }
-);
+)
 
-export default RequestRouter;
+export default RequestRouter

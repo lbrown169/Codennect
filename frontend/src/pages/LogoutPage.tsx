@@ -1,17 +1,17 @@
-import { useContext, useEffect } from 'react';
-import { deleteToken } from '../api/utils';
-import { UserContext } from '../hooks/UserContext';
-import { Navigate } from 'react-router-dom';
+import { useContext, useEffect } from 'react'
+import { deleteToken } from '../api/utils'
+import { UserContext } from '../hooks/UserContext'
+import { Navigate } from 'react-router-dom'
 
 export default function LogoutPage() {
-    const { setUser } = useContext(UserContext);
+    const { setUser } = useContext(UserContext)
 
     useEffect(() => {
-        deleteToken();
+        deleteToken()
         if (setUser) {
-            setUser(null);
+            setUser(null)
         }
-    }, []);
+    }, [])
 
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" />
 }

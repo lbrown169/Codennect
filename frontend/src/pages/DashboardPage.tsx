@@ -1,8 +1,8 @@
-import { Title, Box, Tabs } from '@mantine/core';
+import { Title, Box, Tabs } from '@mantine/core'
 import {
     MemberedProjectsPanel,
     OwnedProjectsPanel,
-} from '../components/dashboard/ProjectsPanel';
+} from '../components/dashboard/ProjectsPanel'
 
 export default function DashboardPage() {
     return (
@@ -20,5 +20,5 @@ export default function DashboardPage() {
                 <MemberedProjectsPanel />
             </Tabs>
         </Box>
-    );
+    )
 }
