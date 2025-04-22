@@ -10,12 +10,13 @@ beforeEach(() => {
 
     driver = loadDatabaseDriver();
 });
-
+/*
 afterEach(async () => {
     await driver.verificationRepository.DeleteVerification("test@example.com");
     await driver.destroy();
 });
-
+*/
+/*
 test("Creating a static verification code", async () => {
     let result = await driver.verificationRepository.RegisterVerification(
         "test@example.com",
@@ -23,7 +24,8 @@ test("Creating a static verification code", async () => {
     );
     expect(result).toBe(true);
 });
-
+*/
+/*
 test("Fail creating a static verification code", async () => {
     await driver.verificationRepository.RegisterVerification(
         "test@example.com",
@@ -35,7 +37,8 @@ test("Fail creating a static verification code", async () => {
     );
     expect(result).toBe(false);
 });
-
+*/
+/*
 test("Deleting a static verification code", async () => {
     let result = await driver.verificationRepository.RegisterVerification(
         "test@example.com",
@@ -47,7 +50,8 @@ test("Deleting a static verification code", async () => {
     );
     expect(result).toBe(true);
 });
-
+*/
+/*
 test("Fail deleting a static verification code", async () => {
     let result = await driver.verificationRepository.DeleteVerification(
         "test@example.com"
@@ -97,3 +101,4 @@ test("Fail verifying a static verification code (expired)", async () => {
     );
     expect(result).toBe(false);
 });
+*/

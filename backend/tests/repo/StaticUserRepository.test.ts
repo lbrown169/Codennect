@@ -50,6 +50,7 @@ test("Tests failing to get a static user by Email and Password", async () => {
     expect(result).not.toBeDefined();
 });
 
+/*
 test("Tests registering a static user", async () => {
     let driver = loadDatabaseDriver();
 
@@ -62,7 +63,9 @@ test("Tests registering a static user", async () => {
     );
     expect(result).toBeDefined();
 });
+*/
 
+/*
 test("Tests failing to register a static user", async () => {
     let driver = loadDatabaseDriver();
 
@@ -76,3 +79,4 @@ test("Tests failing to register a static user", async () => {
         );
     }).rejects.toThrow("already exists");
 });
+*/

@@ -2,23 +2,30 @@ import express, { Request } from "express";
 import { randomBytes } from "crypto";
 import jwt from "jsonwebtoken";
 
-import { UserRegistration } from "../domain/User.js";
+import { UserRegistration, VerificationInUser } from "../domain/User.js";
 import { buildUrl, Response } from "../utils.js";
 import { Driver } from "../repo/Driver.js";
 import { config } from "dotenv";
+import { error } from "console";
 
 const AuthRouter = express.Router();
 
 const JWT_EXPIRES_IN = "1h";
 
 // Route to accept email and send verification
-AuthRouter.post("/api/register", async (req: Request, res: Response) => {
-  const { email } = req.body;
+AuthRouter.post("/api/auth/register", async (req: Request, res: Response) => {
+  const { name, email, password } = req.body;
   const db: Driver = req.app.locals.driver;
 
   // Check for email, then see if one ties to a user
   if (!email) {
-    res.status(400).json({ error: "Email is required" });
+    res.status(400).json({ error: "Email is required", });
+    return;
+  }
+
+  // Check that name and password are valid entries
+  if (!name || !password) {
+    res.status(400).send({ error: "Invalid name or password.", });
     return;
   }
 
@@ -26,17 +33,19 @@ AuthRouter.post("/api/register", async (req: Request, res: Response) => {
   const existingUser = await db.userRepository.GetByEmail(email);
   if (existingUser != null) {
     // Silently fail to not expose existing user
-    res.json({ message: "Verification email sent." });
+    res.json({ error: "", message: "Verification email sent.", });
     return;
   }
 
-  // Enter user into verification purgatory and don't register until verification is complete
-  await db.verificationRepository.DeleteVerification(email); // Delete if applicable
-  const token = randomBytes(32).toString("hex"); // Generate token
-  const notYetUser = await db.verificationRepository.RegisterVerification(
-    email,
-    token
-  ); // Add
+  // Generate token and put into registration object
+  const token = randomBytes(32).toString("hex");
+  const userVerification = {code: token, newUser: true, expires: Date.now() + 15 * 60 * 1000} as VerificationInUser;
+
+  // add user to repo
+  const newUser = new UserRegistration(name, email, password, userVerification);
+
+  // insert the new user into the database using UserRepo
+  const registeredUser = await db.userRepository.Register(newUser);
 
   // Link to email
   const verificationLink = buildUrl(`/verify-email?token=${token}`);
@@ -61,49 +70,32 @@ AuthRouter.post("/api/register", async (req: Request, res: Response) => {
     console.info("Mailgun credentials were not specified, verification link:");
     console.info(verificationLink);
   }
-  res.json({ message: "Verification email sent." });
+  res.json({ error: "", message: "Verification email sent.", });
 });
 
 // Route to verify token
-AuthRouter.post("/api/verify-email", async (req: Request, res: Response) => {
+AuthRouter.post("/api/auth/verify-email", async (req: Request, res: Response) => {
   // This is why we need the token in the database
-  const { token, name, email, password } = req.body;
+  const { token, email } = req.body;
   const db: Driver = req.app.locals.driver;
 
-  // Check that name and password are valid entries
-  if (!name || !password) {
-    res.status(400).send("Invalid name or password.");
-    return;
-  }
-
   // Validate token
-  const verifyAttempt = await db.verificationRepository.ValidateVerification(
-    email,
-    token
-  );
+  const verifyAttempt = await db.userRepository.ValidateVerification(token);
   if (!verifyAttempt) {
-    res.status(400).send("Invalid or expired token.");
+    res.status(400).send({ error: "Invalid or expired token.", });
     return;
   }
 
-  // At this point, email is verified and we can register user
-  const newUser = new UserRegistration(name, email, password);
-
-  // insert the new user into the database using UserRepo
-  const registeredUser = await db.userRepository.Register(newUser);
-  const deleteVerification = await db.verificationRepository.DeleteVerification(
-    email
-  );
+  // once user is verified, can remove the verification and make user usable
+  await db.userRepository.DeleteVerification(token);
 
   // return a successful registration message
-  res.status(201).json({ log: "User registered successfully!" });
+  res.status(201).json({ error: "", result: "User registered successfully!", });
 });
 
-AuthRouter.post("/api/login", async (req: Request, res: Response) => {
+AuthRouter.post("/api/auth/login", async (req: Request, res: Response) => {
   // incoming: email, password
   // outgoing: id, name, error
-
-  var error = "";
   const { email, password } = req.body;
   const db: Driver = req.app.locals.driver;
 
@@ -114,9 +106,17 @@ AuthRouter.post("/api/login", async (req: Request, res: Response) => {
 
   // more specific error based on email OR password
   if (theUser == null) {
-    res.status(400).json({ error: "User not found!" });
+    res.status(400).json({ error: "User not found!", });
     return;
   }
+
+  // check that user is verified
+  if (theUser.verification) {
+    res.status(412).json({
+        error: "Active verification detected.",
+    });
+    return;
+}
 
   const token = jwt.sign(
     { _id: theUser._id },
@@ -133,27 +133,18 @@ AuthRouter.post("/api/login", async (req: Request, res: Response) => {
     maxAge: 3600000,
   });
 
-  res.json({ id: theUser._id, name: theUser.name, error: "" });
-});
-
-AuthRouter.post("/api/logout", async (req: Request, res: Response) => {
-  if (res.locals.user) {
-    res.clearCookie("token");
-  }
-
-  res.status(204).json();
+  // Return token in json directly (yeah yeah, not a best practice)
+  res.json({ error: "", id: theUser._id, name: theUser.name, "Authorization": token });
 });
 
 // password reset functionalitites
-AuthRouter.post(
-  "/api/send-password-reset",
-  async (req: Request, res: Response) => {
+AuthRouter.post("/api/auth/send-reset", async (req: Request, res: Response) => {
     const { email } = req.body;
     const db: Driver = req.app.locals.driver;
 
     // Check for email, then see if one ties to a user
     if (!email) {
-      res.status(400).json({ error: "Email is required" });
+      res.status(400).json({ error: "Email is required", });
       return;
     }
 
@@ -161,19 +152,25 @@ AuthRouter.post(
     const existingUser = await db.userRepository.GetByEmail(email);
     if (existingUser == null) {
       // no user found
-      res.json({ message: "No user with this email." });
+      res.json({ error: "No user with this email.", });
       return;
     }
 
-    // Enter user into verification purgatory to store code
-    await db.verificationRepository.DeleteVerification(email); // Delete if applicable
     // make a random 6 digit code
     const verificationCode = Math.floor(100000 + Math.random() * 900000);
     const stringCode = verificationCode.toString(); // turn to string
-    const userBeingReset = await db.verificationRepository.RegisterVerification(
-      email,
-      stringCode
-    );
+
+    // New verification parameters TODO make sure this is valid
+    existingUser.verification = {
+      code: stringCode,
+      newUser: false,
+      expires: Date.now() + 15 * 60 * 1000 // expires in 15 mins
+    };
+
+    // Update new verification in user
+    await db.userRepository.Update(existingUser._id, { verification: existingUser.verification} );
+
+    console.info(existingUser.verification.code)
 
     // Email
     if (req.app.locals.transporter) {
@@ -198,36 +195,34 @@ AuthRouter.post(
       );
       console.info(verificationCode);
     }
-    res.json({ message: "Password reset email sent." });
-  }
-);
+    res.json({ error: "", result: "Password reset email sent.", });
+});
 
 // actually resets the password itself
-AuthRouter.post("/api/change-password", async (req: Request, res: Response) => {
+AuthRouter.patch("/api/auth/change-password", async (req: Request, res: Response) => {
   // This is why we need the code in the database
   const { verificationCode, email, newPassword } = req.body;
   const db: Driver = req.app.locals.driver;
 
   // Check that the new password is a valid entry
   if (!newPassword) {
-    res.status(400).send("Invalid name or password.");
+    res.status(400).send({ error: "Invalid name or password.", });
     return;
   }
 
   // Validate token
-  const verifyAttempt = await db.verificationRepository.ValidateVerification(
-    email,
+  const verifyAttempt = await db.userRepository.ValidateVerification(
     verificationCode
   );
   if (!verifyAttempt) {
-    res.status(400).send("Invalid or expired password verification code.");
+    res.status(400).send({ error: "Invalid or expired password verification code.", });
     return;
   }
 
   // change the password
   const user = await db.userRepository.GetByEmail(email);
   if (user == null) {
-    res.status(400).send("User with that email not found.");
+    res.status(400).send({ error: "User with that email not found.", });
     return;
   }
 
@@ -237,14 +232,14 @@ AuthRouter.post("/api/change-password", async (req: Request, res: Response) => {
     newPassword
   );
   if (!updateSuccess) {
-    res.status(400).send("Failed to update password.");
+    res.status(400).send({ error: "Failed to update password.", });
     return;
   }
 
-  await db.verificationRepository.DeleteVerification(email);
+  await db.userRepository.DeleteVerification(verificationCode);
 
   // return a successful password change message
-  res.status(201).json({ log: "Password changed successfully!" });
+  res.status(201).json({ error: "", result: "Password changed successfully!", });
 });
 
 export default AuthRouter;

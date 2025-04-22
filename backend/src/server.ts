@@ -1,4 +1,4 @@
-import { Request, NextFunction } from "express";
+import { Request, Response as ExResponse, NextFunction, RequestHandler } from "express";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import path, { dirname } from "path";
@@ -10,7 +10,7 @@ import cors from "cors";
 
 import { getVersion, isProd, Response } from "./utils.js";
 import { loadDatabaseDriver } from "./repo/Driver.js";
-import { loadTransporter } from "./service/auth.js";
+import { loadTransporter, jwtKey } from "./service/auth.js";
 
 import AuthRouter from "./routers/AuthRouter.js";
 import UserRouter from "./routers/UserRouter.js";
@@ -28,9 +28,11 @@ app.use(cookieParser(process.env.SIGNING_KEY));
 
 let driver = loadDatabaseDriver();
 let transporter = loadTransporter();
+let key = jwtKey();
 
 app.locals.driver = driver;
 app.locals.transporter = transporter;
+app.locals.key = key;
 
 interface JwtPayload {
     _id: string;
@@ -44,7 +46,7 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
         try {
             const decoded = jwt.verify(
                 token,
-                process.env.JWT_SECRET_KEY || "your-secret-key"
+                key
             ) as JwtPayload;
             res.locals.user = await driver.userRepository.GetById(decoded._id);
         } catch (err) {
@@ -55,7 +57,22 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
     next();
 });
 
+// Middleware verification check
+const checkVerification: RequestHandler = (
+    req: Request,
+    res: ExResponse,
+    next: NextFunction
+): void => {
+    const user = res.locals.user;
+    if(user?.verification) {
+        res.status(412).json({ error: "Active verification detected." });
+        return;
+    }
+    next();
+};
+
 app.use(AuthRouter);
+app.use(checkVerification);
 app.use(UserRouter);
 app.use(ProjectRouter);
 app.use(RequestRouter);

@@ -1,3 +1,5 @@
+// Hehe, this is gonna be fun
+/*
 import { WithId } from "mongodb";
 
 export interface VerificationReponse extends WithId<Document> {
@@ -11,3 +13,4 @@ export interface VerificationCodeRepository {
     DeleteVerification(email: string): Promise<boolean>;
     ValidateVerification(email: string, code: string): Promise<boolean>;
 }
+*/

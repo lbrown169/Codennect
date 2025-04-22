@@ -1,3 +1,5 @@
+// Oh boy
+/*
 import { Collection, Db, MongoClient } from "mongodb";
 import {
     VerificationCodeRepository,
@@ -49,3 +51,4 @@ export class MongoVerificationRepository implements VerificationCodeRepository {
         return true;
     }
 }
+*/

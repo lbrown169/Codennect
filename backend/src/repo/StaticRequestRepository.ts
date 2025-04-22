@@ -6,14 +6,14 @@ export class StaticRequestRepository implements RequestRepository {
             "1234-5678",
             "1",
             RequestType.APPLICATION,
-            ["frontend"],
+            ["Frontend"],
             "Would love to join frontend!"
         ),
         new Request(
             "1234-5678",
             "1",
             RequestType.INVITE,
-            ["frontend"],
+            ["Frontend"],
             "Would love to have you join frontend!"
         ),
     ];

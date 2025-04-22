@@ -1,7 +1,16 @@
+import { PossibleRoles } from "../domain/User.js";
+
 export type FieldDetails = {
     name: string;
     value: string;
     private: boolean;
+};
+
+export type ProjectUsers = {
+    [role: string]: {
+      max: number;
+      users: string[];
+    };
 };
 
 export class Project {
@@ -9,11 +18,10 @@ export class Project {
     name: string;
     domain: string;
     owner: string;
-    is_private: boolean;
+    isPrivate: boolean;
     description: string;
     fields: FieldDetails[];
-    roles: { [role: string]: number };
-    users: { [role: string]: string[] };
+    users : ProjectUsers;
     required_skills: string[];
 
     constructor(
@@ -21,21 +29,19 @@ export class Project {
         name: string,
         domain: string,
         owner: string,
-        is_private: boolean,
+        isPrivate: boolean,
         description: string,
         fields: FieldDetails[],
-        roles: { [role: string]: number },
-        users: { [role: string]: string[] },
+        users : ProjectUsers,
         required_skills: string[]
     ) {
         this._id = _id;
         this.name = name;
         this.domain = domain;
         this.owner = owner;
-        this.is_private = is_private;
+        this.isPrivate = isPrivate;
         this.description = description;
         this.fields = fields;
-        this.roles = roles;
         this.users = users;
         this.required_skills = required_skills;
     }
@@ -46,31 +52,28 @@ export class ProjectCreation {
     name: string;
     domain?: string;
     owner: string;
-    is_private: boolean;
+    isPrivate: boolean;
     description: string;
     fields?: FieldDetails[];
-    roles?: { [role: string]: number };
-    users?: { [role: string]: string[] };
+    users?: ProjectUsers;
     required_skills?: string[];
 
     constructor(
         name: string,
         domain: string = "",
         owner: string,
-        is_private: boolean,
+        isPrivate: boolean,
         description: string = "",
         fields: FieldDetails[] = [],
-        roles: { [role: string]: number } = {},
-        users: { [role: string]: string[] } = {},
+        users: ProjectUsers = {},
         required_skills: string[] = []
     ) {
         this.name = name;
         this.domain = domain;
         this.owner = owner;
-        this.is_private = is_private;
+        this.isPrivate = isPrivate;
         this.description = description;
         this.fields = fields;
-        this.roles = roles;
         this.users = users;
         this.required_skills = required_skills;
     }
@@ -82,4 +85,5 @@ export interface ProjectRepository {
     GetAll(): Promise<Project[]>;
     Create(project: ProjectCreation): Promise<Project>;
     Update(id: string, updates: Partial<Project>): Promise<boolean>;
+    AddUserToProject(project_id: string, user_id: string, roles: string[]): Promise<boolean>;
 }
