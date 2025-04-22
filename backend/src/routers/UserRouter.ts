@@ -56,7 +56,20 @@ UserRouter.get("/api/users", async (req: Request, res: Response) => {
     }
 });
 
-UserRouter.get("/api/users/:id", async (req: Request, res: Response) => {
+UserRouter.get("/api/users/me", async (req: Request, res: Response) => {
+    // incoming: user id
+    // outgoing: all the user info
+    if (!res.locals.user) {
+        res.status(401).json({
+            error: "Unauthorized. You must be logged in to perform this action.",
+        });
+        return;
+    }
+
+    res.status(200).json({ error: "", result: res.locals.user });
+});
+
+UserRouter.get("/api/users/:id(\\d+)", async (req: Request, res: Response) => {
     // incoming: user id
     // outgoing: all the user info
 
@@ -67,7 +80,7 @@ UserRouter.get("/api/users/:id", async (req: Request, res: Response) => {
         return;
     }
 
-    const { id } = req.query;
+    const id  = req.params.id;
     const db: Driver = req.app.locals.driver;
 
     if (!id) {
@@ -129,19 +142,6 @@ UserRouter.get("/api/users/:id", async (req: Request, res: Response) => {
     res.status(403).json({
         error: "This user has a private profile and you do not share any projects with them.",
     });
-});
-
-UserRouter.get("/api/users/me", async (req: Request, res: Response) => {
-    // incoming: user id
-    // outgoing: all the user info
-    if (!res.locals.user) {
-        res.status(401).json({
-            error: "Unauthorized. You must be logged in to perform this action.",
-        });
-        return;
-    }
-
-    res.status(200).json({ error: "", result: res.locals.user });
 });
 
 UserRouter.patch("/api/users/me", async (req: Request, res: Response) => {
