@@ -1,6 +1,6 @@
 // import ProjectSearch from "../components/ProjectSearch";
 
-import { Box, Title } from '@mantine/core'
+import { Box, Title } from '@mantine/core';
 
 // const BrowseProjectsPage = () =>
 // {
@@ -19,5 +19,5 @@ export default function BrowseProjectsPage() {
                 Projects
             </Title>
         </Box>
-    )
+    );
 }

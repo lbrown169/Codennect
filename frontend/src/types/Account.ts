@@ -1,10 +1,10 @@
-export type ProviderName = 'github' | 'discord'
+export type ProviderName = 'github' | 'discord';
 
 export type Account = {
-    [provider in ProviderName]: AccountDetails
-}
+    [provider in ProviderName]: AccountDetails;
+};
 
 type AccountDetails = {
-    name: string
-    id: string
-}
+    name: string;
+    id: string;
+};
