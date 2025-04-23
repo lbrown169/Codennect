@@ -54,6 +54,7 @@ export function ProjectSearchBar()
         'Vue.js',
     ];
     const [roleValue, setRoleValue] = useState<string | null>(null);
+    const [skillValue, setSkillValue] = useState<string[]>([]);
     const [searchInput, setSearchInput] = useState('');
     const searchIcon = <FaSearch />
     const [searchResults, setSearchResults] = useState<Project[]>([]);
@@ -74,15 +75,44 @@ export function ProjectSearchBar()
         </Combobox.Option>
     ));
 
-
     async function doSearch(event: React.FormEvent)
     {
         event.preventDefault();
         alert("WIP");
-        const newProjects = projects.filter(    //filter out owned projects
-            (project) => project.owner !== user?._id
-        );
-        setSearchResults(newProjects);
+        try {
+            let query = '';
+            if(searchInput || skillValue.length > 0 || roleValue)
+            {
+                query += '?';
+                if(searchInput)
+                {
+                    query += new URLSearchParams({ name: searchInput }).toString();
+                }
+                if(skillValue.length > 0)
+                {
+                    if(query.length > 1)   query += '&';
+                    query += new URLSearchParams({ required_skills: skillValue.toString() }).toString();
+                }
+                if(roleValue)
+                {
+                    if(query.length > 1)    query += '&';
+                    query += new URLSearchParams({ roles: roleValue });
+                }
+                //query += new URLSearchParams({ name: searchInput, required_skills: skillValue.toString(), roles: roleString }).toString();
+                alert(query); 
+                
+            }
+
+
+            const newProjects = projects.filter(    //filter out owned projects
+                (project) => project.owner !== user?._id
+            );
+            setSearchResults(newProjects);
+        }
+        catch(error: any) {
+
+        }
+        
     }
 
     
@@ -141,6 +171,8 @@ export function ProjectSearchBar()
                 my="4"
                 placeholder="Filter by skills"
                 data={skillOptions}
+                value={skillValue}
+                onChange={setSkillValue}
             />
 
             <Button type="submit" color="#5c8593" mb="20">
