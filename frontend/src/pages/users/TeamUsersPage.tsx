@@ -20,7 +20,7 @@ interface User {
     username: string;
     projects: Project[];
     roles?: string[];
-    isOwner?: boolean; // Added to resolve TS2353 error
+    isOwner?: boolean;
 }
 
 // Inline UserContext definition
@@ -50,9 +50,10 @@ async function getUserInfo(userId: string): Promise<{ status: number; json: () =
 export default function TeamUsersPage() {
     const { user } = useContext(UserContext); // Get current user to access projects and determine ownership
 
-    // State for projects and their users
+    // State for projects, users, loading, and errors
     const [projectsWithUsers, setProjectsWithUsers] = useState<{ project: Project; users: User[] }[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     // State for the confirmation dialog
     const [opened, { open, close }] = useDisclosure(false);
@@ -62,58 +63,66 @@ export default function TeamUsersPage() {
     // Fetch all projects the user is a part of and their users
     useEffect(() => {
         async function fetchProjectsAndUsers() {
-            if (!user) {
-                setLoading(false);
-                return;
-            }
-
-            setLoading(true);
-
-            // Filter projects where the user is a member or owner
-            const relatedProjects = user.projects.filter(project =>
-                project.owner === user._id ||
-                Object.values(project.users)
-                    .map(role => role.users.includes(user._id))
-                    .includes(true)
-            );
-
-            const projectsData: { project: Project; users: User[] }[] = [];
-
-            // Fetch users for each project
-            for (const project of relatedProjects) {
-                const tempUsers: User[] = [];
-
-                // Fetch the owner
-                let response = await getUserInfo(project.owner);
-                if (response.status === 200) {
-                    const owner = await response.json();
-                    const ownerRoles = Object.keys(project.users).filter(role =>
-                        project.users[role].users.includes(owner._id)
-                    );
-                    tempUsers.push({ ...owner, roles: ownerRoles, isOwner: project.owner === user._id });
+            try {
+                if (!user) {
+                    setError('No user data available');
+                    return;
                 }
 
-                // Fetch users for each role in this project
-                for (const role in project.users) {
-                    for (const userId of project.users[role].users) {
-                        if (!tempUsers.find((member) => member._id === userId)) {
-                            response = await getUserInfo(userId);
-                            if (response.status === 200) {
-                                const userData = await response.json();
-                                const userRoles = Object.keys(project.users).filter(r =>
-                                    project.users[r].users.includes(userData._id)
-                                );
-                                tempUsers.push({ ...userData, roles: userRoles, isOwner: project.owner === user._id });
+                // Filter projects where the user is a member or owner
+                const relatedProjects = user.projects.filter(project =>
+                    project.owner === user._id ||
+                    Object.values(project.users)
+                        .map(role => role.users.includes(user._id))
+                        .includes(true)
+                );
+
+                const projectsData: { project: Project; users: User[] }[] = [];
+
+                // Fetch users for each project
+                for (const project of relatedProjects) {
+                    const tempUsers: User[] = [];
+
+                    // Fetch the owner
+                    const ownerResponse = await getUserInfo(project.owner);
+                    if (ownerResponse.status === 200) {
+                        const owner = await ownerResponse.json();
+                        const ownerRoles = Object.keys(project.users).filter(role =>
+                            project.users[role].users.includes(owner._id)
+                        );
+                        tempUsers.push({ ...owner, roles: ownerRoles, isOwner: project.owner === user._id });
+                    } else {
+                        console.warn(`Failed to fetch owner for project ${project._id}: Status ${ownerResponse.status}`);
+                    }
+
+                    // Fetch users for each role in this project
+                    for (const role in project.users) {
+                        for (const userId of project.users[role].users) {
+                            if (!tempUsers.find((member) => member._id === userId)) {
+                                const userResponse = await getUserInfo(userId);
+                                if (userResponse.status === 200) {
+                                    const userData = await userResponse.json();
+                                    const userRoles = Object.keys(project.users).filter(r =>
+                                        project.users[r].users.includes(userData._id)
+                                    );
+                                    tempUsers.push({ ...userData, roles: userRoles, isOwner: project.owner === user._id });
+                                } else {
+                                    console.warn(`Failed to fetch user ${userId} for project ${project._id}: Status ${userResponse.status}`);
+                                }
                             }
                         }
                     }
+
+                    projectsData.push({ project, users: tempUsers });
                 }
 
-                projectsData.push({ project, users: tempUsers });
+                setProjectsWithUsers(projectsData);
+            } catch (err) {
+                console.error('Error fetching projects and users:', err);
+                setError('Failed to load team details. Please try again later.');
+            } finally {
+                setLoading(false); // Always set loading to false, even if an error occurs
             }
-
-            setProjectsWithUsers(projectsData);
-            setLoading(false);
         }
 
         fetchProjectsAndUsers();
@@ -145,6 +154,20 @@ export default function TeamUsersPage() {
         }
         close();
     };
+
+    if (error) {
+        return (
+            <Box mx={{ base: 'md', lg: 'xl' }}>
+                <Title py="md" order={1}>
+                    My Teams
+                </Title>
+                <div className="accountBox">
+                    <h1>Error</h1>
+                    <p>{error}</p>
+                </div>
+            </Box>
+        );
+    }
 
     if (loading || !user) {
         return (
