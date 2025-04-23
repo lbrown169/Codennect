@@ -182,4 +182,6 @@ export class StaticProjectRepository implements ProjectRepository {
 
         return true;
     }
+
+    // TODO Copy over delete-member function from MongoProjectRepository when it's complete
 }
