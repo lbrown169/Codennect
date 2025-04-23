@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { Project } from '../../types/Project';
 import { ProjectCard } from "../dashboard/ProjectsPanel";
+import { UserContext } from '../../hooks/UserContext';
 import { FaSearch } from "react-icons/fa";
-import { Button, Combobox, useCombobox, CloseButton, Input, InputBase, MultiSelect, TextInput } from "@mantine/core";
+import { Alert, Button, Combobox, useCombobox, CloseButton, Grid, Input, InputBase, MultiSelect, ScrollArea, Skeleton, TextInput } from "@mantine/core";
+
+import { IoMdInformationCircleOutline } from 'react-icons/io';
 
 export function ProjectSearchBar()
 {
-
+    const {user} = useContext(UserContext);
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption,
     });
@@ -50,9 +54,19 @@ export function ProjectSearchBar()
         'Vue.js',
     ];
     const [roleValue, setRoleValue] = useState<string | null>(null);
-    const [skillValues, setSkillValues] = useState<string[]>([]);
     const [searchInput, setSearchInput] = useState('');
     const searchIcon = <FaSearch />
+    const [searchResults, setSearchResults] = useState<Project[]>([]);
+
+    if (!user) {
+        return <Skeleton />;
+    }
+
+    const projects = user.projects.filter((project) =>
+        Object.values(project.users)
+            .map((role) => role.users.includes(user._id))
+            .includes(true)
+    );
 
     const comboOptions = roleOptions.map((role) => (
         <Combobox.Option value={role} key={role}>
@@ -65,6 +79,10 @@ export function ProjectSearchBar()
     {
         event.preventDefault();
         alert("WIP");
+        const newProjects = projects.filter(    //filter out owned projects
+            (project) => project.owner !== user?._id
+        );
+        setSearchResults(newProjects);
     }
 
     
@@ -73,6 +91,7 @@ export function ProjectSearchBar()
         <form onSubmit={doSearch}>
             <TextInput
                 placeholder="Search"
+                mb="4"
                 radius="md"
                 leftSection={searchIcon}
                 value={searchInput}
@@ -119,13 +138,37 @@ export function ProjectSearchBar()
 
             <MultiSelect 
                 radius = "md"
+                my="4"
                 placeholder="Filter by skills"
                 data={skillOptions}
             />
 
-            <Button type="submit" color="#5c8593">
+            <Button type="submit" color="#5c8593" mb="20">
                 Search
             </Button>
+
+            <ScrollArea type="never" scrollbars="y">
+            {searchResults.length > 0 ? (
+                <Grid align="stretch">
+                    {searchResults.map((project) => (
+                        <Grid.Col
+                            span={{ base: 12, md: 6, lg: 4 }}
+                            key={project._id}
+                        >
+                            <ProjectCard project={project} />
+                        </Grid.Col>
+                    ))}
+                </Grid>
+            ) : (
+                <Alert
+                    variant="light"
+                    color="#5c8593"
+                    title="No Results Found"
+                    icon={<IoMdInformationCircleOutline />}
+                />
+
+            )}
+            </ScrollArea>
             
         </form>
     );
