@@ -1,6 +1,6 @@
 export enum RequestType {
-    INVITE = "invite",
-    APPLICATION = "application",
+    INVITE = 'invite',
+    APPLICATION = 'application',
 }
 
 export class Request {
@@ -26,7 +26,7 @@ export class Request {
         } else if (type === RequestType.APPLICATION) {
             this.is_invite = false;
         } else {
-            throw new Error("Request type not recognized");
+            throw new Error('Request type not recognized');
         }
         this.is_application = !this.is_invite;
 

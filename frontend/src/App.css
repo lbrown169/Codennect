@@ -1,267 +1,263 @@
-@import "tailwindcss";
-
+@import 'tailwindcss';
 
 .accountBox {
-  background-color: #EFF6E0;
-  padding: 18px;
-  border-radius: 12px;
-  color: black;
-  font-size: 18px;
-  text-align: center;
-  position: relative;
-  width: 60%;
-  margin: auto;
-  top: 100px;
+    background-color: #eff6e0;
+    padding: 18px;
+    border-radius: 12px;
+    color: black;
+    font-size: 18px;
+    text-align: center;
+    position: relative;
+    width: 60%;
+    margin: auto;
+    top: 100px;
 }
 
 .accountInput {
-  background-color: white;
-  border: 1px solid black;
-  border-radius: 4px;
-  padding: 4px;
-  width: 100%;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 4px;
+    width: 100%;
 }
 
 .applyButton {
-  position: relative;
-  margin: auto;
-  padding: 8px;
-  text-align: center;
-  border-radius: 15px;
-  width: 50%;
-  margin-left: 25%;
-  color: white;
-  background-color: #598392;
+    position: relative;
+    margin: auto;
+    padding: 8px;
+    text-align: center;
+    border-radius: 15px;
+    width: 50%;
+    margin-left: 25%;
+    color: white;
+    background-color: #598392;
 }
 
 .closeButton {
-  padding: 4px;
-  border-radius: 12px;
+    padding: 4px;
+    border-radius: 12px;
 }
 
 #editProfButtons {
-  position: relative;
-  margin-bottom: auto;
+    position: relative;
+    margin-bottom: auto;
 }
 
 #editProfResultDiv {
-  position: relative;
-  text-align: left;
-  height: 56px;
-  overflow: y;
-  overflow-y: scroll;
+    position: relative;
+    text-align: left;
+    height: 56px;
+    overflow: y;
+    overflow-y: scroll;
 }
 
 #filterBar {
-  color: black;
-  background-color: white;
-  padding: 2px;
-  border: 1px solid black;
-  border-radius: 8px;
+    color: black;
+    background-color: white;
+    padding: 2px;
+    border: 1px solid black;
+    border-radius: 8px;
 }
 
 .infoBox {
-  background-color: white;
-  position: absolute;
-  border-radius: 12px;
-  border-width: 1px;
-  border-color: black;
-  margin: auto;
-  top: 24px;
-  width: 43%;
-  height: 604px;
-  padding: 12px;
-  margin-right: 24px;
+    background-color: white;
+    position: absolute;
+    border-radius: 12px;
+    border-width: 1px;
+    border-color: black;
+    margin: auto;
+    top: 24px;
+    width: 43%;
+    height: 604px;
+    padding: 12px;
+    margin-right: 24px;
 }
 
 .infoDisplay {
-  height: 480px;
-  overflow: scroll;
-  overflow-y: scroll;
-  text-align: left;
-  
+    height: 480px;
+    overflow: scroll;
+    overflow-y: scroll;
+    text-align: left;
 }
 
 .infoInput {
-  background-color: lightgray;
-  border: 1px solid black;
-  border-radius: 4px;
-  padding: 2px;
-  width: 100%;
-  resize: vertical;
+    background-color: lightgray;
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 2px;
+    width: 100%;
+    resize: vertical;
 }
 
 .left-side {
-  display: inline-block;
-  width: 45%
+    display: inline-block;
+    width: 45%;
 }
 
 .moreInfoButton {
-  color: white;
-  background-color: #598392;
-  position: relative;
-  margin: auto;
-  left: 30%;
-  width: 20%;
-  padding: 3px;
-  border-radius: 16px;
+    color: white;
+    background-color: #598392;
+    position: relative;
+    margin: auto;
+    left: 30%;
+    width: 20%;
+    padding: 3px;
+    border-radius: 16px;
 }
 
 .navBar {
-  top: 0px;
-  font-size: 22px;
-  padding: 10px;
-  color: white;
-  background-color: #01161E;
+    top: 0px;
+    font-size: 22px;
+    padding: 10px;
+    color: white;
+    background-color: #01161e;
 }
 
 .navBar a {
-  color: white;
-  margin: auto;
-  position: relative;
-  text-align: center;
-  padding: 8px;
+    color: white;
+    margin: auto;
+    position: relative;
+    text-align: center;
+    padding: 8px;
 }
 
 .navBar a:hover {
-  color: #B3B3B3;
+    color: #b3b3b3;
 }
 
 .pfp-placeholder {
-  background-color: white;
-  border-radius: 12px;
-  position: relative;
-  height: 200px; 
-  border-color: black;
-  border-width: 1px;
+    background-color: white;
+    border-radius: 12px;
+    position: relative;
+    height: 200px;
+    border-color: black;
+    border-width: 1px;
 }
 
 .profileBox {
-  background-color: #EFF6E0;
-  padding: 24px;
-  border-radius: 12px;
-  color: black;
-  font-size: 18px;
-  width: 95%;
-  margin: auto;
-  position: relative;
-  top: 40px;
-  height: 652px;
+    background-color: #eff6e0;
+    padding: 24px;
+    border-radius: 12px;
+    color: black;
+    font-size: 18px;
+    width: 95%;
+    margin: auto;
+    position: relative;
+    top: 40px;
+    height: 652px;
 }
 
 .projPreview {
-  position: fixed;
-  margin: auto;
-  background-color: white;
-  border: 1px solid black;
-  border-radius: 12px;
-  padding: 15px;
-  width: 90%;
-  overflow: auto;
-  left: 5%;
-  color: black;
-  display: block;
+    position: fixed;
+    margin: auto;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 12px;
+    padding: 15px;
+    width: 90%;
+    overflow: auto;
+    left: 5%;
+    color: black;
+    display: block;
 }
 
 .projSearchCard {
-  background-color: white;
-  border: 1px solid black;
-  border-radius: 12px;
-  padding: 4px;
-  margin: auto;
-  margin-bottom: 8px;
-  display: block;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 12px;
+    padding: 4px;
+    margin: auto;
+    margin-bottom: 8px;
+    display: block;
 }
 
 .projSearchCardDesc {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: inline-block;
-  white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    white-space: nowrap;
 }
 
 .resetButton {
-  padding: 2px;
-  background-color: white;
-  border: 1px solid black;
-  margin: auto;
+    padding: 2px;
+    background-color: white;
+    border: 1px solid black;
+    margin: auto;
 }
 
 .right-side {
-  display: inline-block;
-  width: 45%;
-  margin: auto;
-  margin-left: 10%;
-  
+    display: inline-block;
+    width: 45%;
+    margin: auto;
+    margin-left: 10%;
 }
 
 .searchBox {
-  background-color: #EFF6E0;
-  margin: auto;
-  position: relative;
-  width: 95%;
-  border-radius: 12px;
-  padding: 24px;
-  top: 40px;
+    background-color: #eff6e0;
+    margin: auto;
+    position: relative;
+    width: 95%;
+    border-radius: 12px;
+    padding: 24px;
+    top: 40px;
 }
 
 #searchBar {
-  color: black;
-  background-color: white;
-  border-radius: 8px;
+    color: black;
+    background-color: white;
+    border-radius: 8px;
 }
 
 .searchButton {
-  color: white;
-  background-color: #598392;
-  border-radius: 12px;
+    color: white;
+    background-color: #598392;
+    border-radius: 12px;
 }
 
 .searchButton:hover {
-  background-color: #90b0bb;
+    background-color: #90b0bb;
 }
 
 .searchResults {
-  position: relative;
-  top: 20px;
-  color: black;
+    position: relative;
+    top: 20px;
+    color: black;
 }
 
 .submitButton {
-  padding: 2px;
-  background-color: white;
-  border: 1px solid black;
-  margin: auto;
+    padding: 2px;
+    background-color: white;
+    border: 1px solid black;
+    margin: auto;
 }
 
 .userProfileButton {
-  background-color: white;
-  border-color: black;
-  width: 100%;
-  display: inline;
-  position: relative;
+    background-color: white;
+    border-color: black;
+    width: 100%;
+    display: inline;
+    position: relative;
 }
 
 .card {
-  padding: 2em;
+    padding: 2em;
 }
 
 .read-the-docs {
-  color: #888;
+    color: #888;
 }
 
-html, body, #root {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
+html,
+body,
+#root {
+    height: 100%;
+    width: 100%;
 }
 
 a {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 a:hover {
-  color: #5c8593
+    color: #5c8593;
 }

@@ -1,8 +1,15 @@
-import { Account } from "../domain/Account.js";
-import { HashPassword } from "../service/auth.js";
-import { User, UserRegistration, UserRepository, VerificationInUser, PossibleSkills, PossibleRoles } from "../domain/User.js";
-import { randomInt } from "crypto";
-import bcrypt from "bcrypt";
+import { Account } from '../domain/Account.js';
+import { HashPassword } from '../service/auth.js';
+import {
+    User,
+    UserRegistration,
+    UserRepository,
+    VerificationInUser,
+    PossibleSkills,
+    PossibleRoles,
+} from '../domain/User.js';
+import { randomInt } from 'crypto';
+import bcrypt from 'bcrypt';
 
 class StaticUser extends User {
     password: string;
@@ -18,7 +25,7 @@ class StaticUser extends User {
         interests: string[],
         accounts: Account[],
         projects: string[],
-        verification : VerificationInUser | null,
+        verification: VerificationInUser | null,
         password: string
     ) {
         super(
@@ -49,32 +56,32 @@ export class StaticUserRepository implements UserRepository {
     constructor() {
         this._internal = [
             new StaticUser(
-                "0",
-                "John Doe",
+                '0',
+                'John Doe',
                 false,
-                "john.doe@example.com",
-                "Online",
-                ["React", "Tailwind", "Typescript"],
-                ["frontend"],
-                ["games"],
+                'john.doe@example.com',
+                'Online',
+                ['React', 'Tailwind', 'Typescript'],
+                ['frontend'],
+                ['games'],
                 [],
-                ["1234-5678", "8765-4321"],
+                ['1234-5678', '8765-4321'],
                 null,
-                "$2b$10$px4/4rdjDTmlqv9nd0/A8OTOMwUUEx.wIgXua/AtS0IdTnzgGvAUG" //"SuperSecret123!"
+                '$2b$10$px4/4rdjDTmlqv9nd0/A8OTOMwUUEx.wIgXua/AtS0IdTnzgGvAUG' //"SuperSecret123!"
             ),
             new StaticUser(
-                "1",
-                "Jane Doe",
+                '1',
+                'Jane Doe',
                 true,
-                "jane.doe@example.com",
-                "In Person",
-                ["Python", "Flask", "SQL"],
-                ["backend", "database"],
-                ["games"],
+                'jane.doe@example.com',
+                'In Person',
+                ['Python', 'Flask', 'SQL'],
+                ['backend', 'database'],
+                ['games'],
                 [],
-                ["8765-4321"],
+                ['8765-4321'],
                 null,
-                "$2b$10$Qs8T/bvyZ20GaQo2tLCEge1F3XGZkyODeibH2dTJbBmUet/WYnBje" //"VeryS3cureP4ssw0!d"
+                '$2b$10$Qs8T/bvyZ20GaQo2tLCEge1F3XGZkyODeibH2dTJbBmUet/WYnBje' //"VeryS3cureP4ssw0!d"
             ),
         ];
     }
@@ -142,7 +149,7 @@ export class StaticUserRepository implements UserRepository {
 
     async Register(user: UserRegistration): Promise<User> {
         if ((await this.GetByEmail(user.email)) !== undefined) {
-            throw new Error("A user with that email already exists");
+            throw new Error('A user with that email already exists');
         }
 
         const newUser = new StaticUser(
@@ -150,7 +157,7 @@ export class StaticUserRepository implements UserRepository {
             user.name,
             false,
             user.email,
-            "",
+            '',
             [],
             [],
             [],
@@ -172,27 +179,27 @@ export class StaticUserRepository implements UserRepository {
         if (!user) return false;
 
         if (updates.skills) {
-            const allValid = updates.skills.every(skill =>
+            const allValid = updates.skills.every((skill) =>
                 PossibleSkills.includes(skill)
             );
-    
+
             if (!allValid) {
-                console.warn("Update failed: invalid skills in input.");
+                console.warn('Update failed: invalid skills in input.');
                 return false;
             }
         }
 
         if (updates.roles) {
-                    const allValid = updates.roles.every(role =>
-                        PossibleRoles.includes(role)
-                    );
-            
-                    // crash if not, can be changed
-                    if (!allValid) {
-                        console.warn("Update failed: invalid roles detected.");
-                        return false;
-                    }
-                }
+            const allValid = updates.roles.every((role) =>
+                PossibleRoles.includes(role)
+            );
+
+            // crash if not, can be changed
+            if (!allValid) {
+                console.warn('Update failed: invalid roles detected.');
+                return false;
+            }
+        }
 
         // update the found user
         Object.assign(user, updates);
@@ -209,29 +216,35 @@ export class StaticUserRepository implements UserRepository {
         const newHashedPassword = await HashPassword(newPassword);
 
         // update the found user's password
-        (user as any).password = newHashedPassword;
+        user.password = newHashedPassword;
 
         return true;
     }
 
     async ValidateVerification(code: string): Promise<boolean> {
         const user = this._internal.find(
-            (user) => user.verification?.code === code
+            (user) =>
+                user.verification !== null && user.verification.code === code
         );
-    
+
         if (!user) return false;
-    
+
         return true;
     }
 
     async DeleteVerification(code: string): Promise<boolean> {
         // find user, return false if not found
-        const user = this._internal.find((user) => user.verification?.code === code);
+        const user = this._internal.find(
+            (user) =>
+                user.verification !== null && user.verification.code === code
+        );
 
         if (!user) return false;
 
         // update the found user
-        (user as any).verification = null;
+        user.verification = null;
+        this._internal[this._internal.findIndex((u) => u._id == user._id)] =
+            user;
 
         return true;
     }

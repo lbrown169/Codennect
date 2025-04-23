@@ -1,10 +1,12 @@
-import { Request as ProjectRequest, RequestType } from "../domain/Request.js";
-import express, { Request } from "express";
-import { Driver } from "../repo/Driver.js";
-import { Response } from "../utils.js";
-import { IMailgunClient } from "node_modules/mailgun.js/Types/Interfaces/index.js";
+import { Request as ProjectRequest, RequestType } from '../domain/Request.js';
+import express, { Request } from 'express';
+import { Driver } from '../repo/Driver.js';
+import { Response } from '../utils.js';
+import { IMailgunClient } from 'node_modules/mailgun.js/Types/Interfaces/index.js';
+import checkVerification from '../middleware/checkVerification.js';
 
 const RequestRouter = express.Router();
+RequestRouter.use(checkVerification);
 
 interface RequestsResponse {
     invites: {
@@ -17,10 +19,10 @@ interface RequestsResponse {
     };
 }
 
-RequestRouter.get("/api/requests", async (req: Request, res: Response) => {
+RequestRouter.get('/api/requests', async (req: Request, res: Response) => {
     if (!res.locals.user) {
         res.status(401).json({
-            error: "Unauthorized. You must be logged in to perform this action.",
+            error: 'Unauthorized. You must be logged in to perform this action.',
         });
         return;
     }
@@ -51,15 +53,15 @@ RequestRouter.get("/api/requests", async (req: Request, res: Response) => {
         }
     }
 
-    res.status(200).json({ error: "", result: response });
+    res.status(200).json({ error: '', result: response });
 });
 
-RequestRouter.post("/api/requests", async (req: Request, res: Response) => {
+RequestRouter.post('/api/requests', async (req: Request, res: Response) => {
     // Creates new application to join a project
     // Passed: user_id, projectId, message (all strings)
     if (!res.locals.user) {
         res.status(401).json({
-            error: "Unauthorized. You must be logged in to perform this action.",
+            error: 'Unauthorized. You must be logged in to perform this action.',
         });
         return;
     }
@@ -70,7 +72,7 @@ RequestRouter.post("/api/requests", async (req: Request, res: Response) => {
 
     if (!project) {
         res.status(400).json({
-            error: "Bad request. Provided project does not exist.",
+            error: 'Bad request. Provided project does not exist.',
         });
         return;
     }
@@ -79,7 +81,7 @@ RequestRouter.post("/api/requests", async (req: Request, res: Response) => {
         // Is an invite, we need to make sure authenticated user is the owner
         if (project.owner !== res.locals.user._id) {
             res.status(403).json({
-                error: "Forbidden. Only project owners can create invites.",
+                error: 'Forbidden. Only project owners can create invites.',
             });
             return;
         }
@@ -95,14 +97,14 @@ RequestRouter.post("/api/requests", async (req: Request, res: Response) => {
 
     if ([user_id, project_id, is_invite, roles].includes(undefined)) {
         res.status(400).json({
-            error: "Bad request. user_id, project_id, is_invite, and roles are required.",
+            error: 'Bad request. user_id, project_id, is_invite, and roles are required.',
         });
         return;
     }
 
     if (!Array.isArray(roles) || roles.length == 0) {
         res.status(400).json({
-            error: "Bad request. Roles must be an array greater than size 0.",
+            error: 'Bad request. Roles must be an array greater than size 0.',
         });
         return;
     }
@@ -121,19 +123,20 @@ RequestRouter.post("/api/requests", async (req: Request, res: Response) => {
     const user = await db.userRepository.GetById(user_id);
     if (!user) {
         res.status(400).json({
-            error: "Bad request. Provided user not found.",
+            error: 'Bad request. Provided user not found.',
         });
         return;
     }
     if (req.app.locals.transporter) {
         let t: IMailgunClient = req.app.locals.transporter;
         let message;
-        if(is_invite == RequestType.INVITE) {
+        if (is_invite == RequestType.INVITE) {
             message = `
             Hey there ${user.name},<br /><br />
             You have been sent an invite to join the ${project.name} project! Be sure to check it out!
         `;
-        } else { // application
+        } else {
+            // application
             message = `
             Hey there ${user.name},<br /><br />
             You have received a new application from a user wishing to join the ${project.name} project!
@@ -145,131 +148,22 @@ RequestRouter.post("/api/requests", async (req: Request, res: Response) => {
             subject: `${project.name} Request Update`,
             html: message,
         });
-        console.log("Approval email sent.", info);
+        console.log('Approval email sent.', info);
     }
 
     res.status(200).json({
-        error: "",
-        success: "Request sent!",
+        error: '',
+        success: 'Request sent!',
         request: newRequest,
     });
 });
 
-RequestRouter.post("/api/requests/approve", async (req: Request, res: Response) => {
-    if (!res.locals.user) {
-        res.status(401).json({
-            error: "Unauthorized. You must be logged in to perform this action.",
-        });
-        return;
-    }
-    const { user_id, project_id, is_invite } = req.body;
-    const db: Driver = req.app.locals.driver;
-    const request = await db.requestRepository.GetRequest(
-        user_id,
-        project_id,
-        is_invite
-    );
-
-    if (!request) {
-        res.status(400).json({
-            error: "Bad request. Request not found.",
-        });
-        return;
-    }
-
-    const user = await db.userRepository.GetById(user_id);
-    const project = await db.projectRepository.GetById(project_id);
-
-    if (!user) {
-        res.status(400).json({
-            error: "Bad request. Provided user not found.",
-        });
-        return;
-    }
-
-    if (!project) {
-        res.status(400).json({
-            error: "Bad request. Provided project not found.",
-        });
-        return;
-    }
-
-    if (is_invite) {
-        // It's an invite, it must be the user who is accepting the invite
-        if (res.locals.user._id !== user_id) {
-            res.status(403).json({
-                error: "Forbidden. Only the user receiving the invite can approve it.",
-            });
-            return;
-        }
-    } else {
-        // Application, only the project owner can accept it
-        if (res.locals.user._id !== project.owner) {
-            res.status(403).json({
-                error: "Forbidden. Only the project owner can approve an application.",
-            });
-            return;
-        }
-    }
-
-    // Remove them from any roles they are currently in
-        // in case they're trying to change roles
-    for (let role of Object.keys(project.users)) {
-        const roleData = project.users[role];
-        if (roleData) {
-            roleData.users = roleData.users.filter((user) => user !== user_id);
-        }
-    }
-    
-    // // Place them into their assigned roles
-    // for (let role of request.roles) {
-    //     // make sure the role exists in the project and add it if it doesn't
-    //         // (could validate against PossibleRoles here too)
-    //     if (!project.users[role]) {
-    //         project.users[role] = {
-    //             max: 1, // default max value
-    //             users: []
-    //         };
-    //     }
-    
-    //     // add the user to the role
-    //     project.users[role].users.push(user_id);
-    // }
-
-    // add to project repo with dedicated function
-    await db.projectRepository.AddUserToProject(project_id, user_id, request.roles);
-
-    // Now insert project id into user
-    if (user.projects.indexOf(project_id) === -1) {
-        user.projects.push(project_id);
-        await db.userRepository.Update(user_id, {
-            projects: user.projects,
-        });
-    }
-
-    await db.requestRepository.DeleteRequest(request);
-
-    if (req.app.locals.transporter) {
-        let t: IMailgunClient = req.app.locals.transporter;
-        let message = `
-            Hey there ${user.name},<br /><br />
-            Congratulations! You are now on the team for the ${project.name} project!
-        `;
-        const info = await t.messages.create(process.env.MAILGUN_DOMAIN!, {
-            from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
-            to: [user.email],
-            subject: `${project.name} Request Update`,
-            html: message,
-        });
-        console.log("Approval email sent.", info);
-    }
-    res.status(200).json({ error: "", result: "Request approved." });
-});
-
-RequestRouter.post("/api/requests/deny", async (req: Request, res: Response) => {
+RequestRouter.post(
+    '/api/requests/approve',
+    async (req: Request, res: Response) => {
         if (!res.locals.user) {
             res.status(401).json({
-                error: "Unauthorized. You must be logged in to perform this action.",
+                error: 'Unauthorized. You must be logged in to perform this action.',
             });
             return;
         }
@@ -283,7 +177,7 @@ RequestRouter.post("/api/requests/deny", async (req: Request, res: Response) => 
 
         if (!request) {
             res.status(400).json({
-                error: "Bad request. Request not found.",
+                error: 'Bad request. Request not found.',
             });
             return;
         }
@@ -293,21 +187,141 @@ RequestRouter.post("/api/requests/deny", async (req: Request, res: Response) => 
 
         if (!user) {
             res.status(400).json({
-                error: "Bad request. Provided user not found.",
+                error: 'Bad request. Provided user not found.',
             });
             return;
         }
 
         if (!project) {
             res.status(400).json({
-                error: "Bad request. Provided project not found.",
+                error: 'Bad request. Provided project not found.',
+            });
+            return;
+        }
+
+        if (is_invite) {
+            // It's an invite, it must be the user who is accepting the invite
+            if (res.locals.user._id !== user_id) {
+                res.status(403).json({
+                    error: 'Forbidden. Only the user receiving the invite can approve it.',
+                });
+                return;
+            }
+        } else {
+            // Application, only the project owner can accept it
+            if (res.locals.user._id !== project.owner) {
+                res.status(403).json({
+                    error: 'Forbidden. Only the project owner can approve an application.',
+                });
+                return;
+            }
+        }
+
+        // Remove them from any roles they are currently in
+        // in case they're trying to change roles
+        for (let role of Object.keys(project.users)) {
+            const roleData = project.users[role];
+            if (roleData) {
+                roleData.users = roleData.users.filter(
+                    (user) => user !== user_id
+                );
+            }
+        }
+
+        // // Place them into their assigned roles
+        // for (let role of request.roles) {
+        //     // make sure the role exists in the project and add it if it doesn't
+        //         // (could validate against PossibleRoles here too)
+        //     if (!project.users[role]) {
+        //         project.users[role] = {
+        //             max: 1, // default max value
+        //             users: []
+        //         };
+        //     }
+
+        //     // add the user to the role
+        //     project.users[role].users.push(user_id);
+        // }
+
+        // add to project repo with dedicated function
+        await db.projectRepository.AddUserToProject(
+            project_id,
+            user_id,
+            request.roles
+        );
+
+        // Now insert project id into user
+        if (user.projects.indexOf(project_id) === -1) {
+            user.projects.push(project_id);
+            await db.userRepository.Update(user_id, {
+                projects: user.projects,
+            });
+        }
+
+        await db.requestRepository.DeleteRequest(request);
+
+        if (req.app.locals.transporter) {
+            let t: IMailgunClient = req.app.locals.transporter;
+            let message = `
+            Hey there ${user.name},<br /><br />
+            Congratulations! You are now on the team for the ${project.name} project!
+        `;
+            const info = await t.messages.create(process.env.MAILGUN_DOMAIN!, {
+                from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
+                to: [user.email],
+                subject: `${project.name} Request Update`,
+                html: message,
+            });
+            console.log('Approval email sent.', info);
+        }
+        res.status(200).json({ error: '', result: 'Request approved.' });
+    }
+);
+
+RequestRouter.post(
+    '/api/requests/deny',
+    async (req: Request, res: Response) => {
+        if (!res.locals.user) {
+            res.status(401).json({
+                error: 'Unauthorized. You must be logged in to perform this action.',
+            });
+            return;
+        }
+        const { user_id, project_id, is_invite } = req.body;
+        const db: Driver = req.app.locals.driver;
+        const request = await db.requestRepository.GetRequest(
+            user_id,
+            project_id,
+            is_invite
+        );
+
+        if (!request) {
+            res.status(400).json({
+                error: 'Bad request. Request not found.',
+            });
+            return;
+        }
+
+        const user = await db.userRepository.GetById(user_id);
+        const project = await db.projectRepository.GetById(project_id);
+
+        if (!user) {
+            res.status(400).json({
+                error: 'Bad request. Provided user not found.',
+            });
+            return;
+        }
+
+        if (!project) {
+            res.status(400).json({
+                error: 'Bad request. Provided project not found.',
             });
             return;
         }
 
         if (![user_id, project.owner].includes(res.locals.user._id)) {
             res.status(403).json({
-                error: "Forbidden. Only the user or project owner can deny a request.",
+                error: 'Forbidden. Only the user or project owner can deny a request.',
             });
             return;
         }
@@ -327,9 +341,9 @@ RequestRouter.post("/api/requests/deny", async (req: Request, res: Response) => 
                 subject: `${project.name} Request Update`,
                 html: message,
             });
-            console.log("Denial email sent.", info);
+            console.log('Denial email sent.', info);
         }
-        res.status(200).json({ error: "", result: "Request denied." });
+        res.status(200).json({ error: '', result: 'Request denied.' });
     }
 );
 

@@ -1,43 +1,85 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import { AppShell, Burger, Group, Image } from '@mantine/core';
+import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 import './App.css';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
 
-import { getVersion, isProd } from './utils';
-import ProjectPage from './pages/ProjectPage';
-import UserProfilePage from './pages/UserProfilePage';
-import BrowseProjectsPage from './pages/BrowseProjectsPage';
-import VerifyEmailPage from './pages/VerifyEmailPage';
+import ProjectPage from './pages/projects/ProjectPage';
+import MyProfilePage from './pages/users/MyProfilePage';
+import BrowseProjectsPage from './pages/projects/BrowseProjectsPage';
+import { useDisclosure } from '@mantine/hooks';
+import { Navbar } from './components/Navbar';
+import { useContext, useEffect } from 'react';
+import { UserContext } from './hooks/UserContext';
+import UserProfilePage from './pages/users/UserProfilePage';
+import BrowseUsersPage from './pages/users/BrowseUsersPage';
+import TeamUsersPage from './pages/users/TeamUsersPage';
+import CreateProjectPage from './pages/projects/CreateProjectPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
+    const [opened, { toggle }] = useDisclosure();
+    const { user, loaded, verified } = useContext(UserContext);
+    const navigate = useNavigate();
 
-    if (isProd()) {
-        console.info("[PRODUCTION] Codennect Web")
-        console.info("Version: " + getVersion())
-    } else {
-        console.info("[DEVELOPMENT] Codennect Web")
-        console.info("Version: " + getVersion())
-    }
+    useEffect(() => {
+        if (loaded) {
+            if (!verified) {
+                navigate('/verify');
+            } else if (!user) {
+                navigate('/login');
+            }
+        }
+    }, [user, loaded]);
 
     return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<LoginPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<VerifyEmailPage />} />
-                <Route path="/verify-email" element={<SignupPage />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/userprofile" element={<UserProfilePage />} />
-                <Route path="/browse" element={<BrowseProjectsPage />} />
-                <Route path="/projects/:project_id" element={<ProjectPage />} />
-                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                <Route path="/reset-password" element={<ResetPasswordPage />} />
-                <Route path="/projects/:project_id" element={<ProjectPage />} />
-            </Routes>
-        </Router>
+        <AppShell
+            header={{ height: { base: 60, md: 70, lg: 80 } }}
+            navbar={{
+                width: { base: 200, md: 300, lg: 350 },
+                breakpoint: 'sm',
+                collapsed: { mobile: !opened },
+            }}
+            padding="md"
+        >
+            <AppShell.Header>
+                <Group h="100%" px="md">
+                    <Burger
+                        opened={opened}
+                        onClick={toggle}
+                        hiddenFrom="sm"
+                        size="sm"
+                    />
+                    <Image
+                        className="h-13 lg:h-15 xl:h-17"
+                        src="/banner.png"
+                        alt="Logo"
+                    />
+                </Group>
+            </AppShell.Header>
+            <Navbar />
+            <AppShell.Main>
+                <Routes>
+                    <Route path="/" element={<DashboardPage />} />
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/users" element={<BrowseUsersPage />} />
+                    <Route path="/users/me" element={<MyProfilePage />} />
+                    <Route path="/users/related" element={<TeamUsersPage />} />
+                    <Route path="/users/:id" element={<UserProfilePage />} />
+                    <Route path="/projects" element={<BrowseProjectsPage />} />
+                    <Route
+                        path="/projects/create"
+                        element={<CreateProjectPage />}
+                    />
+                    <Route
+                        path="/projects/:project_id"
+                        element={<ProjectPage />}
+                    />
+                    <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+            </AppShell.Main>
+        </AppShell>
     );
 }
 

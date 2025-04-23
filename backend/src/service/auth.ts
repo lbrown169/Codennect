@@ -1,6 +1,6 @@
-import Mailgun from "mailgun.js";
-import FormData from "form-data";
-import bcrypt from "bcrypt";
+import Mailgun from 'mailgun.js';
+import FormData from 'form-data';
+import bcrypt from 'bcrypt';
 
 export function loadTransporter() {
     if (!(process.env.MAILGUN_API_KEY && process.env.MAILGUN_DOMAIN)) {
@@ -10,7 +10,7 @@ export function loadTransporter() {
     const mailgun = new Mailgun(FormData);
 
     const mg = mailgun.client({
-        username: "api",
+        username: 'api',
         key: process.env.MAILGUN_API_KEY,
     });
 
@@ -19,7 +19,7 @@ export function loadTransporter() {
 
 // New home of the secret key
 export function jwtKey() {
-    return process.env.JWT_SECRET_KEY || "your-secret-key";
+    return process.env.JWT_SECRET_KEY || 'your-secret-key';
 }
 
 const saltRounds = 10; // Number of salt rounds (higher = more secure but slower)

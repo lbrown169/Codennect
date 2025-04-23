@@ -1,1 +1,1 @@
-export type ProviderName = "github" | "discord";
+export type ProviderName = 'github' | 'discord';

@@ -1,6 +1,6 @@
-import { Driver, loadDatabaseDriver } from "src/repo/Driver.js";
-import { beforeEach, afterEach, test, expect } from "@jest/globals";
-import { Request, RequestType } from "src/domain/Request.js";
+import { Driver, loadDatabaseDriver } from 'src/repo/Driver.js';
+import { beforeEach, afterEach, test, expect } from '@jest/globals';
+import { Request, RequestType } from 'src/domain/Request.js';
 
 var driver: Driver;
 var project_id = crypto.randomUUID();
@@ -16,8 +16,8 @@ afterEach(async () => {
             project_id,
             user_id,
             RequestType.INVITE,
-            ["frontend"],
-            "message"
+            ['frontend'],
+            'message'
         )
     );
     await driver.requestRepository.DeleteRequest(
@@ -25,20 +25,20 @@ afterEach(async () => {
             project_id,
             user_id,
             RequestType.APPLICATION,
-            ["frontend"],
-            "message"
+            ['frontend'],
+            'message'
         )
     );
     await driver.destroy();
 });
 
-test("Tests creating and getting an invite", async () => {
+test('Tests creating and getting an invite', async () => {
     let req = new Request(
         project_id,
         user_id,
         RequestType.INVITE,
-        ["frontend"],
-        "Inviting user to project"
+        ['frontend'],
+        'Inviting user to project'
     );
 
     let result = await driver.requestRepository.CreateRequest(req);
@@ -59,13 +59,13 @@ test("Tests creating and getting an invite", async () => {
     expect(returned).not.toContain(req);
 });
 
-test("Tests failing to create an invite", async () => {
+test('Tests failing to create an invite', async () => {
     let req = new Request(
         project_id,
         user_id,
         RequestType.INVITE,
-        ["frontend"],
-        "Inviting user to project"
+        ['frontend'],
+        'Inviting user to project'
     );
 
     let result = await driver.requestRepository.CreateRequest(req);
@@ -78,18 +78,18 @@ test("Tests failing to create an invite", async () => {
     expect(result).toBe(false);
 });
 
-test("Tests failing to get an invite", async () => {
+test('Tests failing to get an invite', async () => {
     let returned = await driver.requestRepository.GetUserInvites(user_id);
     expect(returned).toHaveLength(0);
 });
 
-test("Tests creating and getting an application", async () => {
+test('Tests creating and getting an application', async () => {
     let req = new Request(
         project_id,
         user_id,
         RequestType.APPLICATION,
-        ["frontend"],
-        "Requesting to join project"
+        ['frontend'],
+        'Requesting to join project'
     );
 
     let result = await driver.requestRepository.CreateRequest(req);
@@ -110,13 +110,13 @@ test("Tests creating and getting an application", async () => {
     expect(returned).not.toContain(req);
 });
 
-test("Tests deleting a request", async () => {
+test('Tests deleting a request', async () => {
     let req = new Request(
         project_id,
         user_id,
         RequestType.APPLICATION,
-        ["frontend"],
-        "Requesting to join project"
+        ['frontend'],
+        'Requesting to join project'
     );
 
     let result = await driver.requestRepository.CreateRequest(req);

@@ -1,20 +1,20 @@
-import { Request, RequestRepository, RequestType } from "../domain/Request.js";
+import { Request, RequestRepository, RequestType } from '../domain/Request.js';
 
 export class StaticRequestRepository implements RequestRepository {
     private _internal: Request[] = [
         new Request(
-            "1234-5678",
-            "1",
+            '1234-5678',
+            '1',
             RequestType.APPLICATION,
-            ["Frontend"],
-            "Would love to join frontend!"
+            ['Frontend'],
+            'Would love to join frontend!'
         ),
         new Request(
-            "1234-5678",
-            "1",
+            '1234-5678',
+            '1',
             RequestType.INVITE,
-            ["Frontend"],
-            "Would love to have you join frontend!"
+            ['Frontend'],
+            'Would love to have you join frontend!'
         ),
     ];
 

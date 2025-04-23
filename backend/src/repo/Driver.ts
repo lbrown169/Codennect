@@ -1,17 +1,17 @@
-import { Db, MongoClient } from "mongodb";
-import { isProd } from "../utils.js";
+import { Db, MongoClient } from 'mongodb';
+import { isProd } from '../utils.js';
 
-import { UserRepository } from "../domain/User.js";
-import { ProjectRepository } from "../domain/Project.js";
-import { RequestRepository } from "src/domain/Request.js";
+import { UserRepository } from '../domain/User.js';
+import { ProjectRepository } from '../domain/Project.js';
+import { RequestRepository } from 'src/domain/Request.js';
 
-import { StaticUserRepository } from "./StaticUserRepository.js";
-import { StaticProjectRepository } from "./StaticProjectRepository.js";
-import { StaticRequestRepository } from "./StaticRequestRepository.js";
+import { StaticUserRepository } from './StaticUserRepository.js';
+import { StaticProjectRepository } from './StaticProjectRepository.js';
+import { StaticRequestRepository } from './StaticRequestRepository.js';
 
-import { MongoUserRepository } from "./MongoUserRepository.js";
-import { MongoProjectRepository } from "./MongoProjectRepository.js";
-import { MongoRequestRepository } from "./MongoRequestRepository.js";
+import { MongoUserRepository } from './MongoUserRepository.js';
+import { MongoProjectRepository } from './MongoProjectRepository.js';
+import { MongoRequestRepository } from './MongoRequestRepository.js';
 
 export interface Driver {
     userRepository: UserRepository;
@@ -43,7 +43,7 @@ class MongoDriver implements Driver {
     constructor() {
         if (!process.env.MONGODB_URI) {
             throw new Error(
-                "Loading Mongo Driver but did not find MONGODB_URI in environment"
+                'Loading Mongo Driver but did not find MONGODB_URI in environment'
             );
         }
         this.client = new MongoClient(process.env.MONGODB_URI);
@@ -51,9 +51,9 @@ class MongoDriver implements Driver {
 
         let db: Db;
         if (isProd()) {
-            db = this.client.db("codennect");
+            db = this.client.db('codennect');
         } else {
-            db = this.client.db("development");
+            db = this.client.db('development');
         }
 
         this.userRepository = new MongoUserRepository(db);
@@ -67,7 +67,7 @@ class MongoDriver implements Driver {
 }
 
 export function loadDatabaseDriver(): Driver {
-    if (!isProd() && process.env.EXPLICIT_USE_MONGO != "true") {
+    if (!isProd() && process.env.EXPLICIT_USE_MONGO != 'true') {
         return new StaticDriver();
     } else {
         return new MongoDriver();

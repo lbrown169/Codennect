@@ -1,4 +1,4 @@
-import { PossibleRoles } from "../domain/User.js";
+import { PossibleRoles } from '../domain/User.js';
 
 export type FieldDetails = {
     name: string;
@@ -8,8 +8,8 @@ export type FieldDetails = {
 
 export type ProjectUsers = {
     [role: string]: {
-      max: number;
-      users: string[];
+        max: number;
+        users: string[];
     };
 };
 
@@ -21,7 +21,7 @@ export class Project {
     isPrivate: boolean;
     description: string;
     fields: FieldDetails[];
-    users : ProjectUsers;
+    users: ProjectUsers;
     required_skills: string[];
 
     constructor(
@@ -32,7 +32,7 @@ export class Project {
         isPrivate: boolean,
         description: string,
         fields: FieldDetails[],
-        users : ProjectUsers,
+        users: ProjectUsers,
         required_skills: string[]
     ) {
         this._id = _id;
@@ -60,10 +60,10 @@ export class ProjectCreation {
 
     constructor(
         name: string,
-        domain: string = "",
+        domain: string = '',
         owner: string,
         isPrivate: boolean,
-        description: string = "",
+        description: string = '',
         fields: FieldDetails[] = [],
         users: ProjectUsers = {},
         required_skills: string[] = []
@@ -85,5 +85,9 @@ export interface ProjectRepository {
     GetAll(): Promise<Project[]>;
     Create(project: ProjectCreation): Promise<Project>;
     Update(id: string, updates: Partial<Project>): Promise<boolean>;
-    AddUserToProject(project_id: string, user_id: string, roles: string[]): Promise<boolean>;
+    AddUserToProject(
+        project_id: string,
+        user_id: string,
+        roles: string[]
+    ): Promise<boolean>;
 }

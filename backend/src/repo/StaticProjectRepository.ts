@@ -2,12 +2,12 @@ import {
     Project,
     ProjectCreation,
     ProjectRepository,
-    ProjectUsers
-} from '../domain/Project.js'
-import { PossibleSkills, PossibleRoles } from "../domain/User.js";
+    ProjectUsers,
+} from '../domain/Project.js';
+import { PossibleSkills, PossibleRoles } from '../domain/User.js';
 
 export class StaticProjectRepository implements ProjectRepository {
-    private _internal: Project[]
+    private _internal: Project[];
 
     constructor() {
         this._internal = [
@@ -20,8 +20,8 @@ export class StaticProjectRepository implements ProjectRepository {
                 'A testing project for a testing world',
                 [],
                 {
-                    "Project Manager": {max: 1, users: ["0"]},
-                    Frontend: {max: 1, users: ["0"]}
+                    'Project Manager': { max: 1, users: ['0'] },
+                    Frontend: { max: 1, users: ['0'] },
                 },
                 []
             ),
@@ -34,27 +34,27 @@ export class StaticProjectRepository implements ProjectRepository {
                 'Another Teating Project',
                 [],
                 {
-                    "Project Manager": {max: 1, users: ["0"]},
-                    Frontend: {max: 2, users: ["1", "2"]},
-                    Backend: {max: 1, users: ["0"]}
+                    'Project Manager': { max: 1, users: ['0'] },
+                    Frontend: { max: 2, users: ['1', '2'] },
+                    Backend: { max: 1, users: ['0'] },
                 },
                 []
             ),
-        ]
+        ];
     }
 
     async GetById(id: string): Promise<Project | undefined> {
-        return this._internal.find((project) => project._id === id)
+        return this._internal.find((project) => project._id === id);
     }
 
     async GetByPartialName(name: string): Promise<Project[]> {
         return this._internal.filter(
             (project) => project.name.includes(name) && !project.isPrivate
-        )
+        );
     }
 
     async GetAll(): Promise<Project[]> {
-        return this._internal.filter((project) => !project.isPrivate)
+        return this._internal.filter((project) => !project.isPrivate);
     }
 
     async Create(project: ProjectCreation): Promise<Project> {
@@ -68,11 +68,11 @@ export class StaticProjectRepository implements ProjectRepository {
             [],
             {},
             []
-        )
+        );
 
-        this._internal.push(newProject)
+        this._internal.push(newProject);
 
-        return newProject
+        return newProject;
     }
 
     // async Update(id: string, updates: Partial<Project>): Promise<boolean> {
@@ -85,7 +85,7 @@ export class StaticProjectRepository implements ProjectRepository {
     //         const allValid = updates.required_skills.every(skill =>
     //             PossibleSkills.includes(skill)
     //         );
-    
+
     //         if (!allValid) {
     //             console.warn("Update failed: invalid skills in input.");
     //             return false;
@@ -102,56 +102,62 @@ export class StaticProjectRepository implements ProjectRepository {
         // Find the project
         const project = this._internal.find((project) => project._id === id);
         if (!project) return false;
-    
+
         // validate skills if present
         if (updates.required_skills) {
-            const allValid = updates.required_skills.every(skill =>
+            const allValid = updates.required_skills.every((skill) =>
                 PossibleSkills.includes(skill)
             );
-    
+
             if (!allValid) {
-                console.warn("Update failed: invalid skills in input.");
+                console.warn('Update failed: invalid skills in input.');
                 return false;
             }
         }
-    
+
         // if users are included, sanitize them
         if (updates.users) {
-            console.warn("Cannot edit project members from this endpoint. Updating roles only...");
-    
+            console.warn(
+                'Cannot edit project members from this endpoint. Updating roles only...'
+            );
+
             // validate roles
             const invalidRoles = Object.keys(updates.users).filter(
                 (role) => !PossibleRoles.includes(role)
             );
-    
+
             if (invalidRoles.length > 0) {
-                console.warn("Update failed: invalid roles:", invalidRoles);
+                console.warn('Update failed: invalid roles:', invalidRoles);
                 return false;
             }
-    
+
             const cleanedUsers: ProjectUsers = {};
-    
+
             for (const [role, data] of Object.entries(updates.users)) {
                 const currentUsers = project.users?.[role]?.users ?? [];
-    
+
                 cleanedUsers[role] = {
                     max: data.max,
-                    users: currentUsers
+                    users: currentUsers,
                 };
             }
-    
+
             updates.users = cleanedUsers;
         }
-    
+
         // apply the update
         Object.assign(project, updates);
         return true;
     }
 
-    async AddUserToProject(project_id: string, user_id: string, roles: string[]): Promise<boolean> {
+    async AddUserToProject(
+        project_id: string,
+        user_id: string,
+        roles: string[]
+    ): Promise<boolean> {
         const project = this._internal.find((p) => p._id === project_id);
         if (!project) return false;
-    
+
         // for each role that we're giving to a user
         for (const role of roles) {
             // validate the roles
@@ -159,21 +165,21 @@ export class StaticProjectRepository implements ProjectRepository {
                 console.warn(`Skipping invalid role: ${role}`);
                 continue;
             }
-    
+
             // create role if it doesn't exist
             if (!project.users[role]) {
                 project.users[role] = {
                     max: 1,
-                    users: []
+                    users: [],
                 };
             }
-    
+
             // avoid duplicates
             if (!project.users[role].users.includes(user_id)) {
                 project.users[role].users.push(user_id);
             }
         }
-    
+
         return true;
     }
 }

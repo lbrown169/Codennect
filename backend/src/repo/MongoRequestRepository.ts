@@ -1,6 +1,6 @@
-import { Collection, Db, WithId } from "mongodb";
-import { Request, RequestRepository, RequestType } from "../domain/Request.js";
-import { isProd } from "src/utils.js";
+import { Collection, Db, WithId } from 'mongodb';
+import { Request, RequestRepository, RequestType } from '../domain/Request.js';
+import { isProd } from 'src/utils.js';
 
 interface MongoRequest extends WithId<Document> {
     project_id: string;
@@ -14,7 +14,7 @@ export class MongoRequestRepository implements RequestRepository {
     private collection: Collection;
 
     constructor(db: Db) {
-        this.collection = db.collection("requests");
+        this.collection = db.collection('requests');
     }
 
     async GetRequest(
