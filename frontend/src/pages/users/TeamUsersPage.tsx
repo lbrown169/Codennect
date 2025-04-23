@@ -5,7 +5,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { Link } from 'react-router-dom';
 import { createContext } from 'react';
 
-// Inline type definitions to resolve TS2307 errors
+// Inline type definitions
 interface Project {
     _id: string;
     name: string;
@@ -20,9 +20,10 @@ interface User {
     username: string;
     projects: Project[];
     roles?: string[];
+    isOwner?: boolean; // Added to resolve TS2353 error
 }
 
-// Inline UserContext definition to resolve TS2307 and TS2339 errors
+// Inline UserContext definition
 const UserContext = createContext<{
     user: User | null;
     loaded: boolean;
@@ -33,7 +34,7 @@ const UserContext = createContext<{
     verified: false,
 });
 
-// Inline getUserInfo function to resolve TS2307 for UserAPI
+// Inline getUserInfo function
 async function getUserInfo(userId: string): Promise<{ status: number; json: () => Promise<User> }> {
     // Mock implementation for now
     return {
@@ -197,7 +198,7 @@ export default function TeamUsersPage() {
                                         <Group justify="space-between" mb="xs">
                                             <Group>
                                                 {/* Show crown if the current user is the owner and this user is the owner */}
-                                                {projectData.project.owner === user._id && projectData.project.owner === user?._id && (
+                                                {projectData.project.owner === user._id && user.isOwner && (
                                                     <LuCrown color="#598392" />
                                                 )}
                                                 {/* Username with hyperlink to profile */}
@@ -222,7 +223,7 @@ export default function TeamUsersPage() {
                                                 </ActionIcon>
 
                                                 {/* Remove button (visible only to owner) */}
-                                                {projectData.project.owner === user?._id && (
+                                                {user.isOwner && (
                                                     <ActionIcon
                                                         variant="outline"
                                                         color="red"
