@@ -11,7 +11,7 @@ export function getVersion() {
 
 export function buildUrl(path: string) {
     if (isProd()) {
-        return 'http://cop4331.tech' + path;
+        return 'https://cop4331.tech' + path;
     } else {
         return 'http://localhost:5001' + path;
     }

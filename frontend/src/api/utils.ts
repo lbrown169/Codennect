@@ -4,7 +4,7 @@ const app_name = 'cop4331.tech';
 
 export function buildPath(route: string): string {
     if (isProd()) {
-        return 'http://' + app_name + route;
+        return 'https://' + app_name + route;
     } else {
         return 'http://localhost:5001' + route;
     }
