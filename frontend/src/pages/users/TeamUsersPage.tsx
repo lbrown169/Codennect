@@ -3,9 +3,9 @@ import { Title, Box, SimpleGrid, Card, Group, Pill, ActionIcon, Modal, Button, S
 import { LuCrown } from 'react-icons/lu';
 import { useDisclosure } from '@mantine/hooks';
 import { Link } from 'react-router-dom';
-import { createContext } from 'react';
+import { UserContext } from '../hooks/UserContext';
 
-// Inline type definitions
+// Inline type definitions (remove these if you have them in separate files)
 interface Project {
     _id: string;
     name: string;
@@ -23,18 +23,7 @@ interface User {
     isOwner?: boolean;
 }
 
-// Inline UserContext definition
-const UserContext = createContext<{
-    user: User | null;
-    loaded: boolean;
-    verified: boolean;
-}>({
-    user: null,
-    loaded: false,
-    verified: false,
-});
-
-// Inline getUserInfo function
+// Inline getUserInfo function (replace with real implementation if available)
 async function getUserInfo(userId: string): Promise<{ status: number; json: () => Promise<User> }> {
     // Mock implementation for now
     return {
