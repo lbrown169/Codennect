@@ -90,4 +90,8 @@ export interface ProjectRepository {
         user_id: string,
         roles: string[]
     ): Promise<boolean>;
+    RemoveUserFromProject(
+        project_id: string,
+        user_id: string
+    ): Promise<boolean>;
 }

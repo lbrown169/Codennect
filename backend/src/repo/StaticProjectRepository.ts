@@ -184,4 +184,23 @@ export class StaticProjectRepository implements ProjectRepository {
     }
 
     // TODO Copy over delete-member function from MongoProjectRepository when it's complete
+    async RemoveUserFromProject(
+        project_id: string,
+        user_id: string
+    ): Promise<boolean> {
+        // Load project
+        const project = this._internal.find((p) => p._id === project_id);
+        if(!project)
+            return false;
+
+        // Remove user from roles
+        for(const role of Object.keys(project.users)) {
+            // Do the actual removal
+            project.users[role].users = project.users[role].users.filter(
+                (uid) => uid !== user_id
+            );
+        }
+
+        return true;
+    }
 }

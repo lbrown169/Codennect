@@ -324,21 +324,39 @@ ProjectRouter.delete('/api/projects/:pid/members/:uid', async (req: Request, res
         res.status(403).json({
             error: 'Removal request denied.',
         });
+        return;
     }
 
     // Remove user from project's roles with new projectRepository function, passing pid and uid
-    // TODO Add when function is complete
+    const removeUser = await db.projectRepository.RemoveUserFromProject(pid, uid);
+    if(!removeUser) {
+        res.status(500).json({
+            error: 'User removal attempt failed.',
+        });
+        return;
+    }
 
     // Remove project from user's projects
+    const memberToRemove = await db.userRepository.GetById(uid);
+    if(memberToRemove) {
+        const projectsUpdate = memberToRemove.projects.filter((x) => x !== pid);
+        const removeProject = await db.userRepository.Update(
+            uid,
+            { projects: projectsUpdate }
+        );
+        if(!removeProject) {
+            res.status(500).json({
+                error: 'Unable to update project list of user.',
+            });
+            return;
+        }
+    }
 
     // Removal complete
-    /*
-    return res.status(200).json({
+    res.status(200).json({
         error: '',
         result: 'Member removed successfully.'
     });
-    */
-
 });
 
 export default ProjectRouter;

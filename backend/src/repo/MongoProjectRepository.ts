@@ -238,11 +238,16 @@ export class MongoProjectRepository implements ProjectRepository {
         // Remove user from roles
         for(const role of Object.keys(project.users)) {
             // Do the actual removal
+            project.users[role].users = project.users[role].users.filter(
+                (uid) => uid !== user_id
+            );
         }
 
-        // Update UserRepository
-
-        // Delete when I have everything else
-        return false;
+        // Apply update
+        const result = await this.collection.updateOne(
+            {  _id: new ObjectId(project_id) },
+            { $set: { users: project.users } }
+        );
+        return result.modifiedCount > 0;
     }
 }
