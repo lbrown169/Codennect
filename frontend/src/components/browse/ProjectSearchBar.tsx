@@ -1,9 +1,9 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Project } from '../../types/Project';
 import { ProjectCard } from "../dashboard/ProjectsPanel";
 import { UserContext } from '../../hooks/UserContext';
 import { FaSearch } from "react-icons/fa";
-import { Alert, Button, Combobox, useCombobox, CloseButton, Grid, Input, InputBase, MultiSelect, ScrollArea, Skeleton, TextInput } from "@mantine/core";
+import { Alert, Button, Combobox, useCombobox, CloseButton, Grid, Input, InputBase, MultiSelect, ScrollArea, Skeleton, TextInput, Stack, Flex } from "@mantine/core";
 import { getSearchResults } from "../../api/ProjectAPI";
 
 import { IoMdInformationCircleOutline } from 'react-icons/io';
@@ -60,6 +60,10 @@ export function ProjectSearchBar()
     const searchIcon = <FaSearch />
     const [searchResults, setSearchResults] = useState<Project[]>([]);
 
+    useEffect(() => {
+        doSearch();
+    }, [user])
+
     if (!user) {
         return <Skeleton />;
     }
@@ -78,9 +82,16 @@ export function ProjectSearchBar()
         </Combobox.Option>
     ));
 
-    async function doSearch(event: React.FormEvent)
+    async function doSearch(event?: React.FormEvent)
     {
-        event.preventDefault();
+        if (event) {
+            event.preventDefault();
+        }
+
+        if (!user) {
+            return;
+        }
+
         try {
             let n = '';
             let s = '';
@@ -129,75 +140,78 @@ export function ProjectSearchBar()
             );
             setSearchResults(newProjects);
         }
-        catch(error: any) {
-
+        catch(error: unknown) {
+            console.log(error);
         }
         
     }
 
-    
-
     return(
-        <form onSubmit={doSearch}>
-            <TextInput
-                placeholder="Search"
-                mb="4"
-                radius="md"
-                leftSection={searchIcon}
-                value={searchInput}
-                onChange={(event) => setSearchInput(event.currentTarget.value)} 
-            />
-
-            <Combobox
-                store={combobox}
-                onOptionSubmit={(role) => {
-                    setRoleValue(role);
-                    combobox.closeDropdown();
-                }}
-                resetSelectionOnOptionHover
-            >
-                <Combobox.Target>
-                    <InputBase
-                        component="button"
-                        type="button"
-                        pointer
+        <Stack gap='xl'>
+            <form onSubmit={doSearch}>
+                <Flex align="middle" gap="lg">
+                    <TextInput
+                        className="grow-3"
+                        placeholder="Search"
                         radius="md"
-                        rightSection={
-                            roleValue !== null ? (
-                                <CloseButton
-                                    onMouseDown={(event) => event.preventDefault()}
-                                    onClick={() => setRoleValue(null)}
-                                    aria-label="Clear value"
-                                />
-                            ) : (
-                                <Combobox.Chevron />
-                            )
-                        }
-                        onClick={() => combobox.toggleDropdown()}
-                        rightSectionPointerEvents={roleValue === null ? 'none' : 'all'}
+                        leftSection={searchIcon}
+                        value={searchInput}
+                        onChange={(event) => setSearchInput(event.currentTarget.value)} 
+                    />
+                    <Combobox
+                        store={combobox}
+                        onOptionSubmit={(role) => {
+                            setRoleValue(role);
+                            combobox.closeDropdown();
+                        }}
+                        resetSelectionOnOptionHover
                     >
-                        {roleValue || <Input.Placeholder>Filter by Role</Input.Placeholder>}
-                    </InputBase>
-                </Combobox.Target>
-                <Combobox.Dropdown>
-                    <Combobox.Options>
-                        {comboOptions}
-                    </Combobox.Options>
-                </Combobox.Dropdown>
-            </Combobox>
+                        <Combobox.Target>
+                            <InputBase
+                                className="grow-1"
+                                component="button"
+                                type="button"
+                                pointer
+                                radius="md"
+                                rightSection={
+                                    roleValue !== null ? (
+                                        <CloseButton
+                                            onMouseDown={(event) => event.preventDefault()}
+                                            onClick={() => setRoleValue(null)}
+                                            aria-label="Clear value"
+                                        />
+                                    ) : (
+                                        <Combobox.Chevron />
+                                    )
+                                }
+                                onClick={() => combobox.toggleDropdown()}
+                                rightSectionPointerEvents={roleValue === null ? 'none' : 'all'}
+                            >
+                                {roleValue || <Input.Placeholder>Filter by Role</Input.Placeholder>}
+                            </InputBase>
+                        </Combobox.Target>
+                        <Combobox.Dropdown>
+                            <Combobox.Options>
+                                {comboOptions}
+                            </Combobox.Options>
+                        </Combobox.Dropdown>
+                    </Combobox>
 
-            <MultiSelect 
-                radius = "md"
-                my="4"
-                placeholder="Filter by skills"
-                data={skillOptions}
-                value={skillValue}
-                onChange={setSkillValue}
-            />
+                    <MultiSelect 
+                        className="grow-1"
+                        radius = "md"
+                        placeholder="Filter by skills"
+                        data={skillOptions}
+                        value={skillValue}
+                        onChange={setSkillValue}
+                    />
 
-            <Button type="submit" color="#5c8593" mb="20">
-                Search
-            </Button>
+                    <Button className="grow-0" type="submit" color="#5c8593">
+                        Search
+                    </Button>
+
+                </Flex>
+            </form>
 
             <ScrollArea type="never" scrollbars="y">
             {searchResults.length > 0 ? (
@@ -221,7 +235,6 @@ export function ProjectSearchBar()
 
             )}
             </ScrollArea>
-            
-        </form>
+        </Stack>
     );
 }
