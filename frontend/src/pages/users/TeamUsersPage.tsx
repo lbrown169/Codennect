@@ -1,5 +1,21 @@
 import { useState, useEffect, useContext } from 'react';
-import { Title, Box, SimpleGrid, Card, Group, Pill, ActionIcon, Modal, Button, Stack, Divider, Text, Skeleton } from '@mantine/core';
+import {
+    Title,
+    Box,
+    SimpleGrid,
+    Card,
+    Group,
+    Pill,
+    ActionIcon,
+    Modal,
+    Button,
+    Stack,
+    Divider,
+    Text,
+    Skeleton,
+    Alert,
+    Paper,
+} from '@mantine/core';
 import { LuCrown } from 'react-icons/lu';
 import { useDisclosure } from '@mantine/hooks';
 import { Link } from 'react-router-dom';
@@ -7,10 +23,10 @@ import { UserContext } from '../../hooks/UserContext';
 import { Project } from '../../types/Project';
 import { User } from '../../types/User';
 import { getUserInfo } from '../../api/UserAPI';
+import { IconUserPlus, IconUserMinus } from '@tabler/icons-react'; // Mantine icons for Invite and Remove
 
 export default function TeamUsersPage() {
-    const { user, loaded } = useContext(UserContext); // Include loaded to track user fetch status
-    console.log('UserContext value in TeamUsersPage:', { user, loaded });
+    const { user } = useContext(UserContext); // Get current user to access projects and determine ownership
 
     // State for projects, users, loading, and errors
     const [projectsWithUsers, setProjectsWithUsers] = useState<{ project: Project; users: User[] }[]>([]);
@@ -27,7 +43,7 @@ export default function TeamUsersPage() {
         async function fetchProjectsAndUsers() {
             try {
                 if (!user) {
-                    // If user is null, we'll handle this in the UI
+                    // If user is null, we'll handle this in the UI with a Skeleton
                     return;
                 }
 
@@ -102,7 +118,7 @@ export default function TeamUsersPage() {
         if (selectedUserId && selectedProjectId) {
             // Placeholder for API call to remove user
             // await removeUserFromProject(selectedUserId, selectedProjectId);
-            
+
             // Update state to remove the user from the specific project
             setProjectsWithUsers(projectsWithUsers.map(projectData => {
                 if (projectData.project._id === selectedProjectId) {
@@ -123,17 +139,19 @@ export default function TeamUsersPage() {
                 <Title py="md" order={1}>
                     My Teams
                 </Title>
-                <Card shadow="sm" padding="lg" radius="md" withBorder>
-                    <Title order={2} mb="md">
-                        Error
-                    </Title>
-                    <Text>{error}</Text>
-                </Card>
+                <Alert
+                    variant="light"
+                    color="red"
+                    title="Error"
+                    withCloseButton={false}
+                >
+                    {error}
+                </Alert>
             </Box>
         );
     }
 
-    if (!loaded || loading) {
+    if (loading || !user) {
         return (
             <Box mx={{ base: 'md', lg: 'xl' }}>
                 <Title py="md" order={1}>
@@ -141,9 +159,13 @@ export default function TeamUsersPage() {
                 </Title>
                 <Card shadow="sm" padding="lg" radius="md" withBorder mb="xl">
                     <Title order={2} mb="md">
-                        Loading Team Details
+                        {user ? 'Loading Team Details' : 'No User Data'}
                     </Title>
-                    <Text mb="lg">Hold on just a second while we load the team...</Text>
+                    <Text mb="lg">
+                        {user
+                            ? 'Hold on just a second while we load the team...'
+                            : 'Please log in to view your teams.'}
+                    </Text>
                 </Card>
                 {/* Skeleton placeholders mimicking the user cards */}
                 <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
@@ -181,22 +203,6 @@ export default function TeamUsersPage() {
         );
     }
 
-    if (!user) {
-        return (
-            <Box mx={{ base: 'md', lg: 'xl' }}>
-                <Title py="md" order={1}>
-                    My Teams
-                </Title>
-                <Card shadow="sm" padding="lg" radius="md" withBorder>
-                    <Title order={2} mb="md">
-                        No User Data
-                    </Title>
-                    <Text>Please log in to view your teams.</Text>
-                </Card>
-            </Box>
-        );
-    }
-
     return (
         <Box mx={{ base: 'md', lg: 'xl' }}>
             <Title py="md" order={1}>
@@ -204,21 +210,36 @@ export default function TeamUsersPage() {
             </Title>
 
             {projectsWithUsers.length === 0 ? (
-                <Text>No projects found where you are a member or owner.</Text>
+                <Alert
+                    variant="light"
+                    color="#5c8593"
+                    title="No Projects Found"
+                    withCloseButton={false}
+                >
+                    You are not a member or owner of any projects. Head over to the{' '}
+                    <Link to="/projects">
+                        <Text component="span" c="blue" style={{ display: 'inline' }}>
+                            Browse Projects
+                        </Text>
+                    </Link>{' '}
+                    page to find a project to join.
+                </Alert>
             ) : (
                 projectsWithUsers.map(projectData => (
                     <Box key={projectData.project._id} mb="xl">
                         {/* Project Header */}
-                        <Group mb="md">
-                            <Text fw={700} size="lg">
-                                {projectData.project.name}
-                            </Text>
-                            <Link to={`/projects/${projectData.project._id}`}>
-                                <Text size="sm" c="blue">
-                                    (View Project)
+                        <Paper shadow="xs" p="md" radius="md" withBorder mb="md">
+                            <Group justify="space-between">
+                                <Text fw={700} size="lg">
+                                    {projectData.project.name}
                                 </Text>
-                            </Link>
-                        </Group>
+                                <Link to={`/projects/${projectData.project._id}`}>
+                                    <Text size="sm" c="blue">
+                                        (View Project)
+                                    </Text>
+                                </Link>
+                            </Group>
+                        </Paper>
 
                         {/* User Cards for this Project */}
                         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
@@ -234,9 +255,16 @@ export default function TeamUsersPage() {
                                     <Stack>
                                         <Group justify="space-between" mb="xs">
                                             <Group>
-                                                {/* Show crown if the current user is the owner and this user is the owner */}
-                                                {projectData.project.owner === user._id && projectData.project.owner === user._id && (
-                                                    <LuCrown color="#598392" />
+                                                {/* Show crown if this user is the project owner */}
+                                                {projectData.project.owner === user._id && (
+                                                    <ActionIcon
+                                                        variant="transparent"
+                                                        color="#598392"
+                                                        size="sm"
+                                                        aria-label="Owner"
+                                                    >
+                                                        <LuCrown size={16} />
+                                                    </ActionIcon>
                                                 )}
                                                 {/* Username with hyperlink to profile */}
                                                 <Link to={`/users/${user._id}`}>
@@ -247,28 +275,29 @@ export default function TeamUsersPage() {
                                             {/* Action buttons */}
                                             <Group>
                                                 {/* Invite button (visible to all) */}
-                                                <ActionIcon
+                                                <Button
                                                     variant="outline"
                                                     color="gray"
+                                                    size="xs"
+                                                    leftSection={<IconUserPlus size={14} />}
                                                     onClick={() => {
-                                                        // Placeholder for invite modal
                                                         console.log('Invite modal will open for', user.name, 'in project', projectData.project.name);
                                                     }}
-                                                    aria-label="Invite user"
                                                 >
-                                                    <Text size="xs">Invite</Text>
-                                                </ActionIcon>
+                                                    Invite
+                                                </Button>
 
                                                 {/* Remove button (visible only to owner) */}
                                                 {projectData.project.owner === user._id && (
-                                                    <ActionIcon
+                                                    <Button
                                                         variant="outline"
                                                         color="red"
+                                                        size="xs"
+                                                        leftSection={<IconUserMinus size={14} />}
                                                         onClick={() => handleRemove(user._id, projectData.project._id)}
-                                                        aria-label="Remove user"
                                                     >
-                                                        <Text size="xs">Remove</Text>
-                                                    </ActionIcon>
+                                                        Remove
+                                                    </Button>
                                                 )}
                                             </Group>
                                         </Group>
@@ -298,7 +327,7 @@ export default function TeamUsersPage() {
                 title="Confirm Removal"
                 centered
             >
-                <p>Are you sure you want to remove this user from the project?</p>
+                <Text>Are you sure you want to remove this user from the project?</Text>
                 <Group mt="md" justify="flex-end">
                     <Button variant="outline" onClick={close}>
                         Cancel
