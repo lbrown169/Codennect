@@ -68,6 +68,7 @@ ProjectRouter.get('/api/projects', async (req: Request, res: Response) => {
 
         res.status(200).json({ error: '', result: projects });
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: 'Error retrieving projects.' });
     }
 });

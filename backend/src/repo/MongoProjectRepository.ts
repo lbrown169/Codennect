@@ -55,7 +55,7 @@ export class MongoProjectRepository implements ProjectRepository {
 
     async GetByPartialName(name: string): Promise<Project[]> {
         let results = await this.collection
-            .find({ name: { $regex: name, $options: ' $i' }, isPrivate: false })
+            .find({ name: { $regex: name, $options: 'i' }, isPrivate: false })
             .toArray();
 
         return results.map(
