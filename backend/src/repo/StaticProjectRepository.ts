@@ -22,6 +22,8 @@ export class StaticProjectRepository implements ProjectRepository {
                 {
                     'Project Manager': { max: 1, users: ['0'] },
                     Frontend: { max: 1, users: ['0'] },
+                    Database: { max: 1, users: [] },
+                    Mobile: { max: 2, users: [] },
                 },
                 []
             ),
@@ -37,6 +39,8 @@ export class StaticProjectRepository implements ProjectRepository {
                     'Project Manager': { max: 1, users: ['0'] },
                     Frontend: { max: 2, users: ['1', '2'] },
                     Backend: { max: 1, users: ['0'] },
+                    Database: { max: 1, users: [] },
+                    Mobile: { max: 2, users: [] },
                 },
                 []
             ),
@@ -49,7 +53,9 @@ export class StaticProjectRepository implements ProjectRepository {
 
     async GetByPartialName(name: string): Promise<Project[]> {
         return this._internal.filter(
-            (project) => project.name.includes(name) && !project.isPrivate
+            (project) =>
+                project.name.toLowerCase().includes(name.toLowerCase()) &&
+                !project.isPrivate
         );
     }
 

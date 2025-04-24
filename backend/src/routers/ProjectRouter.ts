@@ -33,9 +33,7 @@ ProjectRouter.get('/api/projects', async (req: Request, res: Response) => {
         ).filter((project) => !project.isPrivate);
 
         // filter by roles if provided
-        console.log('yo1');
         if (roles) {
-            console.log('yo2');
             const parsedRoles = roles.toString().split(',');
 
             // validate roles
@@ -44,8 +42,10 @@ ProjectRouter.get('/api/projects', async (req: Request, res: Response) => {
             );
 
             projects = projects.filter((project) =>
-                Object.keys(project.users).some((role) =>
-                    validRoles.includes(role)
+                Object.keys(project.users).some(
+                    (role) =>
+                        project.users[role].users.length <
+                            project.users[role].max && validRoles.includes(role)
                 )
             );
         }
