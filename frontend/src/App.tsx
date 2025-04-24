@@ -66,7 +66,7 @@ function App() {
                     <Route path="/users" element={<BrowseUsersPage />} />
                     <Route path="/users/me" element={<MyProfilePage />} />
                     <Route path="/users/related" element={<TeamUsersPage />} />
-                    <Route path="/users/:id" element={<UserProfilePage />} />
+                    <Route path="/users/:user_id" element={<UserProfilePage />} />
                     <Route path="/projects" element={<BrowseProjectsPage />} />
                     <Route
                         path="/projects/create"

@@ -8,6 +8,7 @@ import {
     Divider,
     Grid,
     Group,
+    Loader,
     Progress,
     ScrollArea,
     Skeleton,
@@ -88,7 +89,11 @@ export function OwnedProjectsPanel() {
     const { user } = useContext(UserContext);
 
     if (!user) {
-        return <Skeleton />;
+        return (
+            <Tabs.Panel value="owned" px="sm" py="lg">
+                <Loader />
+            </Tabs.Panel>
+        )
     }
 
     const projects = user.projects.filter(
@@ -130,7 +135,11 @@ export function MemberedProjectsPanel() {
     const { user } = useContext(UserContext);
 
     if (!user) {
-        return <Skeleton />;
+        return (
+            <Tabs.Panel value="membered" px="sm" py="lg">
+                <Loader />
+            </Tabs.Panel>
+        )
     }
 
     const projects = user.projects.filter((project) =>
@@ -167,5 +176,45 @@ export function MemberedProjectsPanel() {
                 )}
             </ScrollArea>
         </Tabs.Panel>
+    );
+}
+
+export function SharedProjectsPanel({ uid }: { uid: string }) {
+    const { user } = useContext(UserContext);
+
+    if (!user) {
+        return <Loader />
+    }
+
+    const projects = user.projects.filter((project) =>
+        Object.values(project.users)
+            .map((role) => role.users.includes(uid))
+            .includes(true) || project.owner === uid
+    );
+
+    return (
+        <ScrollArea type="never" scrollbars="y">
+            {projects.length > 0 ? (
+                <Grid align="stretch">
+                    {projects.map((project) => (
+                        <Grid.Col
+                            span={{ base: 12, md: 6, lg: 4 }}
+                            key={project._id}
+                        >
+                            <ProjectCard project={project} />
+                        </Grid.Col>
+                    ))}
+                </Grid>
+            ) : (
+                <Alert
+                    variant="light"
+                    color="#5c8593"
+                    title="Looks like you don't share any projects with this person."
+                    icon={<IoMdInformationCircleOutline />}
+                >
+                    Try reaching out to see if they want to invite you to one of their projects, or start a new one together!
+                </Alert>
+            )}
+        </ScrollArea>
     );
 }
