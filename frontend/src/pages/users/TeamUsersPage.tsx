@@ -16,14 +16,13 @@ import {
     Alert,
     Paper,
 } from '@mantine/core';
-import { LuCrown } from 'react-icons/lu';
+import { LuCrown, LuPlus, LuMinus } from 'react-icons/lu'; // Use Lucide Icons
 import { useDisclosure } from '@mantine/hooks';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../../hooks/UserContext';
 import { Project } from '../../types/Project';
 import { User } from '../../types/User';
 import { getUserInfo } from '../../api/UserAPI';
-import { IconUserPlus, IconUserMinus } from '@tabler/icons-react'; // Mantine icons for Invite and Remove
 
 export default function TeamUsersPage() {
     const { user } = useContext(UserContext); // Get current user to access projects and determine ownership
@@ -279,7 +278,7 @@ export default function TeamUsersPage() {
                                                     variant="outline"
                                                     color="gray"
                                                     size="xs"
-                                                    leftSection={<IconUserPlus size={14} />}
+                                                    leftSection={<LuPlus size={14} />}
                                                     onClick={() => {
                                                         console.log('Invite modal will open for', user.name, 'in project', projectData.project.name);
                                                     }}
@@ -293,7 +292,7 @@ export default function TeamUsersPage() {
                                                         variant="outline"
                                                         color="red"
                                                         size="xs"
-                                                        leftSection={<IconUserMinus size={14} />}
+                                                        leftSection={<LuMinus size={14} />}
                                                         onClick={() => handleRemove(user._id, projectData.project._id)}
                                                     >
                                                         Remove
