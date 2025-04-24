@@ -8,7 +8,9 @@ export async function removeUserFromProject(
     project_id: string,
     user_id: string
 ) {
-    return await deleteRequest(`/api/projects/${project_id}/${user_id}`);
+    return await deleteRequest(
+        `/api/projects/${project_id}/members/${user_id}`
+    );
 }
 
 export async function updateProject(

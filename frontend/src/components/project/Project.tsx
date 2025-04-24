@@ -15,6 +15,7 @@ import { MembersTabPanel } from './MembersTab';
 import { FieldsTab } from './FieldsTab';
 import { ApplicationTab } from './ApplicationTab';
 import { OwnerTab } from './OwnerTab';
+import { MemberTab } from './MemberTab';
 
 export function ProjectComp({ pid }: { pid: string }) {
     const { user, requests } = useContext(UserContext);
@@ -161,13 +162,13 @@ export function ProjectComp({ pid }: { pid: string }) {
                         {getRelationship() === "owner" ? (
                             <Tabs.Tab value="owner">Owner Settings</Tabs.Tab>
                         ) : getRelationship() === "member" ? (
-                            // <Tabs.Tab value="member">Member Settings</Tabs.Tab>
-                            <></>
+                            <Tabs.Tab value="member">Member Settings</Tabs.Tab>
                         ) : (
                             <></>
                         )}
                     </Tabs.List>
 
+                    <MemberTab project={project} setRefresh={setRefresh} />
                     <MembersTabPanel members={project.users} cache={members} />
                     <FieldsTab fields={project.fields} />
                     <ApplicationTab pid={pid} />
