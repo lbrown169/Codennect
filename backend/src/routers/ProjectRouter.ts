@@ -294,69 +294,76 @@ ProjectRouter.post('/api/projects', async (req: Request, res: Response) => {
     });
 });
 
-ProjectRouter.delete('/api/projects/:pid/members/:uid', async (req: Request, res: Response) => {
-    // Only allow if the member being removed is the logged in user,
-    // or if the logged in user is the project owner
-    if (!res.locals.user) {
-        res.status(401).json({
-            error: 'Unauthorized. You must be logged in to perform this action.',
-        });
-        return;
-    }
-
-    const { pid, uid } = req.params;
-    const db: Driver = req.app.locals.driver;
-
-    // Get project
-    const project = await db.projectRepository.GetById(pid);
-    if(!project) {
-        res.status(404).json({
-            error: 'Project not found.',
-        });
-        return;
-    }
-
-    // Case 1: Logged in user removing themselves from a project
-    // Case 2: Project owner removing another user
-    const isMe = uid === res.locals.user?._id;
-    const isOwner = project.owner === res.locals.user?._id;
-    if(!isMe && !isOwner) {
-        res.status(403).json({
-            error: 'Removal request denied.',
-        });
-        return;
-    }
-
-    // Remove user from project's roles with new projectRepository function, passing pid and uid
-    const removeUser = await db.projectRepository.RemoveUserFromProject(pid, uid);
-    if(!removeUser) {
-        res.status(500).json({
-            error: 'User removal attempt failed.',
-        });
-        return;
-    }
-
-    // Remove project from user's projects
-    const memberToRemove = await db.userRepository.GetById(uid);
-    if(memberToRemove) {
-        const projectsUpdate = memberToRemove.projects.filter((x) => x !== pid);
-        const removeProject = await db.userRepository.Update(
-            uid,
-            { projects: projectsUpdate }
-        );
-        if(!removeProject) {
-            res.status(500).json({
-                error: 'Unable to update project list of user.',
+ProjectRouter.delete(
+    '/api/projects/:pid/members/:uid',
+    async (req: Request, res: Response) => {
+        // Only allow if the member being removed is the logged in user,
+        // or if the logged in user is the project owner
+        if (!res.locals.user) {
+            res.status(401).json({
+                error: 'Unauthorized. You must be logged in to perform this action.',
             });
             return;
         }
-    }
 
-    // Removal complete
-    res.status(200).json({
-        error: '',
-        result: 'Member removed successfully.'
-    });
-});
+        const { pid, uid } = req.params;
+        const db: Driver = req.app.locals.driver;
+
+        // Get project
+        const project = await db.projectRepository.GetById(pid);
+        if (!project) {
+            res.status(404).json({
+                error: 'Project not found.',
+            });
+            return;
+        }
+
+        // Case 1: Logged in user removing themselves from a project
+        // Case 2: Project owner removing another user
+        const isMe = uid === res.locals.user?._id;
+        const isOwner = project.owner === res.locals.user?._id;
+        if (!isMe && !isOwner) {
+            res.status(403).json({
+                error: 'Removal request denied.',
+            });
+            return;
+        }
+
+        // Remove user from project's roles with new projectRepository function, passing pid and uid
+        const removeUser = await db.projectRepository.RemoveUserFromProject(
+            pid,
+            uid
+        );
+        if (!removeUser) {
+            res.status(500).json({
+                error: 'User removal attempt failed.',
+            });
+            return;
+        }
+
+        // Remove project from user's projects
+        const memberToRemove = await db.userRepository.GetById(uid);
+        if (memberToRemove && !(isOwner && isMe)) {
+            const projectsUpdate = memberToRemove.projects.filter(
+                (x) => x !== pid
+            );
+            const removeProject = await db.userRepository.Update(uid, {
+                projects: projectsUpdate,
+            });
+            if (!removeProject) {
+                res.status(500).json({
+                    error: 'Unable to update project list of user.',
+                });
+                return;
+            }
+        }
+
+        // Removal complete
+        res.status(200).json({
+            error: '',
+            result: 'Member removed successfully.',
+        });
+    }
+);
 
 export default ProjectRouter;
