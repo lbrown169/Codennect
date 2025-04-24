@@ -70,6 +70,15 @@ export function ProjectComp({ pid }: { pid: string }) {
                         }
                     }
                 }
+
+                for (const application of requests.applications[project._id] || []) {
+                    if (!tempMembers.find((member) => member._id === application.user_id)) {
+                        response = await getUserInfo(application.user_id);
+                        if (response.status === 200) {
+                            tempMembers.push((await response.json()).result as User);
+                        }
+                    }
+                }
             }
 
             setMembers(tempMembers);
