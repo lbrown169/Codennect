@@ -150,9 +150,9 @@ export class MongoProjectRepository implements ProjectRepository {
 
         // if users is present, preserve existing members
         if (updates.users) {
-            console.warn(
-                'Cannot edit project members from this endpoint. Updating roles...'
-            );
+            // console.warn(
+            //     'Cannot edit project members from this endpoint. Updating roles...'
+            // );
 
             // Validate role keys
             const invalidRoles = Object.keys(updates.users).filter(
@@ -165,23 +165,23 @@ export class MongoProjectRepository implements ProjectRepository {
             }
 
             // get current project data
-            const currentProject = await this.GetById(id);
-            if (!currentProject) return false;
+            // const currentProject = await this.GetById(id);
+            // if (!currentProject) return false;
 
-            const cleanedUsers: ProjectUsers = {};
+            // const cleanedUsers: ProjectUsers = {};
 
-            // for any new roles, get the current users and merge with previous ones
-            for (const [role, data] of Object.entries(updates.users)) {
-                const currentUsers = currentProject.users?.[role]?.users ?? [];
+            // // for any new roles, get the current users and merge with previous ones
+            // for (const [role, data] of Object.entries(updates.users)) {
+            //     const currentUsers = currentProject.users?.[role]?.users ?? [];
 
-                cleanedUsers[role] = {
-                    max: data.max, // allow max updates
-                    users: currentUsers, // preserve current user list
-                };
-            }
+            //     cleanedUsers[role] = {
+            //         max: data.max, // allow max updates
+            //         users: currentUsers, // preserve current user list
+            //     };
+            // }
 
-            // Apply the cleaned-up structure back to updates
-            updates.users = cleanedUsers;
+            // // Apply the cleaned-up structure back to updates
+            // updates.users = cleanedUsers;
         }
 
         // apply the update normally
@@ -223,6 +223,6 @@ export class MongoProjectRepository implements ProjectRepository {
             }
         }
 
-        return this.Update(project_id, { users: project.users });
+        return await this.Update(project_id, { users: project.users });
     }
 }
