@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext } from 'react';
-import { Title, Box, SimpleGrid, Card, Group, Pill, ActionIcon, Modal, Button, Stack, Divider, Text } from '@mantine/core';
+import { Title, Box, SimpleGrid, Card, Group, Pill, ActionIcon, Modal, Button, Stack, Divider, Text, Skeleton } from '@mantine/core';
 import { LuCrown } from 'react-icons/lu';
 import { useDisclosure } from '@mantine/hooks';
 import { Link } from 'react-router-dom';
-import { UserContext } from '../hooks/UserContext';
+import { UserContext } from '../../hooks/UserContext';
 
 // Inline type definitions (remove these if you have them in separate files)
 interface Project {
@@ -150,10 +150,12 @@ export default function TeamUsersPage() {
                 <Title py="md" order={1}>
                     My Teams
                 </Title>
-                <div className="accountBox">
-                    <h1>Error</h1>
-                    <p>{error}</p>
-                </div>
+                <Card shadow="sm" padding="lg" radius="md" withBorder>
+                    <Title order={2} mb="md">
+                        Error
+                    </Title>
+                    <Text>{error}</Text>
+                </Card>
             </Box>
         );
     }
@@ -164,10 +166,44 @@ export default function TeamUsersPage() {
                 <Title py="md" order={1}>
                     My Teams
                 </Title>
-                <div className="accountBox">
-                    <h1>Loading team details</h1>
-                    <p>Hold on just a second while we load the team...</p>
-                </div>
+                <Card shadow="sm" padding="lg" radius="md" withBorder mb="xl">
+                    <Title order={2} mb="md">
+                        Loading Team Details
+                    </Title>
+                    <Text mb="lg">Hold on just a second while we load the team...</Text>
+                </Card>
+                {/* Skeleton placeholders mimicking the user cards */}
+                <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+                    {/* Show 2 skeleton cards to match the layout */}
+                    {Array.from({ length: 2 }).map((_, index) => (
+                        <Card
+                            key={index}
+                            className="h-full gap-3"
+                            shadow="sm"
+                            padding="lg"
+                            radius="md"
+                            withBorder
+                        >
+                            <Stack>
+                                <Group justify="space-between" mb="xs">
+                                    <Group>
+                                        <Skeleton height={20} width={20} circle />
+                                        <Skeleton height={16} width="40%" />
+                                    </Group>
+                                    <Group>
+                                        <Skeleton height={30} width={60} />
+                                        <Skeleton height={30} width={60} />
+                                    </Group>
+                                </Group>
+                                <Divider />
+                                <Group>
+                                    <Skeleton height={20} width="20%" />
+                                    <Skeleton height={20} width="20%" />
+                                </Group>
+                            </Stack>
+                        </Card>
+                    ))}
+                </SimpleGrid>
             </Box>
         );
     }
