@@ -9,7 +9,8 @@ import { User } from '../../types/User';
 import { getUserInfo } from '../../api/UserAPI';
 
 export default function TeamUsersPage() {
-    const { user } = useContext(UserContext); // Get current user to access projects and determine ownership
+    const { user, loaded } = useContext(UserContext); // Include loaded to track user fetch status
+    console.log('UserContext value in TeamUsersPage:', { user, loaded });
 
     // State for projects, users, loading, and errors
     const [projectsWithUsers, setProjectsWithUsers] = useState<{ project: Project; users: User[] }[]>([]);
@@ -26,7 +27,7 @@ export default function TeamUsersPage() {
         async function fetchProjectsAndUsers() {
             try {
                 if (!user) {
-                    // If user is null, we'll handle this in the UI with a Skeleton
+                    // If user is null, we'll handle this in the UI
                     return;
                 }
 
@@ -132,7 +133,7 @@ export default function TeamUsersPage() {
         );
     }
 
-    if (loading || !user) {
+    if (!loaded || loading) {
         return (
             <Box mx={{ base: 'md', lg: 'xl' }}>
                 <Title py="md" order={1}>
@@ -180,6 +181,22 @@ export default function TeamUsersPage() {
         );
     }
 
+    if (!user) {
+        return (
+            <Box mx={{ base: 'md', lg: 'xl' }}>
+                <Title py="md" order={1}>
+                    My Teams
+                </Title>
+                <Card shadow="sm" padding="lg" radius="md" withBorder>
+                    <Title order={2} mb="md">
+                        No User Data
+                    </Title>
+                    <Text>Please log in to view your teams.</Text>
+                </Card>
+            </Box>
+        );
+    }
+
     return (
         <Box mx={{ base: 'md', lg: 'xl' }}>
             <Title py="md" order={1}>
@@ -223,7 +240,7 @@ export default function TeamUsersPage() {
                                                 )}
                                                 {/* Username with hyperlink to profile */}
                                                 <Link to={`/users/${user._id}`}>
-                                                    <Text fw={500}>{user.username}</Text>
+                                                    <Text fw={500}>{user.name}</Text>
                                                 </Link>
                                             </Group>
 
@@ -235,7 +252,7 @@ export default function TeamUsersPage() {
                                                     color="gray"
                                                     onClick={() => {
                                                         // Placeholder for invite modal
-                                                        console.log('Invite modal will open for', user.username, 'in project', projectData.project.name);
+                                                        console.log('Invite modal will open for', user.name, 'in project', projectData.project.name);
                                                     }}
                                                     aria-label="Invite user"
                                                 >
@@ -260,7 +277,7 @@ export default function TeamUsersPage() {
 
                                         {/* Roles using Mantine Pills */}
                                         <Group>
-                                            {user.roles?.map((role: string) => (
+                                            {user.roles.map((role: string) => (
                                                 <Pill key={role} size="sm" color="#5b8580">
                                                     {role}
                                                 </Pill>
