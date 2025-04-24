@@ -1,5 +1,5 @@
 import express, { Request } from 'express';
-import { Project, ProjectCreation } from '../domain/Project.js';
+import { Project, ProjectCreation, ProjectUsers } from '../domain/Project.js';
 import { PossibleRoles, PossibleSkills } from '../domain/User.js';
 import { Driver } from '../repo/Driver.js';
 import { Response } from '../utils.js';
@@ -136,9 +136,10 @@ ProjectRouter.get('/api/projects/:id', async (req: Request, res: Response) => {
     const userId = res.locals.user._id;
 
     // check if the user is already a member of the project
-    const isMember = Object.values(theProject.users).some((role) =>
-        role.users.includes(userId)
-    );
+    const isMember =
+        Object.values(theProject.users).some((role) =>
+            role.users.includes(userId)
+        ) || theProject.owner === userId;
     if (isMember) {
         res.status(200).json({ error: '', result: theProject });
         return;
@@ -267,6 +268,23 @@ ProjectRouter.post('/api/projects', async (req: Request, res: Response) => {
         });
         return;
     }
+
+    const defaultUsers: ProjectUsers = {};
+    for (let role of PossibleRoles) {
+        defaultUsers[role] = {
+            max: 0,
+            users: [],
+        };
+        if (
+            typeof users == 'object' &&
+            role in users &&
+            'max' in users[role] &&
+            !Number.isNaN(parseInt(users[role].max))
+        ) {
+            defaultUsers[role].max = parseInt(users[role].max);
+        }
+    }
+
     // Creation stuff
     const newProject = new ProjectCreation(
         name,
@@ -276,7 +294,7 @@ ProjectRouter.post('/api/projects', async (req: Request, res: Response) => {
         description,
         fields,
         // skills and roles are validated in the create function in mongo
-        users,
+        defaultUsers,
         required_skills
     );
     const enterProject = await db.projectRepository.Create(newProject);
