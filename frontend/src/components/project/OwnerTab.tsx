@@ -10,6 +10,8 @@ import { UserContext } from "../../hooks/UserContext";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { Link } from "react-router-dom";
 import { approveRequest, denyRequest } from "../../api/RequestsAPI";
+import { CgProfile } from "react-icons/cg";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 export function OwnerTab({ project, setRefresh, cache }: { project: Project, setRefresh: React.Dispatch<React.SetStateAction<string>>, cache: User[] }) {
     const { requests } = useContext(UserContext);
@@ -199,10 +201,15 @@ export function OwnerTab({ project, setRefresh, cache }: { project: Project, set
                                 </Group>
                                 <Stack gap="xs">
                                     {project.users[role].users.map(uid => (
-                                        <Group grow justify="between" className="bg-slate-100" px="sm" py="xs">
-                                            <Text size="sm">{cache.find(u => u._id === uid)?.name}</Text>
-                                            <Button variant="outline" color="red" onClick={(_) => removeFromProject(uid)}>Remove</Button>
-                                        </Group>
+                                        <div className="flex justify-between bg-slate-100 py-2 px-3 rounded-sm">
+                                            <Group>
+                                                <CgProfile />
+                                                <Text size="sm">{cache.find(u => u._id === uid)?.name}</Text>
+                                            </Group>
+                                            {/* <Button variant="outline" color="red" onClick={(_) => removeFromProject(uid)}>Remove</Button>
+                                             */}
+                                            <FaRegTrashAlt className="cursor-pointer" color="red" onClick={(_) => removeFromProject(uid)} />
+                                        </div>
                                     ))}
                                 </Stack>
                             </Stack>
