@@ -130,25 +130,28 @@ RequestRouter.post('/api/requests', async (req: Request, res: Response) => {
     if (req.app.locals.transporter) {
         let t: IMailgunClient = req.app.locals.transporter;
         let message;
+        let recipient;
         if (is_invite == RequestType.INVITE) {
             message = `
             Hey there ${user.name},<br /><br />
-            You have been sent an invite to join the ${project.name} project! Be sure to check it out!
-        `;
+            You have been sent an invite to join the ${project.name} project! Be sure to check it out!`;
+            recipient = user.email;
         } else {
             // application
             message = `
             Hey there ${user.name},<br /><br />
-            You have received a new application from a user wishing to join the ${project.name} project!
-        `;
+            You have received a new application from a user wishing to join the ${project.name} project!`;
+            recipient = (await db.userRepository.GetById(project.owner))?.email;
         }
-        const info = await t.messages.create(process.env.MAILGUN_DOMAIN!, {
-            from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
-            to: [user.email],
-            subject: `${project.name} Request Update`,
-            html: message,
-        });
-        console.log('Approval email sent.', info);
+        if (recipient) {
+            const info = await t.messages.create(process.env.MAILGUN_DOMAIN!, {
+                from: `Codennect <noreply@${process.env.MAILGUN_DOMAIN}>`,
+                to: [recipient],
+                subject: `${project.name} Request Update`,
+                html: message,
+            });
+            console.log('Approval email sent.', info);
+        }
     }
 
     res.status(200).json({
