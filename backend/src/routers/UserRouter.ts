@@ -76,7 +76,7 @@ UserRouter.get('/api/users/me', async (req: Request, res: Response) => {
     res.status(200).json({ error: '', result: res.locals.user });
 });
 
-UserRouter.get('/api/users/:id(\\d+)', async (req: Request, res: Response) => {
+UserRouter.get('/api/users/:id', async (req: Request, res: Response) => {
     // incoming: user id
     // outgoing: all the user info
 
