@@ -13,94 +13,88 @@ export function Navbar() {
 
     return (
         <AppShell.Navbar p="md">
-            {user ? (
-                <>
-                    <AppShell.Section>
-                        <NavLink
-                            href="/"
-                            label="Dashboard"
-                            autoContrast
-                            leftSection={<MdOutlineSpaceDashboard size={16} />}
-                        />
-                    </AppShell.Section>
-                    <AppShell.Section grow my="md" component={ScrollArea}>
-                        <div>
-                            <p className="uppercase text-sm font-bold text-[#5c8593] pb-1">
-                                Projects
-                            </p>
-                            <NavLink
-                                label="My Projects"
-                                childrenOffset={56}
-                                autoContrast
-                                leftSection={<LuCrown size={16} />}
-                            >
-                                {user.projects.map((project) => (
-                                    <NavLink
-                                        key={project._id}
-                                        label={project.name}
-                                        href={`/projects/${project._id}`}
-                                    />
-                                ))}
-                            </NavLink>
-                            <NavLink
-                                href="/projects"
-                                label="Browse Projects"
-                                autoContrast
-                                leftSection={<FaMagnifyingGlass size={16} />}
-                            ></NavLink>
-                            <NavLink
-                                href="/projects/create"
-                                label="Create Project"
-                                autoContrast
-                                leftSection={<LuCirclePlus size={16} />}
-                            ></NavLink>
-                        </div>
-                        <br />
-                        <div>
-                            <p className="uppercase text-sm font-bold text-[#5c8593] pb-1">
-                                Users
-                            </p>
-                            <NavLink
-                                href="/users/me"
-                                label="My Profile"
-                                autoContrast
-                                leftSection={<FaRegUser size={16} />}
-                            />
-                            <NavLink
-                                href="/users/related"
-                                label="My Teams"
-                                autoContrast
-                                leftSection={<FaRegAddressBook size={16} />}
-                            />
-                            <NavLink
-                                href="/users"
-                                label="Browse Users"
-                                autoContrast
-                                leftSection={<FaMagnifyingGlass size={16} />}
-                            />
-                        </div>
-                    </AppShell.Section>
-                    <AppShell.Section>
-                        <Group justify="space-between" mx="md">
-                            <p>
-                                Logged in as{' '}
-                                <span className="font-bold text-[#5c8593] pb-1">
-                                    {user.name}
-                                </span>
-                            </p>
-                            <Link to="/logout">
-                                <IoMdExit size={25} />
-                            </Link>
-                        </Group>
-                    </AppShell.Section>
-                </>
-            ) : (
-                <AppShell.Section>
+            <AppShell.Section>
+                <NavLink
+                    href="/"
+                    label="Dashboard"
+                    autoContrast
+                    leftSection={<MdOutlineSpaceDashboard size={16} />}
+                />
+            </AppShell.Section>
+            <AppShell.Section grow my="md" component={ScrollArea}>
+                <div>
                     <p className="uppercase text-sm font-bold text-[#5c8593] pb-1">
-                        Loading user...
+                        Projects
                     </p>
-                </AppShell.Section>
-            )}
+                    <NavLink
+                        label="My Projects"
+                        childrenOffset={56}
+                        autoContrast
+                        leftSection={<LuCrown size={16} />}
+                    >
+                        {user && (
+                            user.projects.map((project) => (
+                                <NavLink
+                                    key={project._id}
+                                    label={project.name}
+                                    href={`/projects/${project._id}`}
+                                />
+                            ))
+                        )}
+                    </NavLink>
+                    <NavLink
+                        href="/projects"
+                        label="Browse Projects"
+                        autoContrast
+                        leftSection={<FaMagnifyingGlass size={16} />}
+                    ></NavLink>
+                    <NavLink
+                        href="/projects/create"
+                        label="Create Project"
+                        autoContrast
+                        leftSection={<LuCirclePlus size={16} />}
+                    ></NavLink>
+                </div>
+                <br />
+                <div>
+                    <p className="uppercase text-sm font-bold text-[#5c8593] pb-1">
+                        Users
+                    </p>
+                    <NavLink
+                        href="/users/me"
+                        label="My Profile"
+                        autoContrast
+                        leftSection={<FaRegUser size={16} />}
+                    />
+                    <NavLink
+                        href="/users/related"
+                        label="My Teams"
+                        autoContrast
+                        leftSection={<FaRegAddressBook size={16} />}
+                    />
+                    <NavLink
+                        href="/users"
+                        label="Browse Users"
+                        autoContrast
+                        leftSection={<FaMagnifyingGlass size={16} />}
+                    />
+                </div>
+            </AppShell.Section>
+            <AppShell.Section>
+                {user && (
+                    <Group justify="space-between" mx="md">
+                        <p>
+                            Logged in as{' '}
+                            <span className="font-bold text-[#5c8593] pb-1">
+                                {user.name}
+                            </span>
+                        </p>
+                        <Link to="/logout">
+                            <IoMdExit size={25} />
+                        </Link>
+                    </Group>
+                )}
+            </AppShell.Section>
         </AppShell.Navbar>
     );
 }
