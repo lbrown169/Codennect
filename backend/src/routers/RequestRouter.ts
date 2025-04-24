@@ -131,7 +131,8 @@ RequestRouter.post('/api/requests', async (req: Request, res: Response) => {
         let t: IMailgunClient = req.app.locals.transporter;
         let message;
         let recipient;
-        if (is_invite == RequestType.INVITE) {
+
+        if (is_invite) {
             message = `
             Hey there ${user.name},<br /><br />
             You have been sent an invite to join the ${project.name} project! Be sure to check it out!`;
