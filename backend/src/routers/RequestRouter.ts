@@ -232,14 +232,15 @@ RequestRouter.post(
             }
         }
 
-        const saveToProject = await db.projectRepository.Update(project_id, {
+        await db.projectRepository.Update(project_id, {
             users: project.users,
         });
-        if (!saveToProject) {
-            res.status(500).json({
-                error: 'Could not overwrite roles.',
-            });
-        }
+        // if (!saveToProject) {
+        //     res.status(500).json({
+        //         error: 'Could not overwrite roles.',
+        //     });
+        //     return;
+        // }
 
         // // Place them into their assigned roles
         // for (let role of request.roles) {
