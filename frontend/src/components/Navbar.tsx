@@ -1,6 +1,6 @@
 import { AppShell, Group, NavLink, ScrollArea } from '@mantine/core';
 import { useContext } from 'react';
-import { FaRegAddressBook, FaRegUser } from 'react-icons/fa';
+import { FaRegUser } from 'react-icons/fa';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { IoMdExit } from 'react-icons/io';
 import { LuCrown, LuCirclePlus } from 'react-icons/lu';

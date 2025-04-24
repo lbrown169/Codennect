@@ -161,7 +161,8 @@ export function ProjectComp({ pid }: { pid: string }) {
                         {getRelationship() === "owner" ? (
                             <Tabs.Tab value="owner">Owner Settings</Tabs.Tab>
                         ) : getRelationship() === "member" ? (
-                            <Tabs.Tab value="member">Member Settings</Tabs.Tab>
+                            // <Tabs.Tab value="member">Member Settings</Tabs.Tab>
+                            <></>
                         ) : (
                             <></>
                         )}
