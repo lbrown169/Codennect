@@ -66,7 +66,7 @@ export class StaticProjectRepository implements ProjectRepository {
             project.isPrivate,
             '',
             [],
-            {},
+            project.users || {},
             []
         );
 
