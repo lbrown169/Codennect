@@ -22,7 +22,7 @@ export function ProjectSearchBar()
         'Mobile',
     ];
     const skillOptions = [
-        'Android(Kotlin/Java)',
+        'Android (Kotlin/Java)',
         'Angular',
         'Arduino',
         'AWS',
@@ -31,12 +31,12 @@ export function ProjectSearchBar()
         'Dart',
         'Docker',
         'Express.js',
-        'Figma(UI/UX)',
+        'Figma (UI/UX)',
         'Firebase',
         'Flutter',
         'Google Cloud',
         'GraphQL',
-        'iOS(Swift)',
+        'iOS (Swift)',
         'Java',
         'JavaScript',
         'Machine Learning',

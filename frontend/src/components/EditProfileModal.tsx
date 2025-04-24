@@ -26,7 +26,7 @@ export default function EditProfileModal({ user, opened, close }: { user: Logged
         'Mobile',
     ];
     const skillOptions = [
-        'Android(Kotlin/Java)',
+        'Android (Kotlin/Java)',
         'Angular',
         'Arduino',
         'AWS',
@@ -35,12 +35,12 @@ export default function EditProfileModal({ user, opened, close }: { user: Logged
         'Dart',
         'Docker',
         'Express.js',
-        'Figma(UI/UX)',
+        'Figma (UI/UX)',
         'Firebase',
         'Flutter',
         'Google Cloud',
         'GraphQL',
-        'iOS(Swift)',
+        'iOS (Swift)',
         'Java',
         'JavaScript',
         'Machine Learning',

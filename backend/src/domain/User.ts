@@ -7,7 +7,7 @@ export type VerificationInUser = {
 };
 
 export const PossibleSkills = [
-    'Android(Kotlin/Java)',
+    'Android (Kotlin/Java)',
     'Angular',
     'Arduino',
     'AWS',
@@ -16,12 +16,12 @@ export const PossibleSkills = [
     'Dart',
     'Docker',
     'Express.js',
-    'Figma(UI/UX)',
+    'Figma (UI/UX)',
     'Firebase',
     'Flutter',
     'Google Cloud',
     'GraphQL',
-    'iOS(Swift)',
+    'iOS (Swift)',
     'Java',
     'JavaScript',
     'Machine Learning',

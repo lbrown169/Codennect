@@ -31,7 +31,7 @@ export default function CreateProjectPage() {
     const [submitted, setSubmitted] = useState(false);
 
     const skillOptions = [
-        'Android(Kotlin/Java)',
+        'Android (Kotlin/Java)',
         'Angular',
         'Arduino',
         'AWS',
@@ -40,12 +40,12 @@ export default function CreateProjectPage() {
         'Dart',
         'Docker',
         'Express.js',
-        'Figma(UI/UX)',
+        'Figma (UI/UX)',
         'Firebase',
         'Flutter',
         'Google Cloud',
         'GraphQL',
-        'iOS(Swift)',
+        'iOS (Swift)',
         'Java',
         'JavaScript',
         'Machine Learning',
