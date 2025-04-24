@@ -232,6 +232,15 @@ RequestRouter.post(
             }
         }
 
+        const saveToProject = await db.projectRepository.Update(project_id, {
+            users: project.users,
+        });
+        if (!saveToProject) {
+            res.status(500).json({
+                error: 'Could not overwrite roles.',
+            });
+        }
+
         // // Place them into their assigned roles
         // for (let role of request.roles) {
         //     // make sure the role exists in the project and add it if it doesn't

@@ -225,4 +225,29 @@ export class MongoProjectRepository implements ProjectRepository {
 
         return await this.Update(project_id, { users: project.users });
     }
+
+    async RemoveUserFromProject(
+        project_id: string,
+        user_id: string
+    ): Promise<boolean> {
+        // Load project
+        const project = await this.GetById(project_id);
+        if(!project)
+            return false;
+
+        // Remove user from roles
+        for(const role of Object.keys(project.users)) {
+            // Do the actual removal
+            project.users[role].users = project.users[role].users.filter(
+                (uid) => uid !== user_id
+            );
+        }
+
+        // Apply update
+        const result = await this.collection.updateOne(
+            {  _id: new ObjectId(project_id) },
+            { $set: { users: project.users } }
+        );
+        return result.modifiedCount > 0;
+    }
 }
