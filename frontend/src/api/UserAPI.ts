@@ -69,3 +69,14 @@ export async function SendReset(email: string) {
         );
     }
 }
+
+export async function searchUsers(q: Record<string, string>) {
+    let header = {
+        'Content-Type': 'application/json',
+    };
+    let option = {
+        headers: header,
+        query: q,
+    };
+    return await getRequest('/api/users', option);
+}

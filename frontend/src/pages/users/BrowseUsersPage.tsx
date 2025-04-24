@@ -1,4 +1,5 @@
 import { Title, Box } from '@mantine/core';
+import { UserSearchBar } from '../../components/browse/UserSearchBar';
 
 export default function BrowseUsersPage() {
     return (
@@ -6,6 +7,7 @@ export default function BrowseUsersPage() {
             <Title py="md" order={1}>
                 Users
             </Title>
+            <UserSearchBar />
         </Box>
     );
 }

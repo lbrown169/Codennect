@@ -27,6 +27,12 @@ UserRouter.get('/api/users', async (req: Request, res: Response) => {
         let users = await db.userRepository.GetAll();
 
         // filter by roles if provided
+        if (name) {
+            users = users.filter((user) =>
+                user.name.toLowerCase().includes(name.toString().toLowerCase())
+            );
+        }
+
         if (roles) {
             const parsedRoles = roles.toString().split(',');
 
