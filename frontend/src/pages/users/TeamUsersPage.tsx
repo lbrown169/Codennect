@@ -4,37 +4,9 @@ import { LuCrown } from 'react-icons/lu';
 import { useDisclosure } from '@mantine/hooks';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../../hooks/UserContext';
-
-// Inline type definitions (remove these if you have them in separate files)
-interface Project {
-    _id: string;
-    name: string;
-    description: string;
-    owner: string;
-    users: { [role: string]: { users: string[]; max: number } };
-    required_skills: string[];
-}
-
-interface User {
-    _id: string;
-    username: string;
-    projects: Project[];
-    roles?: string[];
-    isOwner?: boolean;
-}
-
-// Inline getUserInfo function (replace with real implementation if available)
-async function getUserInfo(userId: string): Promise<{ status: number; json: () => Promise<User> }> {
-    // Mock implementation for now
-    return {
-        status: 200,
-        json: async () => ({
-            _id: userId,
-            username: `User_${userId}`,
-            projects: [],
-        }),
-    };
-}
+import { Project } from '../../types/Project';
+import { User } from '../../types/User';
+import { getUserInfo } from '../../api/UserAPI';
 
 export default function TeamUsersPage() {
     const { user } = useContext(UserContext); // Get current user to access projects and determine ownership
@@ -54,7 +26,7 @@ export default function TeamUsersPage() {
         async function fetchProjectsAndUsers() {
             try {
                 if (!user) {
-                    setError('No user data available');
+                    // If user is null, we'll handle this in the UI with a Skeleton
                     return;
                 }
 
@@ -79,7 +51,7 @@ export default function TeamUsersPage() {
                         const ownerRoles = Object.keys(project.users).filter(role =>
                             project.users[role].users.includes(owner._id)
                         );
-                        tempUsers.push({ ...owner, roles: ownerRoles, isOwner: project.owner === user._id });
+                        tempUsers.push({ ...owner, roles: ownerRoles });
                     } else {
                         console.warn(`Failed to fetch owner for project ${project._id}: Status ${ownerResponse.status}`);
                     }
@@ -94,7 +66,7 @@ export default function TeamUsersPage() {
                                     const userRoles = Object.keys(project.users).filter(r =>
                                         project.users[r].users.includes(userData._id)
                                     );
-                                    tempUsers.push({ ...userData, roles: userRoles, isOwner: project.owner === user._id });
+                                    tempUsers.push({ ...userData, roles: userRoles });
                                 } else {
                                     console.warn(`Failed to fetch user ${userId} for project ${project._id}: Status ${userResponse.status}`);
                                 }
@@ -246,7 +218,7 @@ export default function TeamUsersPage() {
                                         <Group justify="space-between" mb="xs">
                                             <Group>
                                                 {/* Show crown if the current user is the owner and this user is the owner */}
-                                                {projectData.project.owner === user._id && user.isOwner && (
+                                                {projectData.project.owner === user._id && projectData.project.owner === user._id && (
                                                     <LuCrown color="#598392" />
                                                 )}
                                                 {/* Username with hyperlink to profile */}
@@ -271,7 +243,7 @@ export default function TeamUsersPage() {
                                                 </ActionIcon>
 
                                                 {/* Remove button (visible only to owner) */}
-                                                {user.isOwner && (
+                                                {projectData.project.owner === user._id && (
                                                     <ActionIcon
                                                         variant="outline"
                                                         color="red"
