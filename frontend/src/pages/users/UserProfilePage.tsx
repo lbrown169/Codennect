@@ -1,4 +1,4 @@
-import { Title, Box, Loader, Grid, Card, Text, Group, Badge, Stack, Modal, MultiSelect, Button } from '@mantine/core';
+import { Title, Box, Loader, Grid, Card, Text, Group, Badge, Stack } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { User } from '../../types/User';
