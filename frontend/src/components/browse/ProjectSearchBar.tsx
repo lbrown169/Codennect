@@ -3,7 +3,7 @@ import { Project } from '../../types/Project';
 import { ProjectCard } from "../dashboard/ProjectsPanel";
 import { UserContext } from '../../hooks/UserContext';
 import { FaSearch } from "react-icons/fa";
-import { Alert, Button, Combobox, useCombobox, CloseButton, Grid, Input, InputBase, MultiSelect, ScrollArea, Skeleton, TextInput, Stack, Flex, Loader } from "@mantine/core";
+import { Alert, Button, Combobox, useCombobox, CloseButton, Grid, Input, InputBase, MultiSelect, ScrollArea, TextInput, Stack, Flex, Loader } from "@mantine/core";
 import { getSearchResults } from "../../api/ProjectAPI";
 
 import { IoMdInformationCircleOutline } from 'react-icons/io';

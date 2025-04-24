@@ -11,7 +11,6 @@ import {
     Loader,
     Progress,
     ScrollArea,
-    Skeleton,
     Stack,
     Tabs,
     Text,
