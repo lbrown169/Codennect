@@ -2,7 +2,7 @@ import { Paper, Title, Text, Stack, Badge, Group, Divider, RingProgress } from "
 import { User } from "../../types/User";
 import { Link } from "react-router-dom";
 
-export default function ProjectHeader({ title, description, skills, fill, owner }: {title: string, description: string, skills: string[], fill: { total: number, open: number}, owner: User}) {
+export default function ProjectHeader({ title, description, skills, fill, owner }: {title: string, description: string, skills: string[], fill: { total: number, open: number}, owner: User | undefined}) {
     return (
         <Paper shadow="md" radius="md" p="xl">
             <Group gap="xl">

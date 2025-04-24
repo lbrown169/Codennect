@@ -6,7 +6,7 @@ import { getProject } from '../../api/ProjectAPI';
 import { Project } from '../../types/Project';
 import { User } from '../../types/User';
 import { getUserInfo } from '../../api/UserAPI';
-import { Alert, Group, Loader, Paper, Stack, Tabs, Text } from '@mantine/core';
+import { Alert, Group, Paper, Stack, Tabs, Text } from '@mantine/core';
 import { IoMdInformationCircleOutline } from 'react-icons/io';
 import { MdErrorOutline } from 'react-icons/md';
 import ProjectHeader from './ProjectHeader';

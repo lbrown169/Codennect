@@ -1,4 +1,4 @@
-import { Alert, Button, MultiSelect, Stack, Tabs, Text, Textarea } from "@mantine/core";
+import { Alert, Button, MultiSelect, Stack, Tabs, Textarea } from "@mantine/core";
 import { useContext, useState } from "react";
 import { LoadData, UserContext } from "../../hooks/UserContext";
 import { IoMdInformationCircleOutline } from "react-icons/io";
