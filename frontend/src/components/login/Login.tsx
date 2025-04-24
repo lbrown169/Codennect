@@ -8,7 +8,7 @@ import { IncorrectCredentials, VerificationRequired } from '../../types/Errors';
 import { notifications } from '@mantine/notifications';
 
 export default function LoginComponent() {
-    const { setUser, setVerified } = useContext(UserContext);
+    const { setUser, setVerified, setRequests } = useContext(UserContext);
     const navigate = useNavigate();
 
     const loginForm = useForm({
@@ -32,7 +32,7 @@ export default function LoginComponent() {
     }) {
         try {
             await Login(email, password);
-            await LoadData(setUser, setVerified);
+            await LoadData(setUser, setVerified, setRequests);
             navigate('/');
         } catch (err) {
             if (err instanceof IncorrectCredentials) {

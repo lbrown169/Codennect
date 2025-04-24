@@ -204,6 +204,7 @@ export function ProjectSearchBar()
                         data={skillOptions}
                         value={skillValue}
                         onChange={setSkillValue}
+                        searchable
                     />
 
                     <Button className="grow-0" type="submit" color="#5c8593">

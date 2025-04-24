@@ -3,6 +3,8 @@ import { LoggedInUser } from '../types/User';
 import { loadToken } from '../api/utils';
 import { getMyInfo } from '../api/UserAPI';
 import { getProject } from '../api/ProjectAPI';
+import { RequestsResponse } from '../types/Request';
+import { getRequests } from '../api/RequestsAPI';
 
 type _UserContext = {
     user: LoggedInUser | null;
@@ -12,6 +14,10 @@ type _UserContext = {
     loaded: boolean;
     verified: boolean;
     setVerified: React.Dispatch<React.SetStateAction<boolean>> | (() => void);
+    requests: RequestsResponse | null;
+    setRequests:
+        | React.Dispatch<React.SetStateAction<RequestsResponse | null>>
+        | (() => void);
 };
 
 export const UserContext = createContext<_UserContext>({
@@ -20,18 +26,21 @@ export const UserContext = createContext<_UserContext>({
     loaded: false,
     verified: true,
     setVerified: () => {},
+    requests: null,
+    setRequests: () => {},
 });
 
 export async function LoadData(
     setUser: React.Dispatch<React.SetStateAction<LoggedInUser | null>>,
-    setVerified: React.Dispatch<React.SetStateAction<boolean>>
+    setVerified: React.Dispatch<React.SetStateAction<boolean>>,
+    setRequests: React.Dispatch<React.SetStateAction<RequestsResponse | null>>
 ) {
     if (loadToken() === null) {
         setUser(null);
         return;
     }
 
-    const response = await getMyInfo();
+    let response = await getMyInfo();
     if (response.status === 412) {
         setVerified(false);
         setUser(null);
@@ -51,6 +60,9 @@ export async function LoadData(
                 user.projects.push((await pResponse.json()).result);
             }
         }
+
+        response = await getRequests();
+        setRequests((await response.json()).result);
 
         setUser(user as LoggedInUser);
     }

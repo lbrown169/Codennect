@@ -27,7 +27,7 @@ async function makeRequest(
     route: string,
     headers: Record<string, string>,
     query: Record<string, string>,
-    body: Record<string, string> | null
+    body: Record<string, string | boolean | object> | null
 ) {
     if (query) {
         route += '?' + new URLSearchParams(query).toString();
@@ -64,12 +64,28 @@ export async function getRequest(
     );
 }
 
+export async function deleteRequest(
+    route: string,
+    options?: {
+        headers?: Record<string, string>;
+        query?: Record<string, string>;
+    }
+) {
+    return makeRequest(
+        'DELETE',
+        route,
+        options?.headers ?? {},
+        options?.query ?? {},
+        null
+    );
+}
+
 export async function postRequest(
     route: string,
     options?: {
         headers?: Record<string, string>;
         query?: Record<string, string>;
-        body?: Record<string, string> | null;
+        body?: Record<string, string | boolean | object> | null;
     }
 ) {
     return makeRequest(
@@ -86,7 +102,7 @@ export async function patchRequest(
     options?: {
         headers?: Record<string, string>;
         query?: Record<string, string>;
-        body?: Record<string, string> | null;
+        body?: Record<string, string | boolean | object> | null;
     }
 ) {
     return makeRequest(

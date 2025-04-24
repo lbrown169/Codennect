@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
-import { Box, Title } from '@mantine/core';
+import { Box } from '@mantine/core';
+import { ProjectComp } from '../../components/project/Project';
 
 const ProjectPage = () => {
     const { project_id } = useParams();
@@ -7,9 +8,7 @@ const ProjectPage = () => {
 
     return (
         <Box mx={{ base: 'md', lg: 'xl' }}>
-            <Title py="md" order={1}>
-                Project
-            </Title>
+            <ProjectComp pid={project_id} />
         </Box>
     );
 };

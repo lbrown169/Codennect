@@ -10,11 +10,13 @@ import { LoggedInUser } from './types/User.ts';
 import { LoadData, UserContext } from './hooks/UserContext.ts';
 import LogoutPage from './pages/LogoutPage.tsx';
 import { getVersion, isProd } from './utils.ts';
+import { RequestsResponse } from './types/Request.ts';
 
 function Wrapper() {
     const [user, setUser] = useState<LoggedInUser | null>(null);
     const [loaded, setLoaded] = useState<boolean>(false);
     const [verified, setVerified] = useState<boolean>(true);
+    const [requests, setRequests] = useState<RequestsResponse | null>(null);
 
     if (isProd()) {
         console.info('[PRODUCTION] Codennect Web');
@@ -25,13 +27,13 @@ function Wrapper() {
     }
 
     useEffect(() => {
-        LoadData(setUser, setVerified).then(() => setLoaded(true));
+        LoadData(setUser, setVerified, setRequests).then(() => setLoaded(true));
     }, []);
 
     return (
         <MantineProvider>
             <UserContext.Provider
-                value={{ user, setUser, loaded, verified, setVerified }}
+                value={{ user, setUser, loaded, verified, setVerified, requests, setRequests }}
             >
                 <Notifications />
                 <Router>

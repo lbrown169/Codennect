@@ -39,7 +39,7 @@ export function ProjectCard({ project }: { project: Project }) {
             radius="md"
             withBorder
         >
-            <Stack>
+            <Stack className='grow'>
                 <Group justify="space-between" mb="xs">
                     <Group>
                         {isOwner && <LuCrown color="#598392" />}
