@@ -66,12 +66,12 @@ export function Navbar() {
                         autoContrast
                         leftSection={<FaRegUser size={16} />}
                     />
-                    <NavLink
+                    {/* <NavLink
                         href="/users/related"
                         label="My Teams"
                         autoContrast
                         leftSection={<FaRegAddressBook size={16} />}
-                    />
+                    /> */}
                     <NavLink
                         href="/users"
                         label="Browse Users"
