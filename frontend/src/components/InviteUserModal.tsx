@@ -51,7 +51,7 @@ export default function InviteUserModal({ user, opened, close }: { user: User, o
     }
 
     return (
-        <Modal opened={opened} onClose={close} title="Invite to Projet">
+        <Modal opened={opened} onClose={close} title="Invite to Project">
             <form onSubmit={form.onSubmit(values => createWrapper(values))}>
                 <Stack>
                     <Select

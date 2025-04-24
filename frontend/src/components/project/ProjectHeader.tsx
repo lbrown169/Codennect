@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 export default function ProjectHeader({ title, description, skills, fill, owner }: {title: string, description: string, skills: string[], fill: { total: number, open: number}, owner: User | undefined}) {
     return (
         <Paper shadow="md" radius="md" p="xl">
-            <Group gap="xl">
+            <Group gap="xl" wrap="nowrap">
                 <RingProgress 
                     visibleFrom="lg"
                     size={250}
@@ -30,7 +30,7 @@ export default function ProjectHeader({ title, description, skills, fill, owner 
                         <Text size="sm" c="dimmed">
                             Project Description
                         </Text>
-                        <Text>{description}</Text>
+                        <Text className="wrap-break-word">{description}</Text>
                     </Stack>
                     <Stack gap={0}>
                         <Text size="sm" c="dimmed">
@@ -53,7 +53,7 @@ export default function ProjectHeader({ title, description, skills, fill, owner 
                             ))}
                         </Group>
                     </Stack>
-            </Stack>
+                </Stack>
             </Group>
         </Paper>
     )
